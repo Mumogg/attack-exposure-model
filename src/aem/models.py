@@ -134,3 +134,15 @@ class ExtractionResponse(Strict):
     @classmethod
     def _strip(cls, v: list[ExtractedTechnique]) -> list[ExtractedTechnique]:
         return [t.model_copy(update={"technique_id": t.technique_id.strip()}) for t in v]
+
+
+# --- Step 2: coverage --------------------------------------------------------------
+
+
+class CoverageResult(Strict):
+    technique_id: str
+    coverage: Coverage
+    score: int | None
+    data_sources: list[str]
+    basis: Literal["own_entry", "no_entry", "inherited_parent"]
+    inherited_from: str | None = None

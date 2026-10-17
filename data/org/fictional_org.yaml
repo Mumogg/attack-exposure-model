@@ -1,0 +1,247 @@
+# BORRADOR: Sebas decide las brechas
+# Organización FICTICIA para la simulación de la tesis (ver docs/DECISIONS.md D-22).
+# Esquema propio simplificado, inspirado en DeTT&CT (https://github.com/rabobank-cdc/DeTTECT).
+# Cubre las técnicas de referencia de los tres escenarios (Gunra, Interlock, Akira) con una mezcla
+# de cubiertas, parciales y sin cobertura. Los nombres de fuentes de datos son componentes de datos de ATT&CK v19.2.
+
+organization: "Distribuidora Ficticia del Valle S.A."
+
+assets:
+  - {id: vpn-fw,       name: "Firewall y VPN SSL perimetral",          criticality: alta,  processes_regulated_data: false, exposure: internet}
+  - {id: vdi-portal,   name: "Portal de autenticación VDI",            criticality: alta,  processes_regulated_data: false, exposure: internet}
+  - {id: m365,         name: "Correo, OneDrive y SharePoint (nube)",   criticality: alta,  processes_regulated_data: true,  exposure: internet}
+  - {id: ad-dc,        name: "Controladores de dominio (AD)",          criticality: alta,  processes_regulated_data: false, exposure: interna}
+  - {id: erp-db,       name: "ERP y base de datos de clientes",        criticality: alta,  processes_regulated_data: true,  exposure: interna}
+  - {id: file-srv,     name: "Servidores de archivos y NAS",           criticality: media, processes_regulated_data: true,  exposure: interna}
+  - {id: workstations, name: "Estaciones de trabajo de usuarios",      criticality: media, processes_regulated_data: false, exposure: interna}
+  - {id: backup,       name: "Infraestructura de respaldo",            criticality: alta,  processes_regulated_data: true,  exposure: aislada}
+  - {id: lab-dev,      name: "Entorno de pruebas",                     criticality: baja,  processes_regulated_data: false, exposure: aislada}
+
+data_sources:
+  - {name: Process Creation,                    quality: 4}
+  - {name: Command Execution,                   quality: 3}
+  - {name: Script Execution,                    quality: 4}
+  - {name: WMI Creation,                        quality: 3}
+  - {name: OS API Execution,                    quality: 1}
+  - {name: Module Load,                         quality: 2}
+  - {name: Process Access,                      quality: 4}
+  - {name: Process Modification,                quality: 2}
+  - {name: Process Metadata,                    quality: 1}
+  - {name: Process Termination,                 quality: 2}
+  - {name: Service Creation,                    quality: 4}
+  - {name: Service Modification,                quality: 2}
+  - {name: Driver Load,                         quality: 1}
+  - {name: Windows Registry Key Modification,   quality: 3}
+  - {name: File Creation,                       quality: 3}
+  - {name: File Modification,                   quality: 4}
+  - {name: File Deletion,                       quality: 2}
+  - {name: File Access,                         quality: 2}
+  - {name: Logon Session Creation,              quality: 4}
+  - {name: User Account Authentication,         quality: 3}
+  - {name: User Account Creation,               quality: 4}
+  - {name: User Account Modification,           quality: 2}
+  - {name: Active Directory Credential Request, quality: 4}
+  - {name: Active Directory Object Access,      quality: 3}
+  - {name: Group Enumeration,                   quality: 2}
+  - {name: Network Share Access,                quality: 3}
+  - {name: Network Connection Creation,         quality: 3}
+  - {name: Network Traffic Flow,                quality: 2}
+  - {name: Network Traffic Content,             quality: 2}
+  - {name: Passive DNS,                         quality: 1}
+  - {name: Application Log Content,             quality: 3}
+  - {name: Cloud Storage Access,                quality: 1}
+
+# score: escala de detección DeTT&CT 0-5. Técnica ausente = sin entrada (sin cobertura).
+detections:
+  # Acceso inicial
+  - {technique_id: T1078,     score: 3, data_sources: [Logon Session Creation, User Account Authentication], comment: "Sub-técnica T1078.001 sin entrada propia a propósito (política de sub-técnicas)"}
+  - {technique_id: T1078.002, score: 4, data_sources: [Logon Session Creation, Active Directory Credential Request]}
+  - {technique_id: T1133,     score: 0, data_sources: [], comment: "VPN sin registro centralizado"}
+  - {technique_id: T1190,     score: 2, data_sources: [Application Log Content, Network Traffic Content]}
+  # Ejecución
+  - {technique_id: T1047,     score: 4, data_sources: [Process Creation, WMI Creation]}
+  - {technique_id: T1059.001, score: 5, data_sources: [Script Execution, Process Creation]}
+  - {technique_id: T1059.003, score: 4, data_sources: [Process Creation, Command Execution]}
+  - {technique_id: T1106,     score: 1, data_sources: [OS API Execution]}
+  - {technique_id: T1204.002, score: 3, data_sources: [File Creation, Process Creation]}
+  - {technique_id: T1569.002, score: 4, data_sources: [Service Creation, Process Creation]}
+  - {technique_id: T1574.001, score: 1, data_sources: [Module Load]}
+  # Persistencia
+  - {technique_id: T1098,     score: 2, data_sources: [User Account Modification]}
+  - {technique_id: T1136,     score: 4, data_sources: [User Account Creation]}
+  - {technique_id: T1543.003, score: 4, data_sources: [Service Creation, Windows Registry Key Modification]}
+  - {technique_id: T1547.001, score: 3, data_sources: [Windows Registry Key Modification]}
+  # Sigilo / deterioro de defensas
+  - {technique_id: T1055,     score: 3, data_sources: [Process Access, Process Modification]}
+  - {technique_id: T1027.010, score: 2, data_sources: [Script Execution, Command Execution]}
+  - {technique_id: T1036,     score: 1, data_sources: [Process Metadata]}
+  - {technique_id: T1070.003, score: 0, data_sources: []}
+  - {technique_id: T1070.004, score: 2, data_sources: [File Deletion]}
+  - {technique_id: T1218.011, score: 4, data_sources: [Process Creation, Module Load]}
+  - {technique_id: T1685,     score: 3, data_sources: [Process Termination, Service Modification]}
+  # Acceso a credenciales
+  - {technique_id: T1003,     score: 3, data_sources: [Process Access]}
+  - {technique_id: T1003.001, score: 5, data_sources: [Process Access]}
+  - {technique_id: T1003.003, score: 4, data_sources: [Command Execution, File Access]}
+  - {technique_id: T1040,     score: 0, data_sources: []}
+  - {technique_id: T1056.001, score: 1, data_sources: [Driver Load]}
+  - {technique_id: T1555,     score: 2, data_sources: [File Access]}
+  - {technique_id: T1555.003, score: 2, data_sources: [File Access]}
+  - {technique_id: T1558.003, score: 4, data_sources: [Active Directory Credential Request]}
+  # Descubrimiento
+  - {technique_id: T1007,     score: 1, data_sources: [Command Execution]}
+  - {technique_id: T1016,     score: 1, data_sources: [Command Execution]}
+  - {technique_id: T1018,     score: 2, data_sources: [Network Connection Creation, Command Execution]}
+  - {technique_id: T1046,     score: 3, data_sources: [Network Traffic Flow]}
+  - {technique_id: T1069.001, score: 2, data_sources: [Command Execution, Group Enumeration]}
+  - {technique_id: T1069.002, score: 3, data_sources: [Group Enumeration, Active Directory Object Access]}
+  - {technique_id: T1087.001, score: 2, data_sources: [Command Execution]}
+  - {technique_id: T1087.002, score: 4, data_sources: [Active Directory Object Access, Command Execution]}
+  - {technique_id: T1135,     score: 2, data_sources: [Network Share Access]}
+  - {technique_id: T1482,     score: 4, data_sources: [Command Execution, Active Directory Object Access]}
+  # Movimiento lateral
+  - {technique_id: T1021.001, score: 3, data_sources: [Logon Session Creation, Network Connection Creation]}
+  - {technique_id: T1021.002, score: 4, data_sources: [Network Share Access, Logon Session Creation]}
+  - {technique_id: T1550.002, score: 2, data_sources: [Logon Session Creation, User Account Authentication]}
+  - {technique_id: T1550.003, score: 1, data_sources: [Active Directory Credential Request]}
+  # Recolección
+  - {technique_id: T1039,     score: 2, data_sources: [Network Share Access, File Access]}
+  - {technique_id: T1114,     score: 3, data_sources: [Application Log Content]}
+  - {technique_id: T1530,     score: 1, data_sources: [Cloud Storage Access]}
+  - {technique_id: T1560,     score: 0, data_sources: []}
+  # Comando y control
+  - {technique_id: T1071.001, score: 3, data_sources: [Network Traffic Content]}
+  - {technique_id: T1105,     score: 4, data_sources: [Network Connection Creation, File Creation]}
+  - {technique_id: T1219,     score: 4, data_sources: [Process Creation, Network Connection Creation]}
+  - {technique_id: T1568.002, score: 1, data_sources: [Passive DNS]}
+  # Exfiltración
+  - {technique_id: T1048,     score: 2, data_sources: [Network Traffic Flow]}
+  - {technique_id: T1567,     score: 3, data_sources: [Network Traffic Content], comment: "Sub-técnica T1567.002 sin entrada propia a propósito"}
+  # Impacto
+  - {technique_id: T1486,     score: 5, data_sources: [File Modification, File Creation]}
+  - {technique_id: T1490,     score: 4, data_sources: [Process Creation, Command Execution]}
+
+# Contexto que el analista asignaría en la simulación reproducible (paso 3). La criticidad y la
+# exposición se leen del activo. Técnicas no listadas usan default_asset_id (D-31).
+analyst_context:
+  default_asset_id: workstations
+  entries:
+    - {technique_id: T1190,     asset_id: vpn-fw}
+    - {technique_id: T1133,     asset_id: vpn-fw}
+    - {technique_id: T1078.001, asset_id: vpn-fw}
+    - {technique_id: T1078,     asset_id: ad-dc}
+    - {technique_id: T1078.002, asset_id: ad-dc}
+    - {technique_id: T1556.006, asset_id: vdi-portal}
+    - {technique_id: T1539,     asset_id: vdi-portal}
+    - {technique_id: T1040,     asset_id: vpn-fw}
+    - {technique_id: T1098,     asset_id: vpn-fw}
+    - {technique_id: T1003,     asset_id: ad-dc}
+    - {technique_id: T1003.001, asset_id: ad-dc}
+    - {technique_id: T1003.003, asset_id: ad-dc}
+    - {technique_id: T1558.003, asset_id: ad-dc}
+    - {technique_id: T1482,     asset_id: ad-dc}
+    - {technique_id: T1087.002, asset_id: ad-dc}
+    - {technique_id: T1069.002, asset_id: ad-dc}
+    - {technique_id: T1550.002, asset_id: ad-dc}
+    - {technique_id: T1550.003, asset_id: ad-dc}
+    - {technique_id: T1136,     asset_id: ad-dc}
+    - {technique_id: T1530,     asset_id: m365}
+    - {technique_id: T1114,     asset_id: m365}
+    - {technique_id: T1567,     asset_id: m365}
+    - {technique_id: T1567.002, asset_id: m365}
+    - {technique_id: T1005,     asset_id: file-srv}
+    - {technique_id: T1039,     asset_id: file-srv}
+    - {technique_id: T1560,     asset_id: file-srv}
+    - {technique_id: T1048,     asset_id: file-srv}
+    - {technique_id: T1048.001, asset_id: file-srv}
+    - {technique_id: T1041,     asset_id: file-srv}
+    - {technique_id: T1486,     asset_id: erp-db}
+    - {technique_id: T1657,     asset_id: erp-db}
+    - {technique_id: T1490,     asset_id: backup}
+
+# IoC que la organización «ya conoce» (solo para el enfoque tradicional, indicador 3).
+# Se generan con semilla mediante `aem make-variants` en el archivo indicado (D-62).
+known_iocs: []
+known_iocs_file: known_iocs_generated.yaml
+
+# Brecha que el autor PRETENDE para cada técnica de referencia (verdad de terreno del indicador 2).
+# Debe coincidir con lo que el paso 2 deriva de `detections`; si no coincide, hay un error.
+coverage_design:
+  - {technique_id: T1078,     intended: parcial}
+  - {technique_id: T1078.001, intended: sin cobertura}
+  - {technique_id: T1078.002, intended: cubierta}
+  - {technique_id: T1133,     intended: sin cobertura}
+  - {technique_id: T1189,     intended: sin cobertura}
+  - {technique_id: T1190,     intended: parcial}
+  - {technique_id: T1047,     intended: cubierta}
+  - {technique_id: T1059.001, intended: cubierta}
+  - {technique_id: T1059.003, intended: cubierta}
+  - {technique_id: T1106,     intended: parcial}
+  - {technique_id: T1204.002, intended: parcial}
+  - {technique_id: T1204.004, intended: sin cobertura}
+  - {technique_id: T1569.002, intended: cubierta}
+  - {technique_id: T1574.001, intended: parcial}
+  - {technique_id: T1098,     intended: parcial}
+  - {technique_id: T1136,     intended: cubierta}
+  - {technique_id: T1543.003, intended: cubierta}
+  - {technique_id: T1547.001, intended: parcial}
+  - {technique_id: T1556.006, intended: sin cobertura}
+  - {technique_id: T1055,     intended: parcial}
+  - {technique_id: T1027.010, intended: parcial}
+  - {technique_id: T1036,     intended: parcial}
+  - {technique_id: T1036.005, intended: sin cobertura}
+  - {technique_id: T1070.003, intended: sin cobertura}
+  - {technique_id: T1070.004, intended: parcial}
+  - {technique_id: T1218.011, intended: cubierta}
+  - {technique_id: T1622,     intended: sin cobertura}
+  - {technique_id: T1678,     intended: sin cobertura}
+  - {technique_id: T1679,     intended: sin cobertura}
+  - {technique_id: T1685,     intended: parcial}
+  - {technique_id: T1003,     intended: parcial}
+  - {technique_id: T1003.001, intended: cubierta}
+  - {technique_id: T1003.003, intended: cubierta}
+  - {technique_id: T1040,     intended: sin cobertura}
+  - {technique_id: T1056,     intended: sin cobertura}
+  - {technique_id: T1056.001, intended: parcial}
+  - {technique_id: T1539,     intended: sin cobertura}
+  - {technique_id: T1555,     intended: parcial}
+  - {technique_id: T1555.003, intended: parcial}
+  - {technique_id: T1558.003, intended: cubierta}
+  - {technique_id: T1007,     intended: parcial}
+  - {technique_id: T1016,     intended: parcial}
+  - {technique_id: T1018,     intended: parcial}
+  - {technique_id: T1033,     intended: sin cobertura}
+  - {technique_id: T1046,     intended: parcial}
+  - {technique_id: T1049,     intended: sin cobertura}
+  - {technique_id: T1069.001, intended: parcial}
+  - {technique_id: T1069.002, intended: parcial}
+  - {technique_id: T1082,     intended: sin cobertura}
+  - {technique_id: T1083,     intended: sin cobertura}
+  - {technique_id: T1087.001, intended: parcial}
+  - {technique_id: T1087.002, intended: cubierta}
+  - {technique_id: T1135,     intended: parcial}
+  - {technique_id: T1482,     intended: cubierta}
+  - {technique_id: T1021.001, intended: parcial}
+  - {technique_id: T1021.002, intended: cubierta}
+  - {technique_id: T1021.003, intended: sin cobertura}
+  - {technique_id: T1550.002, intended: parcial}
+  - {technique_id: T1550.003, intended: parcial}
+  - {technique_id: T1005,     intended: sin cobertura}
+  - {technique_id: T1039,     intended: parcial}
+  - {technique_id: T1114,     intended: parcial}
+  - {technique_id: T1530,     intended: parcial}
+  - {technique_id: T1560,     intended: sin cobertura}
+  - {technique_id: T1071.001, intended: parcial}
+  - {technique_id: T1090,     intended: sin cobertura}
+  - {technique_id: T1105,     intended: cubierta}
+  - {technique_id: T1219,     intended: cubierta}
+  - {technique_id: T1568.002, intended: parcial}
+  - {technique_id: T1572,     intended: sin cobertura}
+  - {technique_id: T1041,     intended: sin cobertura}
+  - {technique_id: T1048,     intended: parcial}
+  - {technique_id: T1048.001, intended: sin cobertura}
+  - {technique_id: T1567,     intended: parcial}
+  - {technique_id: T1567.002, intended: sin cobertura}
+  - {technique_id: T1486,     intended: cubierta}
+  - {technique_id: T1490,     intended: cubierta}
+  - {technique_id: T1657,     intended: sin cobertura}
