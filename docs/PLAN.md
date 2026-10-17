@@ -48,3 +48,4 @@ La de `CLAUDE.md` §4, con estos agregados:
 
 ## Bitácora (una línea por bloque)
 - Bloque 2 ✔ models/config/attack_data/fetch + tests (39). Pendiente: comando CLI `fetch-data` se conecta en el bloque 7.
+- Bloque 3 ✔ step2_coverage + borrador fictional_org.yaml (79 técnicas, coverage_design) + tests (60). Pendiente: Sebas define las brechas definitivas.
