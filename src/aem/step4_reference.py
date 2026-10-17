@@ -85,3 +85,33 @@ def build_reference(technique_ids: list[str], attack: AttackData, prevalence: di
             prevalence=prevalence.get(tid, NO_PREVALENCE),
         ))
     return refs, log
+
+
+SUMMARY_PROMPT = "summary_v1.txt"
+SUMMARY_SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}
+
+
+class LLMSummarizer:
+    """The only AI use in step 4: condensing the (cleaned) ATT&CK description."""
+
+    def __init__(self, client, max_sentences: int = 3, replicate: int = 0):
+        from importlib import resources
+
+        self.client = client
+        self.max_sentences = max_sentences
+        self.replicate = replicate
+        self.template = resources.files("aem.prompts").joinpath(SUMMARY_PROMPT).read_text(encoding="utf-8")
+
+    def summarize(self, technique_id: str, description: str) -> SummaryOutcome:
+        from aem.llm import LLMError
+
+        prompt = self.template.format(max_sentences=self.max_sentences, description=description)
+        try:
+            res = self.client.generate_json(prompt, SUMMARY_SCHEMA, purpose=f"step4_summary[{technique_id}]",
+                                            replicate=self.replicate)
+        except LLMError as exc:
+            return SummaryOutcome(text=None, error=str(exc))
+        text = res.data.get("summary") if isinstance(res.data, dict) else None
+        meta = dict(res.meta, prompt_template=SUMMARY_PROMPT)
+        return SummaryOutcome(text=text if isinstance(text, str) and text.strip() else None, raw=res.raw_text,
+                              meta=meta, error=None if text else "respuesta sin campo summary")

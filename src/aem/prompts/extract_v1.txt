@@ -1,0 +1,15 @@
+You are extracting MITRE ATT&CK Enterprise techniques (version {attack_version}) from a cyber threat report.
+
+Rules:
+1. List only techniques whose behavior is explicitly described in the report text below. Do not infer techniques that probably happened but are not described.
+2. Use the exact ATT&CK technique ID (format Txxxx or Txxxx.yyy). Use a sub-technique ID only when the text supports that specific sub-technique.
+3. For each technique return exactly three fields: technique_id, technique_name, and evidence_quote. The evidence_quote must be a short verbatim quote (at most 30 words) copied from the report that describes the behavior.
+4. Do not evaluate, rate, rank or prioritize anything. Do not recommend actions or mitigations. Do not comment on severity, risk, impact or urgency. Do not add any other field.
+5. List each technique at most once.
+
+Return only JSON that follows the provided schema.
+
+REPORT (fragment {chunk_index} of {chunk_count}):
+<<<
+{report}
+>>>

@@ -108,3 +108,22 @@ def test_evaluative_summary_is_discarded(mini_attack, patterns):
 def test_reference_info_has_no_evaluative_fields():
     assert set(ReferenceInfo.model_fields) == {
         "technique_id", "summary", "source_link", "mitigations", "data_sources", "groups", "prevalence"}
+
+
+def test_llm_summarizer_success_and_failure(tmp_path):
+    from aem.config import Settings
+    from aem.llm import GeminiClient, LLMCache, TransportError
+    from aem.step4_reference import LLMSummarizer
+    from fakes import FakeClock, FakeTransport
+
+    clock = FakeClock()
+    t = FakeTransport([{"summary": "Adversaries log in over RDP."}, TransportError(400, "bad")])
+    client = GeminiClient(Settings("k", "gemini-3.8-flash", "gemini-3.5-flash-lite", 600, 0), LLMCache(tmp_path),
+                          transport=t, sleep=clock.sleep, clock=clock.now)
+    s = LLMSummarizer(client, max_sentences=3)
+    ok = s.summarize("T1021.001", "Adversaries may use RDP to log into a computer.")
+    assert ok.text == "Adversaries log in over RDP." and ok.meta["purpose"] == "step4_summary[T1021.001]"
+    prompt = t.calls[0]["prompt"]
+    assert "Adversaries may use RDP" in prompt and "3" in prompt and "do not add" in prompt.lower()
+    bad = s.summarize("T1190", "Other description.")
+    assert bad.text is None and "400" in bad.error

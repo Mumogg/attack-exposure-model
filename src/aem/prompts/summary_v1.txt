@@ -1,0 +1,13 @@
+Condense the following MITRE ATT&CK technique description into at most {max_sentences} sentences, in English.
+
+Rules:
+- Do not add any information that is not in the description.
+- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.
+- Do not include technique IDs, numbers or names that are not in the description.
+
+Return only JSON that follows the provided schema.
+
+DESCRIPTION:
+<<<
+{description}
+>>>

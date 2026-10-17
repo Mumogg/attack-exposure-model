@@ -205,3 +205,45 @@ class SummaryRecord(Strict):
     violations: list[str] = Field(default_factory=list)
     error: str | None = None
     llm_meta: dict = Field(default_factory=dict)
+
+
+# --- Step 1: validation and analyst review ----------------------------------------
+
+
+class Candidate(Strict):
+    technique_id: str
+    llm_name: str
+    official_name: str | None
+    evidence_quote: str
+    status: Literal["valid", "not_found", "revoked", "deprecated", "malformed"]
+    replacement: str | None = None
+    needs_review: bool
+    quote_found: bool
+
+
+class ValidatedTechnique(Strict):
+    technique_id: str
+    technique_name: str
+    evidence_quote: str = ""
+    origin: Literal["llm", "replacement", "analyst"]
+
+
+class AnalystAction(Strict):
+    action: Literal["accept", "remove", "add", "replace", "exclude_needs_review", "reject_add_invalid"]
+    technique_id: str
+    note: str = ""
+
+
+class ExtractionRecord(Strict):
+    """Everything step 1 produced; `extracted_raw` is what metrics use."""
+
+    report_sha256: str
+    attack_version: str
+    chunks: int
+    extracted_raw: list[ExtractedTechnique]
+    extra_fields: list[str]
+    candidates: list[Candidate]
+    analyst_mode: str
+    analyst_actions: list[AnalystAction]
+    extracted_validated: list[ValidatedTechnique]
+    llm_calls: list[dict]
