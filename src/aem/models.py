@@ -146,3 +146,37 @@ class CoverageResult(Strict):
     data_sources: list[str]
     basis: Literal["own_entry", "no_entry", "inherited_parent"]
     inherited_from: str | None = None
+
+
+# --- Step 3: prioritization (analyst + adapted SSVC tree) -----------------------
+
+
+class PrioritizedTechnique(Strict):
+    technique_id: str
+    technique_name: str
+    tactics: list[str]
+    coverage_original: Coverage
+    coverage_validated: Coverage
+    coverage_change_reason: str = ""
+    asset_id: str
+    criticality: Criticality
+    exposure: Exposure | None
+    action: Action
+    context_source: Literal["analyst_context", "default_asset", "interactive"]
+
+
+class ChainItem(Strict):
+    technique_id: str
+    technique_name: str
+    tactics: list[str]
+    coverage_validated: Coverage
+
+
+class GlobalReview(Strict):
+    question: str
+    answer: bool | None
+    tactics: list[str] = Field(default_factory=list)
+    note: str = ""
+    mode: Literal["interactive", "auto"]
+    techniques_shown: list[ChainItem]
+    timestamp: str

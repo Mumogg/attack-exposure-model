@@ -1,0 +1,20 @@
+# Árbol de decisión adaptado de SSVC v2.0 (Spring et al., 2021, SEI-CMU) para técnicas adversarias.
+# PENDIENTE DE CONFIRMAR por Sebas (docs/DECISIONS.md D-30). Editable sin tocar código.
+# Acciones (nombres de SSVC, en inglés), de menor a mayor:
+#   Track  : registrar y mantener bajo seguimiento ordinario
+#   Track* : registrar con seguimiento reforzado
+#   Attend : atender fuera del ciclo habitual de trabajo
+#   Act    : atender de forma prioritaria
+
+# Tabla base: cobertura validada x criticidad del activo.
+base_table:
+  cubierta:        {baja: Track,  media: Track,  alta: Track*}
+  parcial:         {baja: Track,  media: Track*, alta: Attend}
+  sin cobertura:   {baja: Track*, media: Attend, alta: Act}
+
+# Solo para técnicas de la táctica Acceso Inicial (initial-access): la exposición del activo
+# desplaza la acción de la tabla base (tope Act, piso Track). Para las demás tácticas no se usa.
+initial_access_exposure_shift:
+  internet: 1
+  interna: 0
+  aislada: -1
