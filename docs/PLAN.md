@@ -51,3 +51,4 @@ La de `CLAUDE.md` §4, con estos agregados:
 - Bloque 3 ✔ step2_coverage + borrador fictional_org.yaml (79 técnicas, coverage_design) + tests (60). Pendiente: Sebas define las brechas definitivas.
 - Bloque 4 ✔ step3_prioritize + ssvc_tree.yaml (tabla completa, ajuste por exposición solo en Acceso Inicial, analista auto/interactivo, revisión global) + tests (109).
 - Bloque 5 ✔ step4_reference (lote, 5 campos, filtro evaluativo), boundary_patterns.yaml, plantilla de prevalencia vacía + tests (131). Pendiente: Sebas llena red_canary_2026.csv.
+- Bloque 6 ✔ llm.py (caché, demo, reintentos, verificación de modelo) + step1_extract + LLMSummarizer + tests (156). SIGUIENTE: bloque 7 (output.py, pipeline.py, cli.py con fetch-data/run/demo).
