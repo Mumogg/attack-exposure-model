@@ -25,3 +25,4 @@ data/reports/akira_dfir_2026*.txt
 Thumbs.db
 .idea/
 .vscode/
+.superpowers/

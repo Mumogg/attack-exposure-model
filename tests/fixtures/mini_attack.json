@@ -1,0 +1,520 @@
+{
+ "type": "bundle",
+ "id": "bundle--00000000-0000-4000-8000-000000000000",
+ "objects": [
+  {
+   "type": "x-mitre-tactic",
+   "spec_version": "2.1",
+   "id": "x-mitre-tactic--00000000-0000-4000-8000-000000000101",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Initial Access",
+   "x_mitre_shortname": "initial-access",
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "TA0001",
+     "url": "https://attack.mitre.org/tactics/TA0001"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-tactic",
+   "spec_version": "2.1",
+   "id": "x-mitre-tactic--00000000-0000-4000-8000-000000000102",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Execution",
+   "x_mitre_shortname": "execution",
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "TA0002",
+     "url": "https://attack.mitre.org/tactics/TA0002"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-tactic",
+   "spec_version": "2.1",
+   "id": "x-mitre-tactic--00000000-0000-4000-8000-000000000103",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Lateral Movement",
+   "x_mitre_shortname": "lateral-movement",
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "TA0008",
+     "url": "https://attack.mitre.org/tactics/TA0008"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-matrix",
+   "spec_version": "2.1",
+   "id": "x-mitre-matrix--00000000-0000-4000-8000-000000000001",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Enterprise ATT&CK",
+   "tactic_refs": [
+    "x-mitre-tactic--00000000-0000-4000-8000-000000000101",
+    "x-mitre-tactic--00000000-0000-4000-8000-000000000102",
+    "x-mitre-tactic--00000000-0000-4000-8000-000000000103"
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "enterprise-attack",
+     "url": "https://attack.mitre.org/matrices/enterprise"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-collection",
+   "spec_version": "2.1",
+   "id": "x-mitre-collection--00000000-0000-4000-8000-000000000002",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Enterprise ATT&CK",
+   "x_mitre_version": "19.2"
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000001",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Exploit Public-Facing Application",
+   "description": "Adversaries may exploit a weakness in an Internet-facing host. (Citation: Fake Ref 2020) See [Valid Accounts](https://attack.mitre.org/techniques/T1078) for related use.",
+   "x_mitre_is_subtechnique": false,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "initial-access"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T1190",
+     "url": "https://attack.mitre.org/techniques/T1190"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": false
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000002",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Command and Scripting Interpreter",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": false,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "execution"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T1059",
+     "url": "https://attack.mitre.org/techniques/T1059"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": false
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000003",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Windows Command Shell",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": true,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "execution"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T1059.003",
+     "url": "https://attack.mitre.org/techniques/T1059/003"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": false
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000004",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Remote Services",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": false,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "lateral-movement"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T1021",
+     "url": "https://attack.mitre.org/techniques/T1021"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": false
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000005",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Remote Desktop Protocol",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": true,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "lateral-movement"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T1021.001",
+     "url": "https://attack.mitre.org/techniques/T1021/001"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": false
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000006",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Valid Accounts",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": false,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "lateral-movement"
+    },
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "initial-access"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T1078",
+     "url": "https://attack.mitre.org/techniques/T1078"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": false
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000007",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Old Revoked Technique",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": false,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "execution"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T9001",
+     "url": "https://attack.mitre.org/techniques/T9001"
+    }
+   ],
+   "x_mitre_deprecated": false,
+   "revoked": true
+  },
+  {
+   "type": "attack-pattern",
+   "spec_version": "2.1",
+   "id": "attack-pattern--00000000-0000-4000-8000-000000000008",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Old Deprecated Technique",
+   "description": "Placeholder description.",
+   "x_mitre_is_subtechnique": false,
+   "kill_chain_phases": [
+    {
+     "kill_chain_name": "mitre-attack",
+     "phase_name": "execution"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "T9002",
+     "url": "https://attack.mitre.org/techniques/T9002"
+    }
+   ],
+   "x_mitre_deprecated": true,
+   "revoked": false
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000201",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "subtechnique-of",
+   "source_ref": "attack-pattern--00000000-0000-4000-8000-000000000003",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000002"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000202",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "subtechnique-of",
+   "source_ref": "attack-pattern--00000000-0000-4000-8000-000000000005",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000004"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000203",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "revoked-by",
+   "source_ref": "attack-pattern--00000000-0000-4000-8000-000000000007",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000002"
+  },
+  {
+   "type": "course-of-action",
+   "spec_version": "2.1",
+   "id": "course-of-action--00000000-0000-4000-8000-000000000301",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Network Segmentation",
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "M1030",
+     "url": "https://attack.mitre.org/mitigations/M1030"
+    }
+   ]
+  },
+  {
+   "type": "course-of-action",
+   "spec_version": "2.1",
+   "id": "course-of-action--00000000-0000-4000-8000-000000000302",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Privileged Account Management",
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "M1026",
+     "url": "https://attack.mitre.org/mitigations/M1026"
+    }
+   ]
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000311",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "mitigates",
+   "source_ref": "course-of-action--00000000-0000-4000-8000-000000000301",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000001"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000312",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "mitigates",
+   "source_ref": "course-of-action--00000000-0000-4000-8000-000000000302",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000005"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000313",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "mitigates",
+   "source_ref": "course-of-action--00000000-0000-4000-8000-000000000301",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000005"
+  },
+  {
+   "type": "intrusion-set",
+   "spec_version": "2.1",
+   "id": "intrusion-set--00000000-0000-4000-8000-000000000401",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Fictional Group A",
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "G9001",
+     "url": "https://attack.mitre.org/groups/G9001"
+    }
+   ]
+  },
+  {
+   "type": "intrusion-set",
+   "spec_version": "2.1",
+   "id": "intrusion-set--00000000-0000-4000-8000-000000000402",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Revoked Group",
+   "revoked": true,
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "G9002",
+     "url": "https://attack.mitre.org/groups/G9002"
+    }
+   ]
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000411",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "uses",
+   "source_ref": "intrusion-set--00000000-0000-4000-8000-000000000401",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000001"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000412",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "uses",
+   "source_ref": "intrusion-set--00000000-0000-4000-8000-000000000402",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000001"
+  },
+  {
+   "type": "x-mitre-data-component",
+   "spec_version": "2.1",
+   "id": "x-mitre-data-component--00000000-0000-4000-8000-000000000501",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Logon Session Creation",
+   "x_mitre_deprecated": false,
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "DC0001",
+     "url": "https://attack.mitre.org/datacomponents/DC0001"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-data-component",
+   "spec_version": "2.1",
+   "id": "x-mitre-data-component--00000000-0000-4000-8000-000000000502",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Network Connection Creation",
+   "x_mitre_deprecated": false,
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "DC0002",
+     "url": "https://attack.mitre.org/datacomponents/DC0002"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-analytic",
+   "spec_version": "2.1",
+   "id": "x-mitre-analytic--00000000-0000-4000-8000-000000000601",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Analytic 0001",
+   "x_mitre_log_source_references": [
+    {
+     "x_mitre_data_component_ref": "x-mitre-data-component--00000000-0000-4000-8000-000000000501",
+     "name": "WinEventLog:Security",
+     "channel": "EventCode=4624"
+    },
+    {
+     "x_mitre_data_component_ref": "x-mitre-data-component--00000000-0000-4000-8000-000000000502",
+     "name": "WinEventLog:Sysmon",
+     "channel": "EventCode=3"
+    },
+    {
+     "x_mitre_data_component_ref": "x-mitre-data-component--00000000-0000-4000-8000-000000000501",
+     "name": "WinEventLog:Security",
+     "channel": "EventCode=4648"
+    }
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "AN0001",
+     "url": "https://attack.mitre.org/detectionstrategies/AN0001"
+    }
+   ]
+  },
+  {
+   "type": "x-mitre-detection-strategy",
+   "spec_version": "2.1",
+   "id": "x-mitre-detection-strategy--00000000-0000-4000-8000-000000000701",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "name": "Detect RDP",
+   "x_mitre_analytic_refs": [
+    "x-mitre-analytic--00000000-0000-4000-8000-000000000601"
+   ],
+   "external_references": [
+    {
+     "source_name": "mitre-attack",
+     "external_id": "DET0001",
+     "url": "https://attack.mitre.org/detectionstrategies/DET0001"
+    }
+   ]
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--00000000-0000-4000-8000-000000000711",
+   "created": "2026-01-01T00:00:00.000Z",
+   "modified": "2026-01-01T00:00:00.000Z",
+   "relationship_type": "detects",
+   "source_ref": "x-mitre-detection-strategy--00000000-0000-4000-8000-000000000701",
+   "target_ref": "attack-pattern--00000000-0000-4000-8000-000000000005"
+  }
+ ]
+}

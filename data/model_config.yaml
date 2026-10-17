@@ -1,0 +1,35 @@
+# Configuración editable del modelo. Cada valor está explicado en docs/DECISIONS.md.
+# Los marcados con (D-xx) son PENDIENTE DE CONFIRMAR por Sebas.
+
+coverage:              # (D-20, D-21) adaptación propia de la escala de detección de DeTT&CT
+  partial_min: 1       # score >= partial_min  -> parcial
+  covered_min: 4       # score >= covered_min  -> cubierta ; score 0 o sin entrada -> sin cobertura
+  subtechnique_policy: no_inherit   # no_inherit | inherit_parent
+
+extraction:            # (D-11)
+  chunk_max_chars: 100000
+  chunk_size_chars: 30000
+  chunk_overlap_chars: 2000
+
+summary:
+  max_sentences: 3
+
+baseline:              # (D-62) enfoque tradicional basado en IoC
+  known_ioc_fraction: 0.5
+  min_matches: 1
+  seed: 20261017
+
+ioc:                   # (D-63)
+  # Un dominio sin "[.]" ni esquema http(s) solo cuenta como IoC si su TLD está aquí.
+  domain_tlds: [com, net, org, io, info, biz, xyz, top, online, site, cloud, cc, onion, me, co, us, ru, su, cn, tk,
+                live, app, dev, link, pw, ws, to, pro, club, shop, store, icu, buzz, fun, space, website, tech,
+                host, ch, de, uk, kr, jp, in, br, eu, nl, fr, it, es, pl, ua, ir, kp, vn, id, tw, hk, sg]
+  excluded_domains: [cisa.gov, fbi.gov, ic3.gov, nsa.gov, mitre.org, attack.mitre.org, cve.org, nvd.nist.gov,
+                     www.cisa.gov, www.fbi.gov, www.ic3.gov, github.com, microsoft.com, learn.microsoft.com,
+                     thedfirreport.com, report.cisa.gov, stopransomware.gov]
+
+variants:
+  seed: 20261017
+
+experiment:
+  replicates: 5
