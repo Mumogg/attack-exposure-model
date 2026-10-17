@@ -1,0 +1,27 @@
+# Secrets
+.env
+*.key
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# ATT&CK STIX data (downloaded with `aem fetch-data`; checksum is committed)
+data/attack/*.json
+
+# Raw downloads (converted text is committed for CISA only)
+data/reports/raw/
+
+# DFIR Report content is copyrighted: never commit it
+data/reports/akira_dfir_2026*.txt
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
