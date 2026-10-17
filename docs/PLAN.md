@@ -47,3 +47,4 @@ La de `CLAUDE.md` §4, con estos agregados:
 5. Técnicas extraídas que no figuran en `analyst_context` → en modo `auto` se usa un activo por defecto declarado en el YAML, nunca un valor inventado (test).
 
 ## Bitácora (una línea por bloque)
+- Bloque 2 ✔ models/config/attack_data/fetch + tests (39). Pendiente: comando CLI `fetch-data` se conecta en el bloque 7.
