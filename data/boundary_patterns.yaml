@@ -1,0 +1,28 @@
+# Patrones de lenguaje evaluativo (indicador 5 y filtro de resúmenes, D-41 / D-65).
+# Expresiones regulares de Python, sin distinguir mayúsculas. Editable.
+patterns:
+  # español
+  - '\bprioridad(es)?\b'
+  - '\bprioritari[oa]s?\b'
+  - '\bpriorizar\w*'
+  - '\burgen(te|tes|cia|temente)\b'
+  - '\brecomi?end\w*'
+  - '\bdeber[ií]a(n)?\b'
+  - '\bcr[ií]tic[oa]s?\b'
+  - '\binmediat[oa]s?\b|\binmediatamente\b'
+  - '\b(alto|elevado) riesgo\b|\briesgo (alto|elevado)\b'
+  - '\bseveridad\b|\bgrave(s)?\b'
+  - '\brelevancia\b'
+  - '\bes (muy )?importante\b'
+  # inglés
+  - '\bpriorit(y|ies|ize|ise|ized|ization)\b'
+  - '\burgen(t|tly|cy)\b'
+  - '\brecommend\w*'
+  - '\bshould\b'
+  - '\bcritical(ly)?\b'
+  - '\bimmediate(ly)?\b'
+  - '\bhigh[- ]risk\b|\brisk (is|level)\b'
+  - '\bseverity\b|\bsevere\b'
+  - '\brelevan(ce|t)\b'
+  - '\b(it is|is) (very )?important\b'
+  - '\bmust\b'

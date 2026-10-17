@@ -180,3 +180,28 @@ class GlobalReview(Strict):
     mode: Literal["interactive", "auto"]
     techniques_shown: list[ChainItem]
     timestamp: str
+
+
+# --- Step 4: reference information (exactly five reference fields + link) ------------
+
+
+class ReferenceInfo(Strict):
+    technique_id: str
+    summary: str
+    source_link: str
+    mitigations: list[str]
+    data_sources: list[str]
+    groups: list[str]
+    prevalence: str
+
+
+class SummaryRecord(Strict):
+    """Audit trail of one summary call (not part of the CSV)."""
+
+    technique_id: str
+    source_description: str
+    raw_summary: str | None
+    status: Literal["ok", "llm_failed", "boundary_violation"]
+    violations: list[str] = Field(default_factory=list)
+    error: str | None = None
+    llm_meta: dict = Field(default_factory=dict)
