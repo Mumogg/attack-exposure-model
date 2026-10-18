@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1572]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:36:56+00:00",
+  "temperature": 0,
+  "prompt_sha256": "88a69d3f2bbd7c9dc05a79e9b8ac8c4a76a587af959d3440f398a7f39c4ce955",
+  "replicate": 0,
+  "cache_key": "f66f6ff1a2b456dac8d2043b72118d0ec8b298cf2fe9ffca385810a6906f3cdb",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may tunnel network communications to and from a victim system within a separate protocol to avoid detection/network filtering and/or enable access to otherwise unreachable systems. Tunneling involves explicitly encapsulating a protocol within another. This behavior may conceal malicious traffic by blending in with existing traffic and/or provide an outer layer of encryption (similar to a VPN). Tunneling could also enable routing of network packets that would otherwise not reach their intended destination, such as SMB, RDP, or other traffic that would be filtered by network appliances or not routed over the Internet. \n\nThere are various means to encapsulate a protocol within another protocol. For example, adversaries may perform SSH tunneling (also known as SSH port forwarding), which involves forwarding arbitrary data over an encrypted SSH tunnel. \n\nProtocol Tunneling may also be abused by adversaries during Dynamic Resolution. Known as DNS over HTTPS (DoH), queries to resolve C2 infrastructure may be encapsulated within encrypted HTTPS packets. \n\nAdversaries may also leverage Protocol Tunneling in conjunction with Proxy and/or Protocol or Service Impersonation to further conceal C2 communications and infrastructure.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may encapsulate one network protocol within another to avoid detection, bypass network filtering, and access otherwise unreachable systems. This behavior can conceal malicious traffic through encryption or blending in, while enabling the routing of normally filtered packets like SMB or RDP. Adversaries may employ methods like SSH tunneling or DNS over HTTPS, sometimes combining them with proxies or impersonation to further hide command and control communications.\"}"
+}

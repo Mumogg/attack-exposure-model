@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1567.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:59+00:00",
+  "temperature": 0,
+  "prompt_sha256": "9a68a5be32620c55da6753aac590aa276553b5d0f07a85d336de1b003734b39a",
+  "replicate": 0,
+  "cache_key": "8d56e5b7714393d9aab7b96a3214685deb39ea229ea78baa24a9255b8feeef7b",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel. Cloud storage services allow for the storage, edit, and retrieval of data from a remote cloud storage server over the Internet.\n\nExamples of cloud storage services include Dropbox and Google Docs. Exfiltration to these cloud storage services can provide a significant amount of cover to the adversary if hosts within the network are already communicating with the service.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel. Cloud storage services, such as Dropbox and Google Docs, allow data to be stored, edited, and retrieved remotely over the Internet. Exfiltration to these services can provide cover to the adversary if network hosts already communicate with the service.\"}"
+}

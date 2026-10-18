@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1622]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:45+00:00",
+  "temperature": 0,
+  "prompt_sha256": "56a6388b603b61b14310b65055eb27245d8d283f30c5653b6ec48385a70d5cef",
+  "replicate": 0,
+  "cache_key": "53d36664b6af8c033e51e2980f3ddcc1920b5ea655b01404876847751b2b2a5a",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may employ various means to detect and avoid debuggers. Debuggers are typically used by defenders to trace and/or analyze the execution of potential malware payloads.\n\nDebugger evasion may include changing behaviors based on the results of the checks for the presence of artifacts indicative of a debugged environment. Similar to Virtualization/Sandbox Evasion, if the adversary detects a debugger, they may alter their malware to disengage from the victim or conceal the core functions of the implant. They may also search for debugger artifacts before dropping secondary or additional payloads.\n\nSpecific checks will vary based on the target and/or adversary. On Windows, this may involve Native API function calls such as <code>IsDebuggerPresent()</code> and <code> NtQueryInformationProcess()</code>, or manually checking the <code>BeingDebugged</code> flag of the Process Environment Block (PEB). On Linux, this may involve querying `/proc/self/status` for the `TracerPID` field, which indicates whether or not the process is being traced by dynamic analysis tools. Other checks for debugging artifacts may also seek to enumerate hardware breakpoints, interrupt assembly opcodes, time checks, or measurements if exceptions are raised in the current process (assuming a present debugger would “swallow” or handle the potential error).\n\nMalware may also leverage Structured Exception Handling (SEH) to detect debuggers by throwing an exception and detecting whether the process is suspended. SEH handles both hardware and software expectations, providing control over the exceptions including support for debugging. If a debugger is present, the program’s control will be transferred to the debugger, and the execution of the code will be suspended. If the debugger is not present, control will be transferred to the SEH handler, which will automatically handle the exception and allow the program’s execution to continue.\n\nAdversaries may use the information learned from these debugger checks during automated discovery to shape follow-on behaviors. Debuggers can also be evaded by detaching the process or flooding debug logs with meaningless data via messages produced by looping Native API function calls such as <code>OutputDebugStringW()</code>.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries employ various means to detect and avoid debuggers used by defenders to analyze malware payloads, including Native API calls, system artifact checks, and Structured Exception Handling. Upon detecting a debugger, malware may disengage, conceal core functions, or alter its behavior before deploying additional payloads. Adversaries can also evade debuggers directly by detaching the process or flooding debug logs with meaningless data.\"}"
+}

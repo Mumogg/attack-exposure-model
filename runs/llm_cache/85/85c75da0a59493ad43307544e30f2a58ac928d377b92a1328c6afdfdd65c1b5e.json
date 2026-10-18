@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1021.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:36:33+00:00",
+  "temperature": 0,
+  "prompt_sha256": "ec1d93d4562f602e4126a6ebcf619b80c3e8551da28324d4ff65eeb972f50360",
+  "replicate": 0,
+  "cache_key": "85c75da0a59493ad43307544e30f2a58ac928d377b92a1328c6afdfdd65c1b5e",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may use Valid Accounts to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user.\n\nSMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with file shares, allowing them to move laterally throughout a network. Linux and macOS implementations of SMB typically use Samba.\n\nWindows systems have hidden network shares that are accessible only to administrators and provide the ability for remote file copy and other administrative functions. Example network shares include `C$`, `ADMIN$`, and `IPC$`. Adversaries may use this technique in conjunction with administrator-level Valid Accounts to remotely access a networked system over SMB, to interact with systems using remote procedure calls (RPCs), transfer files, and run transferred binaries through remote Execution. Example execution techniques that rely on authenticated sessions over SMB/RPC are Scheduled Task/Job, Service Execution, and Windows Management Instrumentation. Adversaries can also use NTLM hashes to access administrator shares on systems with Pass the Hash and certain configuration and patch levels.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use Valid Accounts or Pass the Hash to interact with remote network shares via Server Message Block (SMB) to perform actions as the logged-on user and move laterally. On Windows systems, adversaries can access hidden administrator shares such as C$, ADMIN$, and IPC$ to transfer files and interact through remote procedure calls. These authenticated SMB and RPC sessions also enable adversaries to remotely execute binaries using mechanisms like Scheduled Task/Job, Service Execution, and Windows Management Instrumentation.\"}"
+}

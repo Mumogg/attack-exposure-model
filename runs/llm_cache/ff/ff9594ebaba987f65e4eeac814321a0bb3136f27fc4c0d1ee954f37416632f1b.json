@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1486]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:38:05+00:00",
+  "temperature": 0,
+  "prompt_sha256": "189fc501c908574fdafc2d9f86824cd4d7de16a97fb5d5384a9a2b8a5aa6dc27",
+  "replicate": 0,
+  "cache_key": "ff9594ebaba987f65e4eeac814321a0bb3136f27fc4c0d1ee954f37416632f1b",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. They can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted.\n\nIn the case of ransomware, it is typical that common user files like Office documents, PDFs, images, videos, audio, text, and source code files will be encrypted (and often renamed and/or tagged with specific file markers). Adversaries may need to first employ other behaviors, such as File and Directory Permissions Modification or System Shutdown/Reboot, in order to unlock and/or gain access to manipulate these files. In some cases, adversaries may encrypt critical system files, disk partitions, and the MBR. Adversaries may also encrypt virtual machines hosted on ESXi or other hypervisors. \n\nTo maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, OS Credential Dumping, and SMB/Windows Admin Shares. Encryption malware may also leverage Internal Defacement, such as changing victim wallpapers or ESXi server login messages, or otherwise intimidate victims by sending ransom notes or other messages to connected printers (known as \"print bombing\").\n\nIn cloud environments, storage objects within compromised accounts may also be encrypted. For example, in AWS environments, adversaries may leverage services such as AWS’s Server-Side Encryption with Customer Provided Keys (SSE-C) to encrypt data.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may encrypt data on local, remote, virtual machine, or cloud storage systems and withhold decryption keys to disrupt resource availability, either to extort monetary compensation or to permanently destroy access. Such operations typically target user files, critical system files, disk partitions, or hypervisor-hosted virtual machines, sometimes requiring behaviors like permission modifications to unlock targets. Additionally, encryption malware may include worm-like network propagation capabilities and engage in intimidation tactics like ransom notes or internal defacement.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1056.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:07:34+00:00",
+  "temperature": 0,
+  "prompt_sha256": "cf23ff7db1a696469b14be6042dc585068caa9440a709882b1b84fff03776478",
+  "replicate": 0,
+  "cache_key": "0735be5c14442afa3650f0e2a2030806a7a3793a1c717d7584bed8f285964276",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may log user keystrokes to intercept credentials as the user types them. Keylogging is likely to be used to acquire credentials for new access opportunities when OS Credential Dumping efforts are not effective, and may require an adversary to intercept keystrokes on a system for a substantial period of time before credentials can be successfully captured. In order to increase the likelihood of capturing credentials quickly, an adversary may also perform actions such as clearing browser cookies to force users to reauthenticate to systems.\n\nKeylogging is the most prevalent type of input capture, with many different ways of intercepting keystrokes. Some methods include:\n\n* Hooking API callbacks used for processing keystrokes. Unlike Credential API Hooking, this focuses solely on API functions intended for processing keystroke data.\n* Reading raw keystroke data from the hardware buffer.\n* Windows Registry modifications.\n* Custom drivers.\n* Modify System Image may provide adversaries with hooks into the operating system of network devices to read raw keystrokes for login sessions.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may log user keystrokes to intercept typed credentials, potentially clearing browser cookies to force reauthentication and capture them more quickly. Methods for intercepting keystroke data include hooking API callbacks, reading raw data from hardware buffers, modifying the Windows Registry, using custom drivers, and modifying system images.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1021.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:10+00:00",
+  "temperature": 0,
+  "prompt_sha256": "a8d9ec2c11059bfbcbd909e016e62108a23b55c502b813db3a8cc68d25420ba4",
+  "replicate": 0,
+  "cache_key": "98c01d7a798e48a9162d6dc9eeada253b556474004e5b57bd3f28eae31ee0bf3",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may use Valid Accounts to log into a computer using the Remote Desktop Protocol (RDP). The adversary may then perform actions as the logged-on user.\n\nRemote desktop is a common feature in operating systems. It allows a user to log into an interactive session with a system desktop graphical user interface on a remote system. Microsoft refers to its implementation of the Remote Desktop Protocol (RDP) as Remote Desktop Services (RDS). \n\nAdversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries will likely use Credential Access techniques to acquire credentials to use with RDP. Adversaries may also use RDP in conjunction with the Accessibility Features or Terminal Services DLL for Persistence.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use valid accounts to log into a computer using the Remote Desktop Protocol (RDP) to perform actions as the logged-on user. If the service is enabled and permits access to accounts with known credentials, adversaries can connect over RDP or Remote Desktop Services (RDS) to expand their access. They may also use acquired credentials with RDP, or combine RDP with Accessibility Features or Terminal Services DLL for persistence.\"}"
+}

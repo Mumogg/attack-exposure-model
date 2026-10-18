@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1556]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:27+00:00",
+  "temperature": 0,
+  "prompt_sha256": "2b0329f1ea3583f6601ee7d15a5a3c3f54bb2954cad2e41ca926f971ec5df01a",
+  "replicate": 0,
+  "cache_key": "12fb535c647cfefbfdb05bc4cf452739156298ece87593582b37756fad712263",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may modify authentication mechanisms and processes to access user credentials or enable otherwise unwarranted access to accounts. The authentication process is handled by mechanisms, such as the Local Security Authentication Server (LSASS) process and the Security Accounts Manager (SAM) on Windows, pluggable authentication modules (PAM) on Unix-based systems, and authorization plugins on MacOS systems, responsible for gathering, storing, and validating credentials. By modifying an authentication process, an adversary may be able to authenticate to a service or system without using Valid Accounts.\n\nAdversaries may maliciously modify a part of this process to either reveal credentials or bypass authentication mechanisms. Compromised credentials or access may be used to bypass access controls placed on various resources on systems within the network and may even be used for persistent access to remote systems and externally available services, such as VPNs, Outlook Web Access and remote desktop.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may modify authentication mechanisms and processes—such as LSASS and SAM on Windows, PAM on Unix-based systems, and authorization plugins on MacOS—to reveal credentials or bypass authentication. Altering these processes, which gather, store, and validate credentials, allows adversaries to access systems or services without using valid accounts. The resulting compromised access or credentials may be used to bypass access controls and achieve persistent access to remote systems and external services.\"}"
+}

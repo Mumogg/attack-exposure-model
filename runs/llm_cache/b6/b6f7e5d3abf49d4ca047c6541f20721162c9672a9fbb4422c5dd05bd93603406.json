@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1556.006]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:59:36+00:00",
+  "temperature": 0,
+  "prompt_sha256": "ac92dceff4bf23961faa2f1fe78c7e0149aa67cdc82a4650e53b8409b65c70ef",
+  "replicate": 0,
+  "cache_key": "b6f7e5d3abf49d4ca047c6541f20721162c9672a9fbb4422c5dd05bd93603406",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may disable or modify multi-factor authentication (MFA) mechanisms to enable persistent access to compromised accounts.\n\nOnce adversaries have gained access to a network by either compromising an account lacking MFA or by employing an MFA bypass method such as Multi-Factor Authentication Request Generation, adversaries may leverage their access to modify or completely disable MFA defenses. This can be accomplished by abusing legitimate features, such as excluding users from Azure AD Conditional Access Policies, registering a new yet vulnerable/adversary-controlled MFA method, or by manually patching MFA programs and configuration files to bypass expected functionality.\n\nFor example, modifying the Windows hosts file (`C:\\windows\\system32\\drivers\\etc\\hosts`) to redirect MFA calls to localhost instead of an MFA server may cause the MFA process to fail. If a \"fail open\" policy is in place, any otherwise successful authentication attempt may be granted access without enforcing MFA. \n\nDepending on the scope, goals, and privileges of the adversary, MFA defenses may be disabled for individual accounts or for all accounts tied to a larger group, such as all domain accounts in a victim's network environment.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may disable or modify multi-factor authentication (MFA) mechanisms to enable persistent access to compromised accounts. To achieve this, they can abuse legitimate features, register adversary-controlled MFA methods, or patch MFA software and configuration files to bypass expected enforcement. Depending on adversary privileges and goals, these modifications can affect individual accounts or entire groups within a victim network.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1070.004]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:07:53+00:00",
+  "temperature": 0,
+  "prompt_sha256": "70668a03cef752962a02f1ff6ff206166f533459c9cdb1cdfbf006e2304deb8c",
+  "replicate": 0,
+  "cache_key": "6ecb8fbea3376f039d69d6ba8f1585edee3217af614b5843e8b4ca9a4a14f6f0",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may delete files left behind by the actions of their intrusion activity. Malware, tools, or other non-native files dropped or created on a system by an adversary (ex: Ingress Tool Transfer) may leave traces to indicate to what was done within a network and how. Removal of these files can occur during an intrusion, or as part of a post-intrusion process to minimize the adversary's footprint.\n\nThere are tools available from the host operating system to perform cleanup, but adversaries may use other tools as well. Examples of built-in Command and Scripting Interpreter functions include <code>del</code> on Windows, <code>rm</code> or <code>unlink</code> on Linux and macOS, and `rm` on ESXi.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may delete malware, tools, or other files left behind during an intrusion to remove traces and minimize their footprint. This removal can take place during the intrusion or as a post-intrusion process. To perform cleanup, adversaries can use other tools or built-in operating system functions, such as del on Windows, rm or unlink on Linux and macOS, and rm on ESXi.\"}"
+}

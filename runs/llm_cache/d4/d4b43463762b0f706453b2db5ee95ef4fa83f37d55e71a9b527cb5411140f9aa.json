@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1136]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:06:27+00:00",
+  "temperature": 0,
+  "prompt_sha256": "36b21abcfc2b1edf2e0678b789ba915c01179845e83d2d7e50e23bb3e41b9ca8",
+  "replicate": 0,
+  "cache_key": "d4b43463762b0f706453b2db5ee95ef4fa83f37d55e71a9b527cb5411140f9aa",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may create an account to maintain access to victim systems. With a sufficient level of access, creating such accounts may be used to establish secondary credentialed access that do not require persistent remote access tools to be deployed on the system.\n\nAccounts may be created on the local system or within a domain or cloud tenant. In cloud environments, adversaries may create accounts that only have access to specific services, which can reduce the chance of detection.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may create accounts on local systems, domains, or cloud tenants to maintain access to victim systems. With sufficient access, these accounts establish secondary credentialed access without needing persistent remote access tools deployed on the system. In cloud environments, adversaries may create accounts with access limited to specific services to reduce the chance of detection.\"}"
+}

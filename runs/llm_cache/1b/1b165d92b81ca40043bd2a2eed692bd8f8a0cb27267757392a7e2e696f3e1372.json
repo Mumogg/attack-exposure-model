@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1059.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:06:54+00:00",
+  "temperature": 0,
+  "prompt_sha256": "c66eaac7da123fc55fa1c4bd444cca6c7bfa0748404c1f91528863d0f4844842",
+  "replicate": 0,
+  "cache_key": "1b165d92b81ca40043bd2a2eed692bd8f8a0cb27267757392a7e2e696f3e1372",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Examples include the <code>Start-Process</code> cmdlet which can be used to run an executable and the <code>Invoke-Command</code> cmdlet which runs a command locally or on a remote computer (though administrator permissions are required to use PowerShell to connect to remote systems).\n\nPowerShell may also be used to download and run executables from the Internet, which can be executed from disk or in memory without touching disk.\n\nA number of PowerShell-based offensive testing tools are available, including Empire, PowerSploit, PoshC2, and PSAttack.\n\nPowerShell commands/scripts can also be executed without directly invoking the <code>powershell.exe</code> binary through interfaces to PowerShell's underlying <code>System.Management.Automation</code> assembly DLL exposed through the.NET framework and Windows Common Language Interface (CLI).\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may abuse PowerShell to discover information, execute code, and download and run executables from disk or in memory. Several offensive testing tools, including Empire, PowerSploit, PoshC2, and PSAttack, utilize PowerShell for these actions. Commands and scripts can also be executed without invoking the powershell.exe binary by interfacing with the underlying System.Management.Automation assembly DLL.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1098]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:02+00:00",
+  "temperature": 0,
+  "prompt_sha256": "7644edefe19c0c5d437a6d690e79fdb2eddf60ee1a3f6fe2ba91f92a76912ce9",
+  "replicate": 0,
+  "cache_key": "89cd25c5a8505e3dd846459f34f98ec03d290a416c3dda9d4beebc5558afeb4c",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may manipulate accounts to maintain and/or elevate access to victim systems. Account manipulation may consist of any action that preserves or modifies adversary access to a compromised account, such as modifying credentials or permission groups. These actions could also include account activity designed to subvert security policies, such as performing iterative password updates to bypass password duration policies and preserve the life of compromised credentials. \n\nIn order to create or manipulate accounts, the adversary must already have sufficient permissions on systems or the domain. However, account manipulation may also lead to privilege escalation where modifications grant access to additional roles, permissions, or higher-privileged Valid Accounts.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may manipulate accounts by modifying credentials, altering permission groups, or subverting security policies to maintain and elevate access to victim systems. To perform these actions, adversaries must already possess sufficient permissions on systems or the domain. These manipulations may subsequently lead to privilege escalation by granting access to additional roles, permissions, or higher-privileged Valid Accounts.\"}"
+}

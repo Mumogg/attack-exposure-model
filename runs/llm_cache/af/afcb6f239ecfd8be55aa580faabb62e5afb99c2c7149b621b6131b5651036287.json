@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1057]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:07:14+00:00",
+  "temperature": 0,
+  "prompt_sha256": "71627a024e003b900f11d1bb87a889a06bfa9709ba29e29d71a6af6bee79326b",
+  "replicate": 0,
+  "cache_key": "afcb6f239ecfd8be55aa580faabb62e5afb99c2c7149b621b6131b5651036287",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software/applications running on systems within the network. Administrator or otherwise elevated access may provide better process details. Adversaries may use the information from Process Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n\nIn Windows environments, adversaries could obtain details on running processes using the Tasklist utility via cmd or <code>Get-Process</code> via PowerShell. Information about processes can also be extracted from the output of Native API calls such as <code>CreateToolhelp32Snapshot</code>. In Mac and Linux, this is accomplished with the <code>ps</code> command. Adversaries may also opt to enumerate processes via `/proc`. ESXi also supports use of the `ps` command, as well as `esxcli system process list`.\n\nOn network devices, Network Device CLI commands such as `show processes` can be used to display current running processes.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may attempt to obtain information about running processes to understand common software and shape follow-on behaviors, with elevated access potentially providing better details. This process enumeration can be carried out across Windows, Mac, Linux, ESXi, and network devices using various built-in commands, utilities, APIs, or `/proc`.\"}"
+}

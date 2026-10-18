@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1560.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:54+00:00",
+  "temperature": 0,
+  "prompt_sha256": "2e12add4506537a68244fcee1c49d6e16f7f8610c8a7ced4b16b61ddec752ad5",
+  "replicate": 0,
+  "cache_key": "6c40e778c1c172e3b78a1449784019aaea5a88f5707b58fa0c414bf9e269bb2c",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may use utilities to compress and/or encrypt collected data prior to exfiltration. Many utilities include functionalities to compress, encrypt, or otherwise package data into a format that is easier/more secure to transport.\n\nAdversaries may abuse various utilities to compress or encrypt data before exfiltration. Some third party utilities may be preinstalled, such as <code>tar</code> on Linux and macOS or <code>zip</code> on Windows systems. \n\nOn Windows, <code>diantz</code> or <code> makecab</code> may be used to package collected files into a cabinet (.cab) file. <code>diantz</code> may also be used to download and compress files from remote locations (i.e. Remote Data Staging). <code>xcopy</code> on Windows can copy files and directories with a variety of options. Additionally, adversaries may use certutil to Base64 encode collected data before exfiltration. \n\nAdversaries may use also third party utilities, such as 7-Zip, WinRAR, and WinZip, to perform similar activities.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use utilities to compress, encrypt, or package collected data prior to exfiltration to make it easier or more secure to transport. They may abuse tools such as tar on Linux and macOS, or Windows utilities including zip, diantz, makecab, xcopy, and certutil. Additionally, adversaries may use third-party utilities such as 7-Zip, WinRAR, and WinZip to perform similar activities.\"}"
+}

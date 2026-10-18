@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1040]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:00:14+00:00",
+  "temperature": 0,
+  "prompt_sha256": "cb891bcabd7bb8dd71b265706c81636c91ec3d4d8ac6d7ebe052b8ab133a23a1",
+  "replicate": 0,
+  "cache_key": "dd023fcd4044829b5ef0d1b147e69c92562d967205ec754f0be739791642db92",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may passively sniff network traffic to capture information about an environment, including authentication material passed over the network. Network sniffing refers to using the network interface on a system to monitor or capture information sent over a wired or wireless connection. An adversary may place a network interface into promiscuous mode to passively access data in transit over the network, or use span ports to capture a larger amount of data.\n\nData captured via this technique may include user credentials, especially those sent over an insecure, unencrypted protocol. Techniques for name service resolution poisoning, such as Name Resolution Poisoning and SMB Relay, can also be used to capture credentials to websites, proxies, and internal systems by redirecting traffic to an adversary.\n\nNetwork sniffing may reveal configuration details, such as running services, version numbers, and other network characteristics (e.g. IP addresses, hostnames, VLAN IDs) necessary for subsequent Lateral Movement and/or Stealth activities. Adversaries may likely also utilize network sniffing during Adversary-in-the-Middle (AiTM) to passively gain additional knowledge about the environment.\n\nIn cloud-based environments, adversaries may still be able to use traffic mirroring services to sniff network traffic from virtual machines. For example, AWS Traffic Mirroring, GCP Packet Mirroring, and Azure vTap allow users to define specified instances to collect traffic from and specified targets to send collected traffic to. Often, much of this traffic will be in cleartext due to the use of TLS termination at the load balancer level to reduce the strain of encrypting and decrypting traffic. The adversary can then use exfiltration techniques such as Transfer Data to Cloud Account in order to access the sniffed traffic.\n\nOn network devices, adversaries may perform network captures using Network Device CLI commands such as `monitor capture`.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may passively sniff network traffic across wired, wireless, cloud, and network device environments to capture credentials and information about an environment. Captured data can include unencrypted authentication material, running services, version numbers, and network characteristics necessary for lateral movement or stealth. Techniques used to capture this data include placing interfaces into promiscuous mode, using span ports, leveraging cloud traffic mirroring services, and executing network device CLI commands.\"}"
+}

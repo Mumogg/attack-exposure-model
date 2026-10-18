@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1550.004]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:46:52+00:00",
+  "temperature": 0,
+  "prompt_sha256": "4b949cd2bb9dadde7e869d8aa069be4e7d5c17d9e38103d0e6bc3499c4313fca",
+  "replicate": 0,
+  "cache_key": "0828545353d061473452042cdf89220c8c0280b7281884bc804f1ea85ee30010",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries can use stolen session cookies to authenticate to web applications and services. This technique bypasses some multi-factor authentication protocols since the session is already authenticated.\n\nAuthentication cookies are commonly used in web applications, including cloud-based services, after a user has authenticated to the service so credentials are not passed and re-authentication does not need to occur as frequently. Cookies are often valid for an extended period of time, even if the web application is not actively used. After the cookie is obtained through Steal Web Session Cookie or Web Cookies, the adversary may then import the cookie into a browser they control and is then able to use the site or application as the user for as long as the session cookie is active. Once logged into the site, an adversary can access sensitive information, read email, or perform actions that the victim account has permissions to perform.\n\nThere have been examples of malware targeting session cookies to bypass multi-factor authentication systems.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries can use stolen session cookies to authenticate to web applications and services, bypassing some multi-factor authentication protocols. By importing an obtained cookie into their own browser, an adversary can use the site or application as the authenticated user for as long as the session cookie remains active. Once logged into the site, the adversary can access sensitive information, read email, or perform actions permitted by the victim account.\"}"
+}

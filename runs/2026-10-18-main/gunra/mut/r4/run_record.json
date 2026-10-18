@@ -1,0 +1,1287 @@
+{
+  "meta": {
+    "started": "2026-10-18T18:15:20+00:00",
+    "finished": "2026-10-18T18:15:20+00:00",
+    "model": "gemini-3.8-flash",
+    "temperature": 0,
+    "demo": false,
+    "attack_version": "19.2",
+    "analyst_mode": "auto",
+    "replicate": 4,
+    "private": false,
+    "llm_sources": [
+      "gemini-api"
+    ],
+    "fake": false,
+    "model_versions": [
+      "gemini-3.8-flash"
+    ],
+    "summary_replicate": 0,
+    "report_sha256": "ceadd1336a126de53082049e5d7a5c8d111c7737dfcdac24ef6801ea4a898952",
+    "prompt_sha256": [
+      "4bf29c0e3a9ea65ad5a308f78e469b39968656505918c35a7d4897210758dcd3"
+    ]
+  },
+  "extraction": {
+    "report_sha256": "ceadd1336a126de53082049e5d7a5c8d111c7737dfcdac24ef6801ea4a898952",
+    "attack_version": "19.2",
+    "chunks": 1,
+    "extracted_raw": [
+      {
+        "technique_id": "T1190",
+        "technique_name": "Exploit Public-Facing Application",
+        "evidence_quote": "Gunra actors obtaining initial access primarily through the exploitation of known vulnerabilities in internet-facing devices, including firewall and VPN appliances."
+      },
+      {
+        "technique_id": "T1106",
+        "technique_name": "Native API",
+        "evidence_quote": "Gunra’s Windows encryptor relies on native operating system (OS) application programming interfaces (APIs) to drive both execution and targeted encryption activity."
+      },
+      {
+        "technique_id": "T1021.002",
+        "technique_name": "SMB/Windows Admin Shares",
+        "evidence_quote": "Gunra actors regularly exploit Impacket libraries psexec.py and smbclient.py to move laterally across victim networks using the Server Message Block (SMB) protocol."
+      },
+      {
+        "technique_id": "T1078.001",
+        "technique_name": "Default Accounts",
+        "evidence_quote": "Gunra actors gained access to an administrator account for a secure socket layer (SSL)-VPN appliance by exploiting default credentials when account lockout controls were not present."
+      },
+      {
+        "technique_id": "T1105",
+        "technique_name": "Ingress Tool Transfer",
+        "evidence_quote": "The actors subsequently downloaded OpenSSH (an SSH tunneling tool) from an external attacker-controlled server to establish connections between compromised systems and maintain persistence in the victim’s environment."
+      },
+      {
+        "technique_id": "T1098",
+        "technique_name": "Account Manipulation",
+        "evidence_quote": "The actors modified the account configuration to bypass the mandatory password change requirement enforced on the account and subsequently leveraged it for malicious activities."
+      },
+      {
+        "technique_id": "T1021.001",
+        "technique_name": "Remote Desktop Protocol",
+        "evidence_quote": "Using stolen session information, Gunra actors gained initial access to the internal virtual desktop infrastructure (VDI) environment and conducted lateral movement via RDP."
+      },
+      {
+        "technique_id": "T1003.003",
+        "technique_name": "NTDS",
+        "evidence_quote": "Gunra actors using secretsdump.py (another Impacket library) to conduct OS credential dumping against compromised domain controllers to extract password hashes of user accounts"
+      },
+      {
+        "technique_id": "T1556.006",
+        "technique_name": "Multi-Factor Authentication Bypass",
+        "evidence_quote": "Gunra actors modified authentication processing files on the corporate VDI authentication portal server to allow successful authentication when a specific, Gunra-designated one time password (OTP) value was entered"
+      },
+      {
+        "technique_id": "T1070.003",
+        "technique_name": "Clear Command History",
+        "evidence_quote": "While active within victim networks, Gunra actors typically attempt to mask their presence by deleting system/network access logs and clearing command history."
+      },
+      {
+        "technique_id": "T1622",
+        "technique_name": "Debugger Evasion",
+        "evidence_quote": "The Windows binary includes the IsDebuggerPresent API, which defends against reverse engineering by detecting if the application is being run in a debugger."
+      },
+      {
+        "technique_id": "T1083",
+        "technique_name": "File and Directory Discovery",
+        "evidence_quote": "Prior to encryption, Gunra performs file and directory discovery across all accessible drive letters (A through Z) to identify victim data for targeting."
+      },
+      {
+        "technique_id": "T1560.001",
+        "technique_name": "Archive via Utility",
+        "evidence_quote": "the actors generated compressed archives with sensitive data and exfiltrated the archives to the file-sharing service Mega"
+      },
+      {
+        "technique_id": "T1567.002",
+        "technique_name": "Exfiltration to Cloud Storage",
+        "evidence_quote": "exfiltrated the archives to the file-sharing service Mega; the volume of exfiltrated data ranged up to tens of terabytes."
+      },
+      {
+        "technique_id": "T1486",
+        "technique_name": "Data Encrypted for Impact",
+        "evidence_quote": "The binary achieves high speed file encryption of entire file systems by leveraging a multi-threaded architecture that supports parallel encryption of multiple files simultaneously"
+      },
+      {
+        "technique_id": "T1490",
+        "technique_name": "Inhibit System Recovery",
+        "evidence_quote": "prevent system recovery, Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption"
+      },
+      {
+        "technique_id": "T1047",
+        "technique_name": "Windows Management Instrumentation",
+        "evidence_quote": "Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption"
+      }
+    ],
+    "extra_fields": [],
+    "candidates": [
+      {
+        "technique_id": "T1190",
+        "llm_name": "Exploit Public-Facing Application",
+        "official_name": "Exploit Public-Facing Application",
+        "evidence_quote": "Gunra actors obtaining initial access primarily through the exploitation of known vulnerabilities in internet-facing devices, including firewall and VPN appliances.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1106",
+        "llm_name": "Native API",
+        "official_name": "Native API",
+        "evidence_quote": "Gunra’s Windows encryptor relies on native operating system (OS) application programming interfaces (APIs) to drive both execution and targeted encryption activity.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1021.002",
+        "llm_name": "SMB/Windows Admin Shares",
+        "official_name": "SMB/Windows Admin Shares",
+        "evidence_quote": "Gunra actors regularly exploit Impacket libraries psexec.py and smbclient.py to move laterally across victim networks using the Server Message Block (SMB) protocol.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1078.001",
+        "llm_name": "Default Accounts",
+        "official_name": "Default Accounts",
+        "evidence_quote": "Gunra actors gained access to an administrator account for a secure socket layer (SSL)-VPN appliance by exploiting default credentials when account lockout controls were not present.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1105",
+        "llm_name": "Ingress Tool Transfer",
+        "official_name": "Ingress Tool Transfer",
+        "evidence_quote": "The actors subsequently downloaded OpenSSH (an SSH tunneling tool) from an external attacker-controlled server to establish connections between compromised systems and maintain persistence in the victim’s environment.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1098",
+        "llm_name": "Account Manipulation",
+        "official_name": "Account Manipulation",
+        "evidence_quote": "The actors modified the account configuration to bypass the mandatory password change requirement enforced on the account and subsequently leveraged it for malicious activities.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1021.001",
+        "llm_name": "Remote Desktop Protocol",
+        "official_name": "Remote Desktop Protocol",
+        "evidence_quote": "Using stolen session information, Gunra actors gained initial access to the internal virtual desktop infrastructure (VDI) environment and conducted lateral movement via RDP.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1003.003",
+        "llm_name": "NTDS",
+        "official_name": "NTDS",
+        "evidence_quote": "Gunra actors using secretsdump.py (another Impacket library) to conduct OS credential dumping against compromised domain controllers to extract password hashes of user accounts",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1556.006",
+        "llm_name": "Multi-Factor Authentication Bypass",
+        "official_name": "Multi-Factor Authentication",
+        "evidence_quote": "Gunra actors modified authentication processing files on the corporate VDI authentication portal server to allow successful authentication when a specific, Gunra-designated one time password (OTP) value was entered",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1070.003",
+        "llm_name": "Clear Command History",
+        "official_name": "Clear Command History",
+        "evidence_quote": "While active within victim networks, Gunra actors typically attempt to mask their presence by deleting system/network access logs and clearing command history.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1622",
+        "llm_name": "Debugger Evasion",
+        "official_name": "Debugger Evasion",
+        "evidence_quote": "The Windows binary includes the IsDebuggerPresent API, which defends against reverse engineering by detecting if the application is being run in a debugger.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1083",
+        "llm_name": "File and Directory Discovery",
+        "official_name": "File and Directory Discovery",
+        "evidence_quote": "Prior to encryption, Gunra performs file and directory discovery across all accessible drive letters (A through Z) to identify victim data for targeting.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1560.001",
+        "llm_name": "Archive via Utility",
+        "official_name": "Archive via Utility",
+        "evidence_quote": "the actors generated compressed archives with sensitive data and exfiltrated the archives to the file-sharing service Mega",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1567.002",
+        "llm_name": "Exfiltration to Cloud Storage",
+        "official_name": "Exfiltration to Cloud Storage",
+        "evidence_quote": "exfiltrated the archives to the file-sharing service Mega; the volume of exfiltrated data ranged up to tens of terabytes.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1486",
+        "llm_name": "Data Encrypted for Impact",
+        "official_name": "Data Encrypted for Impact",
+        "evidence_quote": "The binary achieves high speed file encryption of entire file systems by leveraging a multi-threaded architecture that supports parallel encryption of multiple files simultaneously",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1490",
+        "llm_name": "Inhibit System Recovery",
+        "official_name": "Inhibit System Recovery",
+        "evidence_quote": "prevent system recovery, Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1047",
+        "llm_name": "Windows Management Instrumentation",
+        "official_name": "Windows Management Instrumentation",
+        "evidence_quote": "Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      }
+    ],
+    "analyst_mode": "auto",
+    "analyst_actions": [
+      {
+        "action": "accept",
+        "technique_id": "T1047",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1490",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1486",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1567.002",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1560.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1083",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1622",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1070.003",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1556.006",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1003.003",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1021.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1098",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1105",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1078.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1021.002",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1106",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1190",
+        "note": ""
+      }
+    ],
+    "extracted_validated": [
+      {
+        "technique_id": "T1190",
+        "technique_name": "Exploit Public-Facing Application",
+        "evidence_quote": "Gunra actors obtaining initial access primarily through the exploitation of known vulnerabilities in internet-facing devices, including firewall and VPN appliances.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1106",
+        "technique_name": "Native API",
+        "evidence_quote": "Gunra’s Windows encryptor relies on native operating system (OS) application programming interfaces (APIs) to drive both execution and targeted encryption activity.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1021.002",
+        "technique_name": "SMB/Windows Admin Shares",
+        "evidence_quote": "Gunra actors regularly exploit Impacket libraries psexec.py and smbclient.py to move laterally across victim networks using the Server Message Block (SMB) protocol.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1078.001",
+        "technique_name": "Default Accounts",
+        "evidence_quote": "Gunra actors gained access to an administrator account for a secure socket layer (SSL)-VPN appliance by exploiting default credentials when account lockout controls were not present.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1105",
+        "technique_name": "Ingress Tool Transfer",
+        "evidence_quote": "The actors subsequently downloaded OpenSSH (an SSH tunneling tool) from an external attacker-controlled server to establish connections between compromised systems and maintain persistence in the victim’s environment.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1098",
+        "technique_name": "Account Manipulation",
+        "evidence_quote": "The actors modified the account configuration to bypass the mandatory password change requirement enforced on the account and subsequently leveraged it for malicious activities.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1021.001",
+        "technique_name": "Remote Desktop Protocol",
+        "evidence_quote": "Using stolen session information, Gunra actors gained initial access to the internal virtual desktop infrastructure (VDI) environment and conducted lateral movement via RDP.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1003.003",
+        "technique_name": "NTDS",
+        "evidence_quote": "Gunra actors using secretsdump.py (another Impacket library) to conduct OS credential dumping against compromised domain controllers to extract password hashes of user accounts",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1556.006",
+        "technique_name": "Multi-Factor Authentication",
+        "evidence_quote": "Gunra actors modified authentication processing files on the corporate VDI authentication portal server to allow successful authentication when a specific, Gunra-designated one time password (OTP) value was entered",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1070.003",
+        "technique_name": "Clear Command History",
+        "evidence_quote": "While active within victim networks, Gunra actors typically attempt to mask their presence by deleting system/network access logs and clearing command history.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1622",
+        "technique_name": "Debugger Evasion",
+        "evidence_quote": "The Windows binary includes the IsDebuggerPresent API, which defends against reverse engineering by detecting if the application is being run in a debugger.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1083",
+        "technique_name": "File and Directory Discovery",
+        "evidence_quote": "Prior to encryption, Gunra performs file and directory discovery across all accessible drive letters (A through Z) to identify victim data for targeting.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1560.001",
+        "technique_name": "Archive via Utility",
+        "evidence_quote": "the actors generated compressed archives with sensitive data and exfiltrated the archives to the file-sharing service Mega",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1567.002",
+        "technique_name": "Exfiltration to Cloud Storage",
+        "evidence_quote": "exfiltrated the archives to the file-sharing service Mega; the volume of exfiltrated data ranged up to tens of terabytes.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1486",
+        "technique_name": "Data Encrypted for Impact",
+        "evidence_quote": "The binary achieves high speed file encryption of entire file systems by leveraging a multi-threaded architecture that supports parallel encryption of multiple files simultaneously",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1490",
+        "technique_name": "Inhibit System Recovery",
+        "evidence_quote": "prevent system recovery, Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1047",
+        "technique_name": "Windows Management Instrumentation",
+        "evidence_quote": "Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption",
+        "origin": "llm"
+      }
+    ],
+    "llm_calls": [
+      {
+        "purpose": "step1_extract[1/1]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:03:58+00:00",
+        "temperature": 0,
+        "prompt_sha256": "4bf29c0e3a9ea65ad5a308f78e469b39968656505918c35a7d4897210758dcd3",
+        "replicate": 4,
+        "cache_key": "15911f372cb54b2403525723523024db49041f729a1e7e14c1c439c97a32a89f",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "extract_v1.txt",
+        "raw_response": "{\n  \"techniques\": [\n    {\n      \"technique_id\": \"T1190\",\n      \"technique_name\": \"Exploit Public-Facing Application\",\n      \"evidence_quote\": \"Gunra actors obtaining initial access primarily through the exploitation of known vulnerabilities in internet-facing devices, including firewall and VPN appliances.\"\n    },\n    {\n      \"technique_id\": \"T1106\",\n      \"technique_name\": \"Native API\",\n      \"evidence_quote\": \"Gunra’s Windows encryptor relies on native operating system (OS) application programming interfaces (APIs) to drive both execution and targeted encryption activity.\"\n    },\n    {\n      \"technique_id\": \"T1021.002\",\n      \"technique_name\": \"SMB/Windows Admin Shares\",\n      \"evidence_quote\": \"Gunra actors regularly exploit Impacket libraries psexec.py and smbclient.py to move laterally across victim networks using the Server Message Block (SMB) protocol.\"\n    },\n    {\n      \"technique_id\": \"T1078.001\",\n      \"technique_name\": \"Default Accounts\",\n      \"evidence_quote\": \"Gunra actors gained access to an administrator account for a secure socket layer (SSL)-VPN appliance by exploiting default credentials when account lockout controls were not present.\"\n    },\n    {\n      \"technique_id\": \"T1105\",\n      \"technique_name\": \"Ingress Tool Transfer\",\n      \"evidence_quote\": \"The actors subsequently downloaded OpenSSH (an SSH tunneling tool) from an external attacker-controlled server to establish connections between compromised systems and maintain persistence in the victim’s environment.\"\n    },\n    {\n      \"technique_id\": \"T1098\",\n      \"technique_name\": \"Account Manipulation\",\n      \"evidence_quote\": \"The actors modified the account configuration to bypass the mandatory password change requirement enforced on the account and subsequently leveraged it for malicious activities.\"\n    },\n    {\n      \"technique_id\": \"T1021.001\",\n      \"technique_name\": \"Remote Desktop Protocol\",\n      \"evidence_quote\": \"Using stolen session information, Gunra actors gained initial access to the internal virtual desktop infrastructure (VDI) environment and conducted lateral movement via RDP.\"\n    },\n    {\n      \"technique_id\": \"T1003.003\",\n      \"technique_name\": \"NTDS\",\n      \"evidence_quote\": \"Gunra actors using secretsdump.py (another Impacket library) to conduct OS credential dumping against compromised domain controllers to extract password hashes of user accounts\"\n    },\n    {\n      \"technique_id\": \"T1556.006\",\n      \"technique_name\": \"Multi-Factor Authentication Bypass\",\n      \"evidence_quote\": \"Gunra actors modified authentication processing files on the corporate VDI authentication portal server to allow successful authentication when a specific, Gunra-designated one time password (OTP) value was entered\"\n    },\n    {\n      \"technique_id\": \"T1070.003\",\n      \"technique_name\": \"Clear Command History\",\n      \"evidence_quote\": \"While active within victim networks, Gunra actors typically attempt to mask their presence by deleting system/network access logs and clearing command history.\"\n    },\n    {\n      \"technique_id\": \"T1622\",\n      \"technique_name\": \"Debugger Evasion\",\n      \"evidence_quote\": \"The Windows binary includes the IsDebuggerPresent API, which defends against reverse engineering by detecting if the application is being run in a debugger.\"\n    },\n    {\n      \"technique_id\": \"T1083\",\n      \"technique_name\": \"File and Directory Discovery\",\n      \"evidence_quote\": \"Prior to encryption, Gunra performs file and directory discovery across all accessible drive letters (A through Z) to identify victim data for targeting.\"\n    },\n    {\n      \"technique_id\": \"T1560.001\",\n      \"technique_name\": \"Archive via Utility\",\n      \"evidence_quote\": \"the actors generated compressed archives with sensitive data and exfiltrated the archives to the file-sharing service Mega\"\n    },\n    {\n      \"technique_id\": \"T1567.002\",\n      \"technique_name\": \"Exfiltration to Cloud Storage\",\n      \"evidence_quote\": \"exfiltrated the archives to the file-sharing service Mega; the volume of exfiltrated data ranged up to tens of terabytes.\"\n    },\n    {\n      \"technique_id\": \"T1486\",\n      \"technique_name\": \"Data Encrypted for Impact\",\n      \"evidence_quote\": \"The binary achieves high speed file encryption of entire file systems by leveraging a multi-threaded architecture that supports parallel encryption of multiple files simultaneously\"\n    },\n    {\n      \"technique_id\": \"T1490\",\n      \"technique_name\": \"Inhibit System Recovery\",\n      \"evidence_quote\": \"prevent system recovery, Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption\"\n    },\n    {\n      \"technique_id\": \"T1047\",\n      \"technique_name\": \"Windows Management Instrumentation\",\n      \"evidence_quote\": \"Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "coverage": [
+    {
+      "technique_id": "T1190",
+      "coverage": "parcial",
+      "score": 2,
+      "data_sources": [
+        "Application Log Content",
+        "Network Traffic Content"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1106",
+      "coverage": "parcial",
+      "score": 1,
+      "data_sources": [
+        "OS API Execution"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1021.002",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Network Share Access",
+        "Logon Session Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1078.001",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1105",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Network Connection Creation",
+        "File Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1098",
+      "coverage": "parcial",
+      "score": 2,
+      "data_sources": [
+        "User Account Modification"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1021.001",
+      "coverage": "parcial",
+      "score": 3,
+      "data_sources": [
+        "Logon Session Creation",
+        "Network Connection Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1003.003",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Command Execution",
+        "File Access"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1556.006",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1070.003",
+      "coverage": "sin cobertura",
+      "score": 0,
+      "data_sources": [],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1622",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1083",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1560.001",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1567.002",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1486",
+      "coverage": "cubierta",
+      "score": 5,
+      "data_sources": [
+        "File Modification",
+        "File Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1490",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Process Creation",
+        "Command Execution"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1047",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Process Creation",
+        "WMI Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    }
+  ],
+  "prioritization": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactics": [
+        "initial-access"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "vpn-fw",
+      "criticality": "alta",
+      "exposure": "internet",
+      "action": "Act",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactics": [
+        "execution"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "SMB/Windows Admin Shares",
+      "tactics": [
+        "lateral-movement"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Default Accounts",
+      "tactics": [
+        "initial-access",
+        "persistence",
+        "privilege-escalation",
+        "stealth"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "vpn-fw",
+      "criticality": "alta",
+      "exposure": "internet",
+      "action": "Act",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactics": [
+        "command-and-control"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactics": [
+        "persistence",
+        "privilege-escalation"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "vpn-fw",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Desktop Protocol",
+      "tactics": [
+        "lateral-movement"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1003.003",
+      "technique_name": "NTDS",
+      "tactics": [
+        "credential-access"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "ad-dc",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1556.006",
+      "technique_name": "Multi-Factor Authentication",
+      "tactics": [
+        "persistence",
+        "defense-impairment",
+        "credential-access"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "vdi-portal",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Act",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1070.003",
+      "technique_name": "Clear Command History",
+      "tactics": [
+        "stealth"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1622",
+      "technique_name": "Debugger Evasion",
+      "tactics": [
+        "stealth",
+        "discovery"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactics": [
+        "discovery"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive via Utility",
+      "tactics": [
+        "collection"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration to Cloud Storage",
+      "tactics": [
+        "exfiltration"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "m365",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Act",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactics": [
+        "impact"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "erp-db",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactics": [
+        "impact"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "backup",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactics": [
+        "execution"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track",
+      "context_source": "default_asset"
+    }
+  ],
+  "summaries": [
+    {
+      "technique_id": "T1190",
+      "source_description": "Adversaries may attempt to exploit a weakness in an Internet-facing host or system to initially access a network. The weakness in the system can be a software bug, a temporary glitch, or a misconfiguration.\n\nExploited applications are often websites/web servers, but can also include databases (like SQL), standard services (like SMB or SSH), network device administration and management protocols (like SNMP and Smart Install), and any other system with Internet-accessible open sockets. On ESXi infrastructure, adversaries may exploit exposed OpenSLP services; they may alternatively exploit exposed VMware vCenter servers. Depending on the flaw being exploited, this may also involve Exploitation for Stealth or Exploitation for Client Execution.\n\nIf an application is hosted on cloud-based infrastructure and/or is containerized, then exploiting it may lead to compromise of the underlying instance or container. This can allow an adversary a path to access the cloud or container APIs (e.g., via the Cloud Instance Metadata API), exploit container host access via Escape to Host, or take advantage of weak identity and access management policies.\n\nAdversaries may also exploit edge network infrastructure and related appliances, specifically targeting devices that do not support robust host-based defenses.\n\nFor websites and databases, the OWASP top 10 and CWE top 25 highlight the most common web-based vulnerabilities.",
+      "raw_summary": "{\"summary\":\"Adversaries may exploit weaknesses, such as software bugs, temporary glitches, or misconfigurations, in Internet-facing systems to gain initial network access. Targeted technologies include web servers, databases, standard services, network protocols, edge appliances, and virtualization infrastructure like ESXi and VMware vCenter. Compromising cloud-hosted or containerized applications can grant access to underlying instances, containers, APIs, or host environments.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1190]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:36:10+00:00",
+        "temperature": 0,
+        "prompt_sha256": "5ba8620f4724c1a2b90127f9e62abaaf77b0c3a9a415505d614857b661f8f064",
+        "replicate": 0,
+        "cache_key": "57838a9df947e6cb96607934b3dcca01ed5f5229abb1fdf6d8120e4fae0c845f",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1106",
+      "source_description": "Adversaries may interact with the native OS application programming interface (API) to execute behaviors. Native APIs provide a controlled means of calling low-level OS services within the kernel, such as those involving hardware/devices, memory, and processes. These native APIs are leveraged by the OS during system boot (when other system components are not yet initialized) as well as carrying out tasks and requests during routine operations.\n\nAdversaries may abuse these OS API functions as a means of executing behaviors. Similar to Command and Scripting Interpreter, the native API and its hierarchy of interfaces provide mechanisms to interact with and utilize various components of a victimized system.\n\nNative API functions (such as <code>NtCreateProcess</code>) may be directed invoked via system calls / syscalls, but these features are also often exposed to user-mode applications via interfaces and libraries. For example, functions such as the Windows API <code>CreateProcess()</code> or GNU <code>fork()</code> will allow programs and scripts to start other processes. This may allow API callers to execute a binary, run a CLI command, load modules, etc. as thousands of similar API functions exist for various system operations.\n\nHigher level software frameworks, such as Microsoft.NET and macOS Cocoa, are also available to interact with native APIs. These frameworks typically provide language wrappers/abstractions to API functionalities and are designed for ease-of-use/portability of code.\n\nAdversaries may use assembly to directly or in-directly invoke syscalls in an attempt to subvert defensive sensors and detection signatures such as user mode API-hooks. Adversaries may also attempt to tamper with sensors and defensive tools associated with API monitoring, such as unhooking monitored functions via Disable or Modify Tools.",
+      "raw_summary": "{\"summary\": \"Adversaries may interact with native operating system APIs to execute behaviors and access low-level kernel services involving memory, hardware, and processes. These functions can be invoked directly through system calls, user-mode libraries, or higher-level software frameworks to perform actions such as executing binaries, running commands, and loading modules. Additionally, adversaries may use assembly to invoke syscalls or tamper with defensive tools to subvert detection signatures and sensors.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1106]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:36:16+00:00",
+        "temperature": 0,
+        "prompt_sha256": "5ae0f43d92cf65f254c6ce65488637feeb3415a27a36496b11bbc19128a8e14f",
+        "replicate": 0,
+        "cache_key": "df99a4bed1b7553b78feba8e22397964f548164cc987640a97aa57ef5930f6a3",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1021.002",
+      "source_description": "Adversaries may use Valid Accounts to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user.\n\nSMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with file shares, allowing them to move laterally throughout a network. Linux and macOS implementations of SMB typically use Samba.\n\nWindows systems have hidden network shares that are accessible only to administrators and provide the ability for remote file copy and other administrative functions. Example network shares include `C$`, `ADMIN$`, and `IPC$`. Adversaries may use this technique in conjunction with administrator-level Valid Accounts to remotely access a networked system over SMB, to interact with systems using remote procedure calls (RPCs), transfer files, and run transferred binaries through remote Execution. Example execution techniques that rely on authenticated sessions over SMB/RPC are Scheduled Task/Job, Service Execution, and Windows Management Instrumentation. Adversaries can also use NTLM hashes to access administrator shares on systems with Pass the Hash and certain configuration and patch levels.",
+      "raw_summary": "{\"summary\": \"Adversaries may use Valid Accounts or Pass the Hash to interact with remote network shares via Server Message Block (SMB) to perform actions as the logged-on user and move laterally. On Windows systems, adversaries can access hidden administrator shares such as C$, ADMIN$, and IPC$ to transfer files and interact through remote procedure calls. These authenticated SMB and RPC sessions also enable adversaries to remotely execute binaries using mechanisms like Scheduled Task/Job, Service Execution, and Windows Management Instrumentation.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1021.002]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:36:33+00:00",
+        "temperature": 0,
+        "prompt_sha256": "ec1d93d4562f602e4126a6ebcf619b80c3e8551da28324d4ff65eeb972f50360",
+        "replicate": 0,
+        "cache_key": "85c75da0a59493ad43307544e30f2a58ac928d377b92a1328c6afdfdd65c1b5e",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1078.001",
+      "source_description": "Adversaries may obtain and abuse credentials of a default account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. Default accounts are those that are built-into an OS, such as the Guest or Administrator accounts on Windows systems. Default accounts also include default factory/provider set accounts on other types of systems, software, or devices, including the root user account in AWS, the root user account in ESXi, and the default service account in Kubernetes.\n\nDefault accounts are not limited to client machines; rather, they also include accounts that are preset for equipment such as network devices and computer applications, whether they are internal, open source, or commercial. Appliances that come preset with a username and password combination pose a serious threat to organizations that do not change it post installation, as they are easy targets for an adversary. Similarly, adversaries may also utilize publicly disclosed or stolen Private Keys or credential materials to legitimately connect to remote environments via Remote Services.\n\nDefault accounts may be created on a system after initial setup by connecting or integrating it with another application. For example, when an ESXi server is connected to a vCenter server, a default privileged account called `vpxuser` is created on the ESXi server. If a threat actor is able to compromise this account’s credentials (for example, via Exploitation for Credential Access on the vCenter host), they will then have access to the ESXi server.",
+      "raw_summary": "{\"summary\": \"Adversaries may obtain and abuse default account credentials to gain Initial Access, Persistence, Privilege Escalation, or Defense Evasion. These accounts include built-in operating system accounts, factory-preset credentials on devices and applications, and accounts generated through system integrations. Threat actors can leverage compromised default credentials or stolen credential materials to access systems and remote environments.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1078.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:36:39+00:00",
+        "temperature": 0,
+        "prompt_sha256": "4e1c67b8e14b385ad9e49976a3128c1224949536af150e4646ba25a674951135",
+        "replicate": 0,
+        "cache_key": "778e6efe7609515b97126b4debc84d1b2365fe48e732f4b29cbad8e923bcba2a",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1105",
+      "source_description": "Adversaries may transfer tools or other files from an external system into a compromised environment. Tools or files may be copied from an external adversary-controlled system to the victim network through the command and control channel or through alternate protocols such as ftp. Once present, adversaries may also transfer/spread tools between victim devices within a compromised environment (i.e. Lateral Tool Transfer). \n\nOn Windows, adversaries may use various utilities to download tools, such as `copy`, `finger`, certutil, and PowerShell commands such as <code>IEX(New-Object Net.WebClient).downloadString()</code> and <code>Invoke-WebRequest</code>. On Linux and macOS systems, a variety of utilities also exist, such as `curl`, `scp`, `sftp`, `tftp`, `rsync`, `finger`, and `wget`. A number of these tools, such as `wget`, `curl`, and `scp`, also exist on ESXi. After downloading a file, a threat actor may attempt to verify its integrity by checking its hash value (e.g., via `certutil -hashfile`).\n\nAdversaries may also abuse installers and package managers, such as `yum` or `winget`, to download tools to victim hosts. Adversaries have also abused file application features, such as the Windows `search-ms` protocol handler, to deliver malicious files to victims through remote file searches invoked by User Execution (typically after interacting with Phishing lures).\n\nFiles can also be transferred using various Web Services as well as native or otherwise present tools on the victim system. In some cases, adversaries may be able to leverage services that sync between a web-based and an on-premises client, such as Dropbox or OneDrive, to transfer files onto victim systems. For example, by compromising a cloud account and logging into the service's web portal, an adversary may be able to trigger an automatic syncing process that transfers the file onto the victim's machine.",
+      "raw_summary": "{\"summary\":\"Adversaries may transfer tools or files from an external system into a compromised environment using command and control channels, alternate protocols, or syncing web services. They can employ various native utilities, command-line tools, package managers, and application features across Windows, Linux, macOS, and ESXi to download and verify these files. Once inside, adversaries may also transfer and spread tools between victim devices within the compromised network.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1105]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:36:48+00:00",
+        "temperature": 0,
+        "prompt_sha256": "e09b40d746ee2969c1284b357596bdb0128b34d0e4d825c86b8bf6c057a57bda",
+        "replicate": 0,
+        "cache_key": "79c0019f8c488e020b30899b6574e290753aa7b4dc84cd289deb3dea99591311",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1098",
+      "source_description": "Adversaries may manipulate accounts to maintain and/or elevate access to victim systems. Account manipulation may consist of any action that preserves or modifies adversary access to a compromised account, such as modifying credentials or permission groups. These actions could also include account activity designed to subvert security policies, such as performing iterative password updates to bypass password duration policies and preserve the life of compromised credentials. \n\nIn order to create or manipulate accounts, the adversary must already have sufficient permissions on systems or the domain. However, account manipulation may also lead to privilege escalation where modifications grant access to additional roles, permissions, or higher-privileged Valid Accounts.",
+      "raw_summary": "{\"summary\": \"Adversaries may manipulate accounts by modifying credentials, altering permission groups, or subverting security policies to maintain and elevate access to victim systems. To perform these actions, adversaries must already possess sufficient permissions on systems or the domain. These manipulations may subsequently lead to privilege escalation by granting access to additional roles, permissions, or higher-privileged Valid Accounts.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1098]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:02+00:00",
+        "temperature": 0,
+        "prompt_sha256": "7644edefe19c0c5d437a6d690e79fdb2eddf60ee1a3f6fe2ba91f92a76912ce9",
+        "replicate": 0,
+        "cache_key": "89cd25c5a8505e3dd846459f34f98ec03d290a416c3dda9d4beebc5558afeb4c",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1021.001",
+      "source_description": "Adversaries may use Valid Accounts to log into a computer using the Remote Desktop Protocol (RDP). The adversary may then perform actions as the logged-on user.\n\nRemote desktop is a common feature in operating systems. It allows a user to log into an interactive session with a system desktop graphical user interface on a remote system. Microsoft refers to its implementation of the Remote Desktop Protocol (RDP) as Remote Desktop Services (RDS). \n\nAdversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries will likely use Credential Access techniques to acquire credentials to use with RDP. Adversaries may also use RDP in conjunction with the Accessibility Features or Terminal Services DLL for Persistence.",
+      "raw_summary": "{\"summary\": \"Adversaries may use valid accounts to log into a computer using the Remote Desktop Protocol (RDP) to perform actions as the logged-on user. If the service is enabled and permits access to accounts with known credentials, adversaries can connect over RDP or Remote Desktop Services (RDS) to expand their access. They may also use acquired credentials with RDP, or combine RDP with Accessibility Features or Terminal Services DLL for persistence.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1021.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:10+00:00",
+        "temperature": 0,
+        "prompt_sha256": "a8d9ec2c11059bfbcbd909e016e62108a23b55c502b813db3a8cc68d25420ba4",
+        "replicate": 0,
+        "cache_key": "98c01d7a798e48a9162d6dc9eeada253b556474004e5b57bd3f28eae31ee0bf3",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1003.003",
+      "source_description": "Adversaries may attempt to access or create a copy of the Active Directory domain database in order to steal credential information, as well as obtain other information about domain members such as devices, users, and access rights. By default, the NTDS file (NTDS.dit) is located in <code>%SystemRoot%\\NTDS\\Ntds.dit</code> of a domain controller.\n\nIn addition to looking for NTDS files on active Domain Controllers, adversaries may search for backups that contain the same or similar information.\n\nThe following tools and techniques can be used to enumerate the NTDS file and the contents of the entire Active Directory hashes.\n\n* Volume Shadow Copy\n* secretsdump.py\n* Using the in-built Windows tool, ntdsutil.exe\n* Invoke-NinjaCopy",
+      "raw_summary": "{\"summary\": \"Adversaries may attempt to access or create a copy of the Active Directory domain database from active Domain Controllers or backups to steal credentials and obtain information about domain members. By default, the NTDS file (NTDS.dit) is located in %SystemRoot%\\\\NTDS\\\\Ntds.dit of a domain controller. Tools and techniques such as Volume Shadow Copy, secretsdump.py, ntdsutil.exe, and Invoke-NinjaCopy can be used to enumerate the NTDS file and Active Directory hashes.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1003.003]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:19+00:00",
+        "temperature": 0,
+        "prompt_sha256": "a35d4d73ac2cc22fee95aee4cd14cfd83c2a0c06460913f6e3b5ea6036514c4e",
+        "replicate": 0,
+        "cache_key": "702f3618db453b9093e31f3ddf6f09e87e126a821a7328c130953fb44bb4abd7",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1556.006",
+      "source_description": "Adversaries may disable or modify multi-factor authentication (MFA) mechanisms to enable persistent access to compromised accounts.\n\nOnce adversaries have gained access to a network by either compromising an account lacking MFA or by employing an MFA bypass method such as Multi-Factor Authentication Request Generation, adversaries may leverage their access to modify or completely disable MFA defenses. This can be accomplished by abusing legitimate features, such as excluding users from Azure AD Conditional Access Policies, registering a new yet vulnerable/adversary-controlled MFA method, or by manually patching MFA programs and configuration files to bypass expected functionality.\n\nFor example, modifying the Windows hosts file (`C:\\windows\\system32\\drivers\\etc\\hosts`) to redirect MFA calls to localhost instead of an MFA server may cause the MFA process to fail. If a \"fail open\" policy is in place, any otherwise successful authentication attempt may be granted access without enforcing MFA. \n\nDepending on the scope, goals, and privileges of the adversary, MFA defenses may be disabled for individual accounts or for all accounts tied to a larger group, such as all domain accounts in a victim's network environment.",
+      "raw_summary": "{\"summary\": \"Adversaries may disable or modify multi-factor authentication (MFA) mechanisms to enable persistent access to compromised accounts. To achieve this, they can abuse legitimate features, register adversary-controlled MFA methods, or patch MFA software and configuration files to bypass expected enforcement. Depending on adversary privileges and goals, these modifications can affect individual accounts or entire groups within a victim network.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1556.006]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:59:36+00:00",
+        "temperature": 0,
+        "prompt_sha256": "ac92dceff4bf23961faa2f1fe78c7e0149aa67cdc82a4650e53b8409b65c70ef",
+        "replicate": 0,
+        "cache_key": "b6f7e5d3abf49d4ca047c6541f20721162c9672a9fbb4422c5dd05bd93603406",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1070.003",
+      "source_description": "In addition to clearing system logs, an adversary may clear the command history of a compromised account to conceal the actions undertaken during an intrusion. Various command interpreters keep track of the commands users type in their terminal so that users can retrace what they've done.\n\nOn Linux and macOS, these command histories can be accessed in a few different ways. While logged in, this command history is tracked in a file pointed to by the environment variable <code>HISTFILE</code>. When a user logs off a system, this information is flushed to a file in the user's home directory called <code>~/.bash_history</code>. The benefit of this is that it allows users to go back to commands they've used before in different sessions. Adversaries may delete their commands from these logs by manually clearing the history (<code>history -c</code>) or deleting the bash history file <code>rm ~/.bash_history</code>. \n\nAdversaries may also leverage a Network Device CLI on network devices to clear command history data (<code>clear logging</code> and/or <code>clear history</code>). On ESXi servers, command history may be manually removed from the `/var/log/shell.log` file.\n\nOn Windows hosts, PowerShell has two different command history providers: the built-in history and the command history managed by the <code>PSReadLine</code> module. The built-in history only tracks the commands used in the current session. This command history is not available to other sessions and is deleted when the session ends.\n\nThe <code>PSReadLine</code> command history tracks the commands used in all PowerShell sessions and writes them to a file (<code>$env:APPDATA\\Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt</code> by default). This history file is available to all sessions and contains all past history since the file is not deleted when the session ends.\n\nAdversaries may run the PowerShell command <code>Clear-History</code> to flush the entire command history from a current PowerShell session. This, however, will not delete/flush the <code>ConsoleHost_history.txt</code> file. Adversaries may also delete the <code>ConsoleHost_history.txt</code> file or edit its contents to hide PowerShell commands they have run.",
+      "raw_summary": "{\"summary\": \"Adversaries may clear the command history of a compromised account to conceal actions undertaken during an intrusion. Across Linux, macOS, ESXi servers, and network devices, they can delete command history files like ~/.bash_history and /var/log/shell.log or run commands to clear history data. On Windows hosts, adversaries can execute Clear-History to clear current session history or delete and edit the PSReadLine ConsoleHost_history.txt file to hide PowerShell commands.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1070.003]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:39+00:00",
+        "temperature": 0,
+        "prompt_sha256": "d97fd56939be2ae4254c16248c3e56b3dbbbfca9fd7bbbce6cd564f49d0fff51",
+        "replicate": 0,
+        "cache_key": "0d32c5a9864aca69107fa9eda6dca807456409394cf22557baaf7ad062a2ee93",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1622",
+      "source_description": "Adversaries may employ various means to detect and avoid debuggers. Debuggers are typically used by defenders to trace and/or analyze the execution of potential malware payloads.\n\nDebugger evasion may include changing behaviors based on the results of the checks for the presence of artifacts indicative of a debugged environment. Similar to Virtualization/Sandbox Evasion, if the adversary detects a debugger, they may alter their malware to disengage from the victim or conceal the core functions of the implant. They may also search for debugger artifacts before dropping secondary or additional payloads.\n\nSpecific checks will vary based on the target and/or adversary. On Windows, this may involve Native API function calls such as <code>IsDebuggerPresent()</code> and <code> NtQueryInformationProcess()</code>, or manually checking the <code>BeingDebugged</code> flag of the Process Environment Block (PEB). On Linux, this may involve querying `/proc/self/status` for the `TracerPID` field, which indicates whether or not the process is being traced by dynamic analysis tools. Other checks for debugging artifacts may also seek to enumerate hardware breakpoints, interrupt assembly opcodes, time checks, or measurements if exceptions are raised in the current process (assuming a present debugger would “swallow” or handle the potential error).\n\nMalware may also leverage Structured Exception Handling (SEH) to detect debuggers by throwing an exception and detecting whether the process is suspended. SEH handles both hardware and software expectations, providing control over the exceptions including support for debugging. If a debugger is present, the program’s control will be transferred to the debugger, and the execution of the code will be suspended. If the debugger is not present, control will be transferred to the SEH handler, which will automatically handle the exception and allow the program’s execution to continue.\n\nAdversaries may use the information learned from these debugger checks during automated discovery to shape follow-on behaviors. Debuggers can also be evaded by detaching the process or flooding debug logs with meaningless data via messages produced by looping Native API function calls such as <code>OutputDebugStringW()</code>.",
+      "raw_summary": "{\"summary\":\"Adversaries employ various means to detect and avoid debuggers used by defenders to analyze malware payloads, including Native API calls, system artifact checks, and Structured Exception Handling. Upon detecting a debugger, malware may disengage, conceal core functions, or alter its behavior before deploying additional payloads. Adversaries can also evade debuggers directly by detaching the process or flooding debug logs with meaningless data.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1622]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:45+00:00",
+        "temperature": 0,
+        "prompt_sha256": "56a6388b603b61b14310b65055eb27245d8d283f30c5653b6ec48385a70d5cef",
+        "replicate": 0,
+        "cache_key": "53d36664b6af8c033e51e2980f3ddcc1920b5ea655b01404876847751b2b2a5a",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1083",
+      "source_description": "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. Adversaries may use the information from File and Directory Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n\nMany command shell utilities can be used to obtain this information. Examples include <code>dir</code>, <code>tree</code>, <code>ls</code>, <code>find</code>, and <code>locate</code>. Custom tools may also be used to gather file and directory information and interact with the Native API. Adversaries may also leverage a Network Device CLI on network devices to gather file and directory information (e.g. <code>dir</code>, <code>show flash</code>, and/or <code>nvram</code>).\n\nSome files and directories may require elevated or specific user permissions to access.",
+      "raw_summary": "{\"summary\": \"Adversaries may enumerate files and directories or search specific locations on a host or network share to shape follow-on behaviors. This information can be gathered using command shell utilities, custom tools interacting with the Native API, or a Network Device CLI. Accessing some files and directories may require elevated or specific user permissions.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1083]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:36:26+00:00",
+        "temperature": 0,
+        "prompt_sha256": "1c7921036b7a086db5393229ad0ad6c51d5f57c0f211bb9c391cab4c6aa07d56",
+        "replicate": 0,
+        "cache_key": "89d0c75699a4b004f6b1c691a10e3d58e70d0549edcf347ae85f22ea54442ab1",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1560.001",
+      "source_description": "Adversaries may use utilities to compress and/or encrypt collected data prior to exfiltration. Many utilities include functionalities to compress, encrypt, or otherwise package data into a format that is easier/more secure to transport.\n\nAdversaries may abuse various utilities to compress or encrypt data before exfiltration. Some third party utilities may be preinstalled, such as <code>tar</code> on Linux and macOS or <code>zip</code> on Windows systems. \n\nOn Windows, <code>diantz</code> or <code> makecab</code> may be used to package collected files into a cabinet (.cab) file. <code>diantz</code> may also be used to download and compress files from remote locations (i.e. Remote Data Staging). <code>xcopy</code> on Windows can copy files and directories with a variety of options. Additionally, adversaries may use certutil to Base64 encode collected data before exfiltration. \n\nAdversaries may use also third party utilities, such as 7-Zip, WinRAR, and WinZip, to perform similar activities.",
+      "raw_summary": "{\"summary\": \"Adversaries may use utilities to compress, encrypt, or package collected data prior to exfiltration to make it easier or more secure to transport. They may abuse tools such as tar on Linux and macOS, or Windows utilities including zip, diantz, makecab, xcopy, and certutil. Additionally, adversaries may use third-party utilities such as 7-Zip, WinRAR, and WinZip to perform similar activities.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1560.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:54+00:00",
+        "temperature": 0,
+        "prompt_sha256": "2e12add4506537a68244fcee1c49d6e16f7f8610c8a7ced4b16b61ddec752ad5",
+        "replicate": 0,
+        "cache_key": "6c40e778c1c172e3b78a1449784019aaea5a88f5707b58fa0c414bf9e269bb2c",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1567.002",
+      "source_description": "Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel. Cloud storage services allow for the storage, edit, and retrieval of data from a remote cloud storage server over the Internet.\n\nExamples of cloud storage services include Dropbox and Google Docs. Exfiltration to these cloud storage services can provide a significant amount of cover to the adversary if hosts within the network are already communicating with the service.",
+      "raw_summary": "{\"summary\": \"Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel. Cloud storage services, such as Dropbox and Google Docs, allow data to be stored, edited, and retrieved remotely over the Internet. Exfiltration to these services can provide cover to the adversary if network hosts already communicate with the service.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1567.002]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:59+00:00",
+        "temperature": 0,
+        "prompt_sha256": "9a68a5be32620c55da6753aac590aa276553b5d0f07a85d336de1b003734b39a",
+        "replicate": 0,
+        "cache_key": "8d56e5b7714393d9aab7b96a3214685deb39ea229ea78baa24a9255b8feeef7b",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1486",
+      "source_description": "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. They can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted.\n\nIn the case of ransomware, it is typical that common user files like Office documents, PDFs, images, videos, audio, text, and source code files will be encrypted (and often renamed and/or tagged with specific file markers). Adversaries may need to first employ other behaviors, such as File and Directory Permissions Modification or System Shutdown/Reboot, in order to unlock and/or gain access to manipulate these files. In some cases, adversaries may encrypt critical system files, disk partitions, and the MBR. Adversaries may also encrypt virtual machines hosted on ESXi or other hypervisors. \n\nTo maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, OS Credential Dumping, and SMB/Windows Admin Shares. Encryption malware may also leverage Internal Defacement, such as changing victim wallpapers or ESXi server login messages, or otherwise intimidate victims by sending ransom notes or other messages to connected printers (known as \"print bombing\").\n\nIn cloud environments, storage objects within compromised accounts may also be encrypted. For example, in AWS environments, adversaries may leverage services such as AWS’s Server-Side Encryption with Customer Provided Keys (SSE-C) to encrypt data.",
+      "raw_summary": "{\"summary\": \"Adversaries may encrypt data on local, remote, virtual machine, or cloud storage systems and withhold decryption keys to disrupt resource availability, either to extort monetary compensation or to permanently destroy access. Such operations typically target user files, critical system files, disk partitions, or hypervisor-hosted virtual machines, sometimes requiring behaviors like permission modifications to unlock targets. Additionally, encryption malware may include worm-like network propagation capabilities and engage in intimidation tactics like ransom notes or internal defacement.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1486]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:38:05+00:00",
+        "temperature": 0,
+        "prompt_sha256": "189fc501c908574fdafc2d9f86824cd4d7de16a97fb5d5384a9a2b8a5aa6dc27",
+        "replicate": 0,
+        "cache_key": "ff9594ebaba987f65e4eeac814321a0bb3136f27fc4c0d1ee954f37416632f1b",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1490",
+      "source_description": "Adversaries may delete or remove built-in data and turn off services designed to aid in the recovery of a corrupted system to prevent recovery. This may deny access to available backups and recovery options.\n\nOperating systems may contain features that can help fix corrupted systems, such as a backup catalog, volume shadow copies, and automatic repair features. Adversaries may disable or delete system recovery features to augment the effects of Data Destruction and Data Encrypted for Impact. Furthermore, adversaries may disable recovery notifications, then corrupt backups.\n\nA number of native Windows utilities have been used by adversaries to disable or delete system recovery features:\n\n* <code>vssadmin.exe</code> can be used to delete all volume shadow copies on a system - <code>vssadmin.exe delete shadows /all /quiet</code>\n* Windows Management Instrumentation can be used to delete volume shadow copies - <code>wmic shadowcopy delete</code>\n* <code>wbadmin.exe</code> can be used to delete the Windows Backup Catalog - <code>wbadmin.exe delete catalog -quiet</code>\n* <code>bcdedit.exe</code> can be used to disable automatic Windows recovery features by modifying boot configuration data - <code>bcdedit.exe /set {default} bootstatuspolicy ignoreallfailures & bcdedit /set {default} recoveryenabled no</code>\n* <code>REAgentC.exe</code> can be used to disable Windows Recovery Environment (WinRE) repair/recovery options of an infected system\n* <code>diskshadow.exe</code> can be used to delete all volume shadow copies on a system - <code>diskshadow delete shadows all</code>\n\nOn network devices, adversaries may leverage Disk Wipe to delete backup firmware images and reformat the file system, then System Shutdown/Reboot to reload the device. Together this activity may leave network devices completely inoperable and inhibit recovery operations.\n\nOn ESXi servers, adversaries may delete or encrypt snapshots of virtual machines to support Data Encrypted for Impact, preventing them from being leveraged as backups (e.g., via ` vim-cmd vmsvc/snapshot.removeall`).\n\nAdversaries may also delete “online” backups that are connected to their network – whether via network storage media or through folders that sync to cloud services. In cloud environments, adversaries may disable versioning and backup policies and delete snapshots, database backups, machine images, and prior versions of objects designed to be used in disaster recovery scenarios.",
+      "raw_summary": "{\"summary\": \"Adversaries may delete built-in data and disable services or operating system features designed to aid in system recovery, denying access to backups and recovery options. This activity can involve native Windows utilities to remove volume shadow copies, backup catalogs, and repair options, as well as wiping network device backup firmware or deleting and encrypting virtual machine snapshots on ESXi servers. Adversaries may also target online backups and cloud environments by disabling backup and versioning policies and deleting cloud snapshots, database backups, and machine images.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1490]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:38:10+00:00",
+        "temperature": 0,
+        "prompt_sha256": "78c39a74cb300f74ed2b7ec46029bb1bb62661dd38de236a5d7a3d12405687a6",
+        "replicate": 0,
+        "cache_key": "ca9bd5863959159c03f9a42d6254f263f6b3a9a09188509eb2710ca696873de8",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1047",
+      "source_description": "Adversaries may abuse Windows Management Instrumentation (WMI) to execute malicious commands and payloads. WMI is designed for programmers and is the infrastructure for management data and operations on Windows systems. WMI is an administration feature that provides a uniform environment to access Windows system components.\n\nThe WMI service enables both local and remote access, though the latter is facilitated by Remote Services such as Distributed Component Object Model and Windows Remote Management. Remote WMI over DCOM operates using port 135, whereas WMI over WinRM operates over port 5985 when using HTTP and 5986 for HTTPS.\n\nAn adversary can use WMI to interact with local and remote systems and use it as a means to execute various behaviors, such as gathering information for Discovery as well as Execution of commands and payloads. For example, `wmic.exe` can be abused by an adversary to delete shadow copies with the command `wmic.exe Shadowcopy Delete` (i.e., Inhibit System Recovery).\n\n**Note:** `wmic.exe` is deprecated as of January of 2024, with the WMIC feature being “disabled by default” on Windows 11+. WMIC will be removed from subsequent Windows releases and replaced by PowerShell as the primary WMI interface. In addition to PowerShell and tools like `wbemtool.exe`, COM APIs can also be used to programmatically interact with WMI via C++,.NET, VBScript, etc.",
+      "raw_summary": "{\"summary\": \"Windows Management Instrumentation (WMI) provides infrastructure for management data and operations, allowing local and remote access to Windows system components. Adversaries may abuse WMI to interact with systems, gather information, and execute malicious commands and payloads. While wmic.exe has been used for these interactions, adversaries can also interface with WMI using PowerShell, wbemtool.exe, or COM APIs via languages like C++, .NET, and VBScript.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1047]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:38:50+00:00",
+        "temperature": 0,
+        "prompt_sha256": "d2fbd5a1ce48611f30cca0b87ffcf6895d98193798429a2494bf3af4cb28608d",
+        "replicate": 0,
+        "cache_key": "f141eb9826b7cec0ea5773464ea725628a5c6ee6f36a005e3433f1ac1db7be2d",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    }
+  ]
+}

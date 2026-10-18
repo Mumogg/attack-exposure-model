@@ -1,0 +1,161 @@
+{
+  "question": "¿Existe algún punto de la cadena en el que la organización cuente con cobertura suficiente para interrumpir el ataque?",
+  "answer": null,
+  "tactics": [],
+  "note": "Sin responder: modo automático (la pregunta es criterio del analista).",
+  "mode": "auto",
+  "techniques_shown": [
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Default Accounts",
+      "tactics": [
+        "Initial Access",
+        "Persistence",
+        "Privilege Escalation",
+        "Stealth"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactics": [
+        "Initial Access"
+      ],
+      "coverage_validated": "parcial"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactics": [
+        "Execution"
+      ],
+      "coverage_validated": "cubierta"
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactics": [
+        "Execution"
+      ],
+      "coverage_validated": "parcial"
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactics": [
+        "Persistence",
+        "Privilege Escalation"
+      ],
+      "coverage_validated": "parcial"
+    },
+    {
+      "technique_id": "T1556",
+      "technique_name": "Modify Authentication Process",
+      "tactics": [
+        "Persistence",
+        "Defense Impairment",
+        "Credential Access"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1070.003",
+      "technique_name": "Clear Command History",
+      "tactics": [
+        "Stealth"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1622",
+      "technique_name": "Debugger Evasion",
+      "tactics": [
+        "Stealth",
+        "Discovery"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1003.003",
+      "technique_name": "NTDS",
+      "tactics": [
+        "Credential Access"
+      ],
+      "coverage_validated": "cubierta"
+    },
+    {
+      "technique_id": "T1539",
+      "technique_name": "Steal Web Session Cookie",
+      "tactics": [
+        "Credential Access"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactics": [
+        "Discovery"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Desktop Protocol",
+      "tactics": [
+        "Lateral Movement"
+      ],
+      "coverage_validated": "parcial"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "SMB/Windows Admin Shares",
+      "tactics": [
+        "Lateral Movement"
+      ],
+      "coverage_validated": "cubierta"
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "SSH",
+      "tactics": [
+        "Lateral Movement"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive via Utility",
+      "tactics": [
+        "Collection"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration to Cloud Storage",
+      "tactics": [
+        "Exfiltration"
+      ],
+      "coverage_validated": "sin cobertura"
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactics": [
+        "Impact"
+      ],
+      "coverage_validated": "cubierta"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactics": [
+        "Impact"
+      ],
+      "coverage_validated": "cubierta"
+    }
+  ],
+  "timestamp": "2026-10-18T18:15:20+00:00"
+}

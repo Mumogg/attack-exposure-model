@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1047]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:38:50+00:00",
+  "temperature": 0,
+  "prompt_sha256": "d2fbd5a1ce48611f30cca0b87ffcf6895d98193798429a2494bf3af4cb28608d",
+  "replicate": 0,
+  "cache_key": "f141eb9826b7cec0ea5773464ea725628a5c6ee6f36a005e3433f1ac1db7be2d",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may abuse Windows Management Instrumentation (WMI) to execute malicious commands and payloads. WMI is designed for programmers and is the infrastructure for management data and operations on Windows systems. WMI is an administration feature that provides a uniform environment to access Windows system components.\n\nThe WMI service enables both local and remote access, though the latter is facilitated by Remote Services such as Distributed Component Object Model and Windows Remote Management. Remote WMI over DCOM operates using port 135, whereas WMI over WinRM operates over port 5985 when using HTTP and 5986 for HTTPS.\n\nAn adversary can use WMI to interact with local and remote systems and use it as a means to execute various behaviors, such as gathering information for Discovery as well as Execution of commands and payloads. For example, `wmic.exe` can be abused by an adversary to delete shadow copies with the command `wmic.exe Shadowcopy Delete` (i.e., Inhibit System Recovery).\n\n**Note:** `wmic.exe` is deprecated as of January of 2024, with the WMIC feature being “disabled by default” on Windows 11+. WMIC will be removed from subsequent Windows releases and replaced by PowerShell as the primary WMI interface. In addition to PowerShell and tools like `wbemtool.exe`, COM APIs can also be used to programmatically interact with WMI via C++,.NET, VBScript, etc.\n>>>\n",
+ "response_text": "{\"summary\": \"Windows Management Instrumentation (WMI) provides infrastructure for management data and operations, allowing local and remote access to Windows system components. Adversaries may abuse WMI to interact with systems, gather information, and execute malicious commands and payloads. While wmic.exe has been used for these interactions, adversaries can also interface with WMI using PowerShell, wbemtool.exe, or COM APIs via languages like C++, .NET, and VBScript.\"}"
+}

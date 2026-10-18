@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1219]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:07:38+00:00",
+  "temperature": 0,
+  "prompt_sha256": "735d397c3d35bbb8b94836c9d5919d94d9e644efe31aa255182452285c709183",
+  "replicate": 0,
+  "cache_key": "4d87a24f56b27625441431da740176303f84509a68e6c10f4396633c45b3286b",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAn adversary may use legitimate remote access tools to establish an interactive command and control channel within a network. Remote access tools create a session between two trusted hosts through a graphical interface, a command line interaction, a protocol tunnel via development or management software, or hardware-level access such as KVM (Keyboard, Video, Mouse) over IP solutions. Desktop support software (usually graphical interface) and remote management software (typically command line interface) allow a user to control a computer remotely as if they are a local user inheriting the user or software permissions. This software is commonly used for troubleshooting, software installation, and system management. Adversaries may similarly abuse response features included in EDR and other defensive tools that enable remote access.\n\nRemote access tools may be installed and used post-compromise as an alternate communications channel for redundant access or to establish an interactive remote desktop session with the target system. It may also be used as a malware component to establish a reverse connection or back-connect to a service or adversary-controlled system.\n\nInstallation of many remote access tools may also include persistence (e.g., the software's installation routine creates a Windows Service). Remote access modules/features may also exist as part of otherwise existing software (e.g., Google Chrome’s Remote Desktop).\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use legitimate remote access tools or defensive software response features to establish an interactive command and control channel within a network. These tools can be installed post-compromise for redundant access, interactive sessions, or as malware components to establish reverse connections to adversary-controlled systems. Additionally, installing these tools may establish persistence, or adversaries may abuse remote access features already present in existing software.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1003.003]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:37:19+00:00",
+  "temperature": 0,
+  "prompt_sha256": "a35d4d73ac2cc22fee95aee4cd14cfd83c2a0c06460913f6e3b5ea6036514c4e",
+  "replicate": 0,
+  "cache_key": "702f3618db453b9093e31f3ddf6f09e87e126a821a7328c130953fb44bb4abd7",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to access or create a copy of the Active Directory domain database in order to steal credential information, as well as obtain other information about domain members such as devices, users, and access rights. By default, the NTDS file (NTDS.dit) is located in <code>%SystemRoot%\\NTDS\\Ntds.dit</code> of a domain controller.\n\nIn addition to looking for NTDS files on active Domain Controllers, adversaries may search for backups that contain the same or similar information.\n\nThe following tools and techniques can be used to enumerate the NTDS file and the contents of the entire Active Directory hashes.\n\n* Volume Shadow Copy\n* secretsdump.py\n* Using the in-built Windows tool, ntdsutil.exe\n* Invoke-NinjaCopy\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may attempt to access or create a copy of the Active Directory domain database from active Domain Controllers or backups to steal credentials and obtain information about domain members. By default, the NTDS file (NTDS.dit) is located in %SystemRoot%\\\\NTDS\\\\Ntds.dit of a domain controller. Tools and techniques such as Volume Shadow Copy, secretsdump.py, ntdsutil.exe, and Invoke-NinjaCopy can be used to enumerate the NTDS file and Active Directory hashes.\"}"
+}

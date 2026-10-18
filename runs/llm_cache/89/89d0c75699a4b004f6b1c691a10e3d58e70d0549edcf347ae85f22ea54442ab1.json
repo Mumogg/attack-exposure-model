@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1083]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:36:26+00:00",
+  "temperature": 0,
+  "prompt_sha256": "1c7921036b7a086db5393229ad0ad6c51d5f57c0f211bb9c391cab4c6aa07d56",
+  "replicate": 0,
+  "cache_key": "89d0c75699a4b004f6b1c691a10e3d58e70d0549edcf347ae85f22ea54442ab1",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. Adversaries may use the information from File and Directory Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n\nMany command shell utilities can be used to obtain this information. Examples include <code>dir</code>, <code>tree</code>, <code>ls</code>, <code>find</code>, and <code>locate</code>. Custom tools may also be used to gather file and directory information and interact with the Native API. Adversaries may also leverage a Network Device CLI on network devices to gather file and directory information (e.g. <code>dir</code>, <code>show flash</code>, and/or <code>nvram</code>).\n\nSome files and directories may require elevated or specific user permissions to access.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may enumerate files and directories or search specific locations on a host or network share to shape follow-on behaviors. This information can be gathered using command shell utilities, custom tools interacting with the Native API, or a Network Device CLI. Accessing some files and directories may require elevated or specific user permissions.\"}"
+}

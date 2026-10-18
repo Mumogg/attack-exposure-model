@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1007]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:07:20+00:00",
+  "temperature": 0,
+  "prompt_sha256": "dbd1374c298ae2c75040d5731257465c98945bc9a841d366f19834b7dca0c229",
+  "replicate": 0,
+  "cache_key": "fea97cca70ecc835e53717f830e24416a2f07811ed4b832758cf105bb264d6ae",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may try to gather information about registered local system services. Adversaries may obtain information about services using tools as well as OS utility commands such as <code>sc query</code>, <code>tasklist /svc</code>, <code>systemctl --type=service</code>, and <code>net start</code>. Adversaries may also gather information about schedule tasks via commands such as `schtasks` on Windows or `crontab -l` on Linux and macOS.\n\nAdversaries may use the information from System Service Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may gather information about registered local system services and scheduled tasks using tools or operating system utility commands such as sc query, tasklist /svc, systemctl --type=service, net start, schtasks, and crontab -l. They may use this information during automated discovery to shape follow-on behaviors, including whether to fully infect the target or attempt specific actions.\"}"
+}

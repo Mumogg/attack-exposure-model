@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1560]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:00:53+00:00",
+  "temperature": 0,
+  "prompt_sha256": "9bff7b5ba623c9980e98cec001f151ccaf4a7bab5947a46f96f1e2ac4fd485e6",
+  "replicate": 0,
+  "cache_key": "8e5b5dc0be4b3eb0e3f3abb67580a04c564d15e2a2bfb105139dbe8ee60e5070",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAn adversary may compress and/or encrypt data that is collected prior to exfiltration. Compressing the data can help to obfuscate the collected data and minimize the amount of data sent over the network. Encryption can be used to hide information that is being exfiltrated from detection or make exfiltration less conspicuous upon inspection by a defender.\n\nBoth compression and encryption are done prior to exfiltration, and can be performed using a utility, 3rd party library, or custom method.\n>>>\n",
+ "response_text": "{\"summary\": \"Prior to exfiltration, an adversary may compress and/or encrypt collected data to minimize the amount sent over the network, obfuscate it, and hide it from detection. These actions can make exfiltration less conspicuous upon inspection by a defender. They can be performed using a utility, 3rd party library, or custom method.\"}"
+}

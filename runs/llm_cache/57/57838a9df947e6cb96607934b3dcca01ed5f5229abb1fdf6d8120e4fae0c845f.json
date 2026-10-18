@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1190]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:36:10+00:00",
+  "temperature": 0,
+  "prompt_sha256": "5ba8620f4724c1a2b90127f9e62abaaf77b0c3a9a415505d614857b661f8f064",
+  "replicate": 0,
+  "cache_key": "57838a9df947e6cb96607934b3dcca01ed5f5229abb1fdf6d8120e4fae0c845f",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to exploit a weakness in an Internet-facing host or system to initially access a network. The weakness in the system can be a software bug, a temporary glitch, or a misconfiguration.\n\nExploited applications are often websites/web servers, but can also include databases (like SQL), standard services (like SMB or SSH), network device administration and management protocols (like SNMP and Smart Install), and any other system with Internet-accessible open sockets. On ESXi infrastructure, adversaries may exploit exposed OpenSLP services; they may alternatively exploit exposed VMware vCenter servers. Depending on the flaw being exploited, this may also involve Exploitation for Stealth or Exploitation for Client Execution.\n\nIf an application is hosted on cloud-based infrastructure and/or is containerized, then exploiting it may lead to compromise of the underlying instance or container. This can allow an adversary a path to access the cloud or container APIs (e.g., via the Cloud Instance Metadata API), exploit container host access via Escape to Host, or take advantage of weak identity and access management policies.\n\nAdversaries may also exploit edge network infrastructure and related appliances, specifically targeting devices that do not support robust host-based defenses.\n\nFor websites and databases, the OWASP top 10 and CWE top 25 highlight the most common web-based vulnerabilities.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may exploit weaknesses, such as software bugs, temporary glitches, or misconfigurations, in Internet-facing systems to gain initial network access. Targeted technologies include web servers, databases, standard services, network protocols, edge appliances, and virtualization infrastructure like ESXi and VMware vCenter. Compromising cloud-hosted or containerized applications can grant access to underlying instances, containers, APIs, or host environments.\"}"
+}

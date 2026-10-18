@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1135]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:14:50+00:00",
+  "temperature": 0,
+  "prompt_sha256": "eb75bbe5bf14909224311b41a881ed4bcea73e007dcca60cc7b574060a9807c6",
+  "replicate": 0,
+  "cache_key": "30ef0e2ed4ae17ae959d43edffee2c86b76e8d3b3f8c7a4a6f359334cb365e6e",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may look for folders and drives shared on remote systems as a means of identifying sources of information to gather as a precursor for Collection and to identify potential systems of interest for Lateral Movement. Networks often contain shared network drives and folders that enable users to access file directories on various systems across a network. \n\nFile sharing over a Windows network occurs over the SMB protocol. Net can be used to query a remote system for available shared drives using the <code>net view \\\\\\\\remotesystem</code> command. It can also be used to query shared drives on the local system using <code>net share</code>. For macOS, the <code>sharing -l</code> command lists all shared points used for smb services.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may look for folders and drives shared on remote systems to identify sources of information for Collection and systems of interest for Lateral Movement. On Windows networks over SMB, Net can query available shared drives on remote systems using net view or on local systems using net share. For macOS, the sharing -l command lists all shared points used for smb services.\"}"
+}

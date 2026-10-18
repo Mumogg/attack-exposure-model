@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1204.004]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:10:03+00:00",
+  "temperature": 0,
+  "prompt_sha256": "22bba9c17fc4302a36a89aea9f64e03d5498b37ce8f07775f288716209854b0e",
+  "replicate": 0,
+  "cache_key": "b55f6afbb81cc681bbee841bbc18a2f1977666fa9caed627ffc0b19f456966f4",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAn adversary may rely upon a user copying and pasting code in order to gain execution. Users may be subjected to social engineering to get them to copy and paste code directly into a Command and Scripting Interpreter. One such strategy is \"ClickFix,\" in which adversaries present users with seemingly helpful solutions—such as prompts to fix errors or complete CAPTCHAs—that instead instruct the user to copy and paste malicious code.\n\nMalicious websites, such as those used in Drive-by Compromise, may present fake error messages or CAPTCHA prompts that instruct users to open a terminal or the Windows Run Dialog box and execute an arbitrary command. These commands may be obfuscated using encoding or other techniques to conceal malicious intent. Once executed, the adversary will typically be able to establish a foothold on the victim's machine.\n\nAdversaries may also leverage phishing emails for this purpose. When a user attempts to open an attachment, they may be presented with a fake error and offered a malicious command to paste as a solution, consistent with the \"ClickFix\" strategy.\n\nTricking a user into executing a command themselves may help to bypass email filtering, browser sandboxing, or other mitigations designed to protect users against malicious downloaded files.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use social engineering, such as the \\\"ClickFix\\\" strategy, to trick users into copying and pasting malicious code into command interpreters to resolve fake errors or CAPTCHAs. Delivered through malicious websites or phishing email attachments, these commands can be obfuscated and allow adversaries to establish a foothold upon execution. Tricking users into running the commands themselves can bypass browser sandboxing, email filtering, and other download mitigations.\"}"
+}

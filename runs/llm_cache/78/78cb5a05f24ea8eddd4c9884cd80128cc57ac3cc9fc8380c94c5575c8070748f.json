@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1550.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:59:25+00:00",
+  "temperature": 0,
+  "prompt_sha256": "39b072aa575915d3a96518387f6437e071b8101003f8e6988d9936a842403ec1",
+  "replicate": 0,
+  "cache_key": "78cb5a05f24ea8eddd4c9884cd80128cc57ac3cc9fc8380c94c5575c8070748f",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may “pass the hash” using stolen password hashes to move laterally within an environment, bypassing normal system access controls. Pass the hash (PtH) is a method of authenticating as a user without having access to the user's cleartext password. This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash.\n\nWhen performing PtH, valid password hashes for the account being used are captured using a Credential Access technique. Captured hashes are used with PtH to authenticate as that user. Once authenticated, PtH may be used to perform actions on local or remote systems.\n\nAdversaries may also use stolen password hashes to \"overpass the hash.\" Similar to PtH, this involves using a password hash to authenticate as a user but also uses the password hash to create a valid Kerberos ticket. This ticket can then be used to perform Pass the Ticket attacks.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use pass the hash (PtH) with captured password hashes to authenticate without cleartext passwords and perform actions on local or remote systems. This technique bypasses normal system access controls and standard authentication steps to facilitate lateral movement within an environment. Adversaries may also overpass the hash using stolen password hashes to create a valid Kerberos ticket for Pass the Ticket attacks.\"}"
+}

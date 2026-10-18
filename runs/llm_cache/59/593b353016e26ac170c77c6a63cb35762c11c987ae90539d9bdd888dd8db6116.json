@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1550.003]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:59:32+00:00",
+  "temperature": 0,
+  "prompt_sha256": "ae178fa1082c6525f475779cdecca071427d41ae5fe0c137f23b454403e21952",
+  "replicate": 0,
+  "cache_key": "593b353016e26ac170c77c6a63cb35762c11c987ae90539d9bdd888dd8db6116",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may “pass the ticket” using stolen Kerberos tickets to move laterally within an environment, bypassing normal system access controls. Pass the ticket (PtT) is a method of authenticating to a system using Kerberos tickets without having access to an account's password. Kerberos authentication can be used as the first step to lateral movement to a remote system.\n\nWhen preforming PtT, valid Kerberos tickets for Valid Accounts are captured by OS Credential Dumping. A user's service tickets or ticket granting ticket (TGT) may be obtained, depending on the level of access. A service ticket allows for access to a particular resource, whereas a TGT can be used to request service tickets from the Ticket Granting Service (TGS) to access any resource the user has privileges to access.\n\nA Silver Ticket can be obtained for services that use Kerberos as an authentication mechanism and are used to generate tickets to access that particular resource and the system that hosts the resource (e.g., SharePoint).\n\nA Golden Ticket can be obtained for the domain using the Key Distribution Service account KRBTGT account NTLM hash, which enables generation of TGTs for any account in Active Directory.\n\nAdversaries may also create a valid Kerberos ticket using other user information, such as stolen password hashes or AES keys. For example, \"overpassing the hash\" involves using a NTLM password hash to authenticate as a user (i.e. Pass the Hash) while also using the password hash to create a valid Kerberos ticket.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may use pass the ticket to authenticate to systems and move laterally using stolen Kerberos tickets without having an account's password. Depending on their level of access, adversaries can obtain or forge service tickets, ticket granting tickets, Silver Tickets, or Golden Tickets to access resources. They may also create valid Kerberos tickets using other stolen information, such as password hashes or AES keys.\"}"
+}

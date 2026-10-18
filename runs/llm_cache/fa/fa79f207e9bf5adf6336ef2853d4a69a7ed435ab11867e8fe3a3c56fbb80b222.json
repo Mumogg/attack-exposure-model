@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1033]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:07:26+00:00",
+  "temperature": 0,
+  "prompt_sha256": "de66f2379450e51cbb96ef05410e86ea952809580d06954dfd2b564796751020",
+  "replicate": 0,
+  "cache_key": "fa79f207e9bf5adf6336ef2853d4a69a7ed435ab11867e8fe3a3c56fbb80b222",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to identify the primary user, currently logged in user, set of users that commonly uses a system, or whether a user is actively using the system. They may do this, for example, by retrieving account usernames or by using OS Credential Dumping. The information may be collected in a number of different ways using other Discovery techniques, because user and username details are prevalent throughout a system and include running process ownership, file/directory ownership, session information, and system logs. Adversaries may use the information from System Owner/User Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.\n\nVarious utilities and commands may acquire this information, including <code>whoami</code>. In macOS and Linux, the currently logged in user can be identified with <code>w</code> and <code>who</code>. On macOS the <code>dscl. list /Users | grep -v '_'</code> command can also be used to enumerate user accounts. Environment variables, such as <code>%USERNAME%</code> and <code>$USER</code>, may also be used to access this information.\n\nOn network devices, Network Device CLI commands such as `show users` and `show ssh` can be used to display users currently logged into the device.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may attempt to identify the primary user, currently logged-in users, common users, or active system usage to shape follow-on behaviors such as whether to fully infect a target. This information can be collected through various methods, including process ownership, file and directory ownership, session details, system logs, and credential dumping. Utilities, environment variables, and command-line tools across various operating systems and network devices can be used to acquire these user details.\"}"
+}

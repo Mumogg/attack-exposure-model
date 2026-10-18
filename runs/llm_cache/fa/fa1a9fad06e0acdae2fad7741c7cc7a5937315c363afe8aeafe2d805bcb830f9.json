@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1539]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T18:04:35+00:00",
+  "temperature": 0,
+  "prompt_sha256": "bbb28d85438916fb266cd5de9d3c97b2423dad01a7d48e605e6f63409c23a08e",
+  "replicate": 0,
+  "cache_key": "fa1a9fad06e0acdae2fad7741c7cc7a5937315c363afe8aeafe2d805bcb830f9",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAn adversary may steal web application or service session cookies and use them to gain access to web applications or Internet services as an authenticated user without needing credentials. Web applications and services often use session cookies as an authentication token after a user has authenticated to a website.\n\nCookies are often valid for an extended period of time, even if the web application is not actively used. Cookies can be found on disk, in the process memory of the browser, and in network traffic to remote systems. Additionally, other applications on the targets machine might store sensitive authentication cookies in memory (e.g. apps which authenticate to cloud services). Session cookies can be used to bypasses some multi-factor authentication protocols.\n\nThere are several examples of malware targeting cookies from web browsers on the local system. Adversaries may also steal cookies by injecting malicious JavaScript content into websites or relying on User Execution by tricking victims into running malicious JavaScript in their browser.\n\nThere are also open source frameworks such as `Evilginx2` and `Muraena` that can gather session cookies through a malicious proxy (e.g., Adversary-in-the-Middle) that can be set up by an adversary and used in phishing campaigns.\n\nAfter an adversary acquires a valid cookie, they can then perform a Web Session Cookie technique to login to the corresponding web application.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may steal session cookies to access web applications or Internet services as authenticated users without credentials, which can bypass some multi-factor authentication protocols. Cookies can remain valid for extended periods and may be found on disk, in network traffic, or in application and browser process memory. Adversaries can acquire them via local malware, malicious JavaScript execution, or malicious proxies using frameworks like Evilginx2 and Muraena in phishing campaigns.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1106]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T17:36:16+00:00",
+  "temperature": 0,
+  "prompt_sha256": "5ae0f43d92cf65f254c6ce65488637feeb3415a27a36496b11bbc19128a8e14f",
+  "replicate": 0,
+  "cache_key": "df99a4bed1b7553b78feba8e22397964f548164cc987640a97aa57ef5930f6a3",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may interact with the native OS application programming interface (API) to execute behaviors. Native APIs provide a controlled means of calling low-level OS services within the kernel, such as those involving hardware/devices, memory, and processes. These native APIs are leveraged by the OS during system boot (when other system components are not yet initialized) as well as carrying out tasks and requests during routine operations.\n\nAdversaries may abuse these OS API functions as a means of executing behaviors. Similar to Command and Scripting Interpreter, the native API and its hierarchy of interfaces provide mechanisms to interact with and utilize various components of a victimized system.\n\nNative API functions (such as <code>NtCreateProcess</code>) may be directed invoked via system calls / syscalls, but these features are also often exposed to user-mode applications via interfaces and libraries. For example, functions such as the Windows API <code>CreateProcess()</code> or GNU <code>fork()</code> will allow programs and scripts to start other processes. This may allow API callers to execute a binary, run a CLI command, load modules, etc. as thousands of similar API functions exist for various system operations.\n\nHigher level software frameworks, such as Microsoft.NET and macOS Cocoa, are also available to interact with native APIs. These frameworks typically provide language wrappers/abstractions to API functionalities and are designed for ease-of-use/portability of code.\n\nAdversaries may use assembly to directly or in-directly invoke syscalls in an attempt to subvert defensive sensors and detection signatures such as user mode API-hooks. Adversaries may also attempt to tamper with sensors and defensive tools associated with API monitoring, such as unhooking monitored functions via Disable or Modify Tools.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may interact with native operating system APIs to execute behaviors and access low-level kernel services involving memory, hardware, and processes. These functions can be invoked directly through system calls, user-mode libraries, or higher-level software frameworks to perform actions such as executing binaries, running commands, and loading modules. Additionally, adversaries may use assembly to invoke syscalls or tamper with defensive tools to subvert detection signatures and sensors.\"}"
+}
