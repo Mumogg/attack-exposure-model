@@ -42,6 +42,15 @@ def test_aggregate_mean_sd():
     assert aggregate([0.4])["sd"] is None
 
 
+def test_aggregate_with_failures_reports_valid_only_and_failed_as_zero():
+    from eval.metrics import aggregate_with_failures
+    a = aggregate_with_failures([0.5, 0.7, None], failed=1)
+    assert a["valid"]["n"] == 2 and a["valid"]["mean"] == pytest.approx(0.6)
+    assert a["fail0"]["n"] == 3 and a["fail0"]["mean"] == pytest.approx(0.4)
+    assert aggregate_with_failures([], failed=2)["fail0"]["mean"] == 0.0
+    assert aggregate_with_failures([], failed=0)["fail0"]["mean"] is None
+
+
 def org_with(design, detections):
     return make_org(detections=detections, coverage_design=[dict(technique_id=t, intended=c) for t, c in design])
 

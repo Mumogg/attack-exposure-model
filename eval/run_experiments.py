@@ -21,7 +21,7 @@ from aem.pipeline import EmptyExtraction, PipelineContext, run_pipeline, write_o
 from aem.scenarios import VERSIONS, Scenario, load_reference
 from eval.baseline_ioc import baseline_recognizes
 from eval.metrics import (
-    aggregate, boundary_violations_extraction, coverage_correctness, extraction_scores, gap_techniques,
+    aggregate, aggregate_with_failures, boundary_violations_extraction, coverage_correctness, extraction_scores, gap_techniques,
     model_persistence, summary_auto_check, traditional_persistence,
 )
 
@@ -57,6 +57,15 @@ def _scored(runs: list[dict]) -> list[dict]:
     return [r for r in runs if r["status"] in ("ok", "empty")]
 
 
+def _failure_reasons(runs: list[dict], width: int = 160) -> str:
+    reasons = []
+    for r in runs:
+        if r["status"] == "error":
+            msg = " ".join(str(r["error"]).split())
+            reasons.append(f"r{r['replicate']}: " + (msg if len(msg) <= width else msg[:width] + "…"))
+    return "; ".join(reasons) or "ninguna"
+
+
 # --- formatting -------------------------------------------------------------------------------
 
 
@@ -64,9 +73,18 @@ def _pct(x: float | None) -> float | str:
     return NO_DATA if x is None else round(100 * x, 2)
 
 
-def _agg_cols(prefix: str, values: list[float | None]) -> dict:
-    a = aggregate(values)
-    return {f"{prefix}_mean": _pct(a["mean"]), f"{prefix}_sd": _pct(a["sd"]) if a["n"] >= 2 else NO_DATA}
+def _agg_cols(prefix: str, values: list[float | None], failed: int, fmt=None) -> dict:
+    """`<prefix>_mean/sd_valid` (failed runs left out) and `<prefix>_mean/sd_fail0` (failed runs as 0), D-67."""
+    fmt = fmt or _pct
+    cols = {}
+    for view, a in aggregate_with_failures(values, failed).items():
+        cols[f"{prefix}_mean_{view}"] = fmt(a["mean"])
+        cols[f"{prefix}_sd_{view}"] = fmt(a["sd"]) if a["n"] >= 2 else NO_DATA
+    return cols
+
+
+def _num(x: float | None) -> float | str:
+    return NO_DATA if x is None else round(x, 2)
 
 
 def write_table(path: Path, rows: list[dict]) -> None:
@@ -114,7 +132,7 @@ def _parse_summary(raw: str | None) -> tuple[str | None, list[str]]:
 
 def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineContext, replicates: int) -> dict:
     org, cfg = ctx.org, ctx.model_cfg
-    tables: dict[str, list[dict]] = {k: [] for k in ("indicator1", "indicator1_detail", "indicator2", "indicator3",
+    tables: dict[str, list[dict]] = {k: [] for k in ("runs", "indicator1", "indicator1_detail", "indicator2", "indicator3",
                                                      "indicator4", "indicator5")}
     texts: dict[tuple[str, str], str] = {}
     for sc in scenarios.values():
@@ -135,17 +153,24 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
                                     for m in cc["mismatches"]) or "ninguna",
         })
 
-        persistence: dict[str, dict] = {}
+        persistence: dict[str, list] = {}
+        failed_by_version: dict[str, int] = {}
         for v in VERSIONS:
             vr = [r for r in runs if r["scenario"] == sc.name and r["version"] == v]
             scored = _scored(vr)
             failed = len(vr) - len(scored)
+            failed_by_version[v] = failed
+            counts_cols = {"runs_total": len(vr), "runs_valid": len(scored), "failed_runs": failed}
+            if vr:
+                tables["runs"].append({"scenario": sc.name, "version": v, **counts_cols,
+                                       "empty_runs": sum(r["status"] == "empty" for r in vr),
+                                       "failure_reasons": _failure_reasons(vr)})
             raw_sets = [[t["technique_id"] for t in r["raw"]] for r in scored]
             scores = [extraction_scores(ids, ref) for ids in raw_sets]
             for level in ("exact", "parent"):
-                row = {"scenario": sc.name, "version": v, "level": level, "runs": len(scored), "failed_runs": failed}
-                row.update(_agg_cols("precision", [s[level]["precision"] for s in scores]))
-                row.update(_agg_cols("recall", [s[level]["recall"] for s in scores]))
+                row = {"scenario": sc.name, "version": v, "level": level, **counts_cols}
+                row.update(_agg_cols("precision", [s[level]["precision"] for s in scores], failed))
+                row.update(_agg_cols("recall", [s[level]["recall"] for s in scores], failed))
                 tables["indicator1"].append(row)
                 for kind, key in (("omitida", "omitted"), ("errónea", "erroneous")):
                     counts = Counter(t for s in scores for t in s[level][key])
@@ -153,7 +178,7 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
                         tables["indicator1_detail"].append({"scenario": sc.name, "version": v, "level": level,
                                                             "kind": kind, "technique_id": tid,
                                                             "runs": f"{n}/{len(scored)}"})
-            persistence[v] = aggregate([model_persistence(ids, gaps) for ids in raw_sets])
+            persistence[v] = [model_persistence(ids, gaps) for ids in raw_sets]
 
             # indicator 5 (step 1 outputs)
             per_run = []
@@ -162,43 +187,46 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
                 names = {tid: rec.name for tid, *_ in items if (rec := ctx.attack.get(tid))}
                 per_run.append(boundary_violations_extraction(items, texts.get((sc.name, v), ""), r["extra_fields"],
                                                               ctx.patterns, names))
-            agg = aggregate([float(x["total"]) for x in per_run])
             tables["indicator5"].append({
-                "scenario": sc.name, "version": v, "output": "paso 1 (extracción)", "runs": len(per_run),
+                "scenario": sc.name, "version": v, "output": "paso 1 (extracción)", **counts_cols,
                 "violations_total": sum(x["total"] for x in per_run) if per_run else NO_DATA,
-                "violations_mean": NO_DATA if agg["mean"] is None else round(agg["mean"], 2),
-                "violations_sd": NO_DATA if agg["sd"] is None else round(agg["sd"], 2),
+                **_agg_cols("violations", [float(x["total"]) for x in per_run], failed, fmt=_num),
                 "extra_fields": sum(x["extra_fields"] for x in per_run) if per_run else NO_DATA,
                 "evaluative_text": sum(x["evaluative_text"] for x in per_run) if per_run else NO_DATA,
             })
 
         # indicator 3
-        def mean(v: str):
-            return persistence[v]["mean"]
-
-        ratio = mean("mut") / mean("orig") if mean("orig") and mean("mut") is not None else None
-        tables["indicator3"].append({
-            "scenario": sc.name, "approach": "modelo", "denominator_techniques": len(gaps),
-            "orig_mean": _pct(mean("orig")),
-            "orig_sd": _pct(persistence["orig"]["sd"]) if persistence["orig"]["n"] >= 2 else NO_DATA,
-            "mut_mean": _pct(mean("mut")),
-            "mut_sd": _pct(persistence["mut"]["sd"]) if persistence["mut"]["n"] >= 2 else NO_DATA,
-            "persistence_mut_over_orig": NO_DATA if ratio is None else round(ratio, 4), "ioc_matches": "",
-        })
+        row = {"scenario": sc.name, "approach": "modelo", "denominator_techniques": len(gaps),
+               "failed_runs": f"orig {failed_by_version['orig']}, mut {failed_by_version['mut']}"}
+        means = {}
+        for v in VERSIONS:
+            both = aggregate_with_failures(persistence[v], failed_by_version[v])
+            for view, a in both.items():
+                means[(v, view)] = a["mean"]
+                row[f"{v}_mean_{view}"] = _pct(a["mean"])
+                row[f"{v}_sd_{view}"] = _pct(a["sd"]) if a["n"] >= 2 else NO_DATA
+        for view in ("valid", "fail0"):
+            o, m = means[("orig", view)], means[("mut", view)]
+            row[f"persistence_mut_over_orig_{view}"] = round(m / o, 4) if o and m is not None else NO_DATA
+        row["ioc_matches"] = ""
+        tables["indicator3"].append(row)
+        trad = {"scenario": sc.name, "approach": "tradicional", "denominator_techniques": len(ref),
+                "failed_runs": "no aplica (sin LLM)"}
         if (sc.name, "orig") in texts and (sc.name, "mut") in texts:
             rec_o, m_o = baseline_recognizes(texts[(sc.name, "orig")], org.known_iocs, cfg.ioc, cfg.baseline)
             rec_m, m_m = baseline_recognizes(texts[(sc.name, "mut")], org.known_iocs, cfg.ioc, cfg.baseline)
             tp = traditional_persistence(rec_o, rec_m)
-            row = {"scenario": sc.name, "approach": "tradicional", "denominator_techniques": len(ref),
-                   "orig_mean": _pct(tp["orig"]), "orig_sd": "determinístico", "mut_mean": _pct(tp["mut"]),
-                   "mut_sd": "determinístico",
-                   "persistence_mut_over_orig": NO_DATA if tp["ratio"] is None else round(tp["ratio"], 4),
-                   "ioc_matches": f"orig {len(m_o)}, mut {len(m_m)}"}
+            ratio = NO_DATA if tp["ratio"] is None else round(tp["ratio"], 4)
+            values = {"orig": tp["orig"], "mut": tp["mut"]}
+            for col in row:
+                if col.startswith(("orig_", "mut_")):
+                    v = col.split("_", 1)[0]
+                    trad[col] = "determinístico" if "_sd_" in col else _pct(values[v])
+            trad.update(persistence_mut_over_orig_valid=ratio, persistence_mut_over_orig_fail0=ratio,
+                        ioc_matches=f"orig {len(m_o)}, mut {len(m_m)}")
         else:
-            row = {"scenario": sc.name, "approach": "tradicional", "denominator_techniques": len(ref), "orig_mean": NO_DATA,
-                   "orig_sd": NO_DATA, "mut_mean": NO_DATA, "mut_sd": NO_DATA, "persistence_mut_over_orig": NO_DATA,
-                   "ioc_matches": NO_DATA}
-        tables["indicator3"].append(row)
+            trad.update({col: NO_DATA for col in row if col not in trad})
+        tables["indicator3"].append({col: trad.get(col, NO_DATA) for col in row})
 
     # indicator 4 + summary part of indicator 5 (one summary per technique, D-44)
     summaries = _unique_summaries(runs)
@@ -224,8 +252,10 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
         "manual_review": "pendiente (hoja de revisión)",
     })
     tables["indicator5"].append({
-        "scenario": "todos", "version": "-", "output": "paso 4 (resúmenes, uno por técnica)", "runs": len(summaries),
-        "violations_total": summary_viol + summary_extra, "violations_mean": NO_DATA, "violations_sd": NO_DATA,
+        "scenario": "todos", "version": "-", "output": "paso 4 (resúmenes, uno por técnica)",
+        "runs_total": len(summaries), "runs_valid": len(summaries), "failed_runs": "ver indicador 4 (llm_failures)",
+        "violations_total": summary_viol + summary_extra,
+        **{f"violations_{k}_{v}": NO_DATA for v in ("valid", "fail0") for k in ("mean", "sd")},
         "extra_fields": summary_extra, "evaluative_text": summary_viol,
     })
 
@@ -252,6 +282,7 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
 # --- report -------------------------------------------------------------------------------------
 
 _TITLES = {
+    "runs": "Corridas por escenario y versión (válidas, fallidas y motivo de cada falla)",
     "indicator1": "Indicador 1 — Precisión y exhaustividad del paso 1 (%, sobre extracted_raw)",
     "indicator2": "Indicador 2 — Corrección del cruce de cobertura (paso 2, sobre la referencia)",
     "indicator3": "Indicador 3 — Persistencia en el reconocimiento de la exposición (%). Denominador: técnicas "
@@ -281,6 +312,9 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
           f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
           f"{meta['replicates']} corridas por escenario × versión · modo demo: {'sí' if meta['demo'] else 'no'}",
           f"- Media y desviación estándar muestral (n−1). «{NO_DATA}»: no hay corridas o el valor no está definido.",
+          "- Cada media se informa dos veces (D-67): `_valid` solo con las corridas válidas y `_fail0` contando "
+          "cada corrida fallida (`failed_runs`) como 0. En el indicador 5, contar una falla como 0 violaciones es "
+          "optimista: se informa solo por completitud.",
           "- No hay indicador para el paso 3 ni para la revisión global (criterio del analista).\n"]
     if meta["skipped"]:
         md.append("Escenarios/versiones sin texto (no evaluados): " + ", ".join(meta["skipped"]) + "\n")

@@ -28,6 +28,11 @@ def aggregate(values: list[float | None]) -> dict:
     }
 
 
+def aggregate_with_failures(values: list[float | None], failed: int) -> dict:
+    """Both views of D-67: `valid` (failed runs left out) and `fail0` (each failed run counted as 0)."""
+    return {"valid": aggregate(values), "fail0": aggregate(list(values) + [0.0] * failed)}
+
+
 # --- indicator 1 ------------------------------------------------------------------------
 
 

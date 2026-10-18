@@ -71,20 +71,20 @@ def test_full_experiment(setup):
     results = setup["run"] / "results"
     i1 = {(r["scenario"], r["version"], r["level"]): r for r in read_csv(results / "indicator1.csv")}
     exact = i1[("gunra", "orig", "exact")]
-    assert float(exact["precision_mean"]) == pytest.approx(50.0) and float(exact["recall_mean"]) == pytest.approx(50.0)
-    assert float(exact["precision_sd"]) == 0.0 and exact["runs"] == "2"
+    assert float(exact["precision_mean_valid"]) == pytest.approx(50.0) and float(exact["recall_mean_valid"]) == pytest.approx(50.0)
+    assert float(exact["precision_sd_valid"]) == 0.0 and exact["runs_valid"] == "2"
     parent = i1[("gunra", "orig", "parent")]
-    assert float(parent["precision_mean"]) == pytest.approx(100.0)
-    assert i1[("interlock", "orig", "exact")]["precision_mean"] == "sin dato disponible"
+    assert float(parent["precision_mean_valid"]) == pytest.approx(100.0)
+    assert i1[("interlock", "orig", "exact")]["precision_mean_valid"] == "sin dato disponible"
 
     i2 = {r["scenario"]: r for r in read_csv(results / "indicator2.csv")}
     assert float(i2["gunra"]["accuracy"]) == 100.0
 
     i3 = {(r["scenario"], r["approach"]): r for r in read_csv(results / "indicator3.csv")}
-    assert float(i3[("gunra", "modelo")]["orig_mean"]) == 100.0  # T1190 is the only gap and is found
-    assert float(i3[("gunra", "modelo")]["mut_mean"]) == 100.0
-    assert float(i3[("gunra", "tradicional")]["orig_mean"]) == 100.0
-    assert float(i3[("gunra", "tradicional")]["mut_mean"]) == 0.0
+    assert float(i3[("gunra", "modelo")]["orig_mean_valid"]) == 100.0  # T1190 is the only gap and is found
+    assert float(i3[("gunra", "modelo")]["mut_mean_valid"]) == 100.0
+    assert float(i3[("gunra", "tradicional")]["orig_mean_valid"]) == 100.0
+    assert float(i3[("gunra", "tradicional")]["mut_mean_valid"]) == 0.0
 
     sheet = read_csv(setup["sheets"] / "r1_indicator4_summaries.csv")
     assert {r["technique_id"] for r in sheet} == {"T1190", "T1059"}
@@ -125,6 +125,41 @@ def test_invalid_llm_output_is_recorded_as_failed_run(setup):
     assert {r["status"] for r in runs} == {"error"}
     i1 = {(r["scenario"], r["version"], r["level"]): r for r in read_csv(setup["run"] / "results" / "indicator1.csv")}
     assert i1[("gunra", "orig", "exact")]["failed_runs"] == "1"
+
+
+def test_partial_failures_are_reported_both_ways(setup):
+    """D-67: one of two orig runs fails → counts, reason, valid-only mean and failed-as-0 mean."""
+    class SecondFails(RoutingTransport):
+        n = 0
+
+        def generate(self, model, prompt, schema, temperature):
+            if "extracting MITRE ATT&CK" in prompt:
+                self.n += 1
+                if self.n == 2:
+                    return "not json", model
+            return super().generate(model, prompt, schema, temperature)
+
+    run_experiment(setup["ctx"](SecondFails(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=2)
+    results = setup["run"] / "results"
+    status = {(r["scenario"], r["version"]): r for r in read_csv(results / "runs.csv")}
+    g = status[("gunra", "orig")]
+    assert (g["runs_total"], g["runs_valid"], g["failed_runs"]) == ("2", "1", "1")
+    assert g["failure_reasons"].startswith("r1: ")
+    assert status[("gunra", "mut")]["failure_reasons"] == "ninguna"
+
+    i1 = {(r["scenario"], r["version"], r["level"]): r for r in read_csv(results / "indicator1.csv")}
+    e = i1[("gunra", "orig", "exact")]
+    assert e["failed_runs"] == "1" and float(e["precision_mean_valid"]) == 50.0
+    assert float(e["precision_mean_fail0"]) == 25.0 and float(e["recall_mean_fail0"]) == 25.0
+    i3 = {(r["scenario"], r["approach"]): r for r in read_csv(results / "indicator3.csv")}
+    m = i3[("gunra", "modelo")]
+    assert float(m["orig_mean_valid"]) == 100.0 and float(m["orig_mean_fail0"]) == 50.0
+    assert m["failed_runs"] == "orig 1, mut 0"
+    i5 = [r for r in read_csv(results / "indicator5.csv") if r["scenario"] == "gunra" and r["version"] == "orig"]
+    assert i5[0]["failed_runs"] == "1" and "violations_mean_fail0" in i5[0]
+    md = (results / "results.md").read_text(encoding="utf-8")
+    assert "failed_runs" in md and "r1: " in md
 
 
 def test_api_error_stops_the_experiment(setup):
