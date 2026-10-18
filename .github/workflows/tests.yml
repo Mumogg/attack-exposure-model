@@ -1,0 +1,38 @@
+# Tests on every push and pull request. No secrets and no API key: the tests never call the Gemini API
+# (tests/conftest.py fails any test that tries). `aem fetch-data` downloads ATT&CK v19.2 (checked by SHA-256)
+# so that the ATT&CK-dependent tests run instead of being skipped; the CISA texts are already versioned.
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Download ATT&CK v19.2
+        run: aem fetch-data
+      - name: Run tests (none may be skipped for lack of ATT&CK)
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q -rs | tee pytest.log
+          if grep -E "SKIPPED.*(ATT&CK v19.2 no descargado|requiere ATT&CK)" pytest.log; then
+            echo "::error::Hay tests omitidos por falta de ATT&CK"
+            exit 1
+          fi

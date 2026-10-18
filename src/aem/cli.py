@@ -40,6 +40,33 @@ app = typer.Typer(
 )
 console = Console()
 
+
+def project_version() -> str:
+    """Version declared in pyproject.toml (the repository copy; installed metadata if there is none)."""
+    import tomllib
+
+    pyproject = config.REPO_ROOT / "pyproject.toml"
+    if pyproject.exists():
+        return tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"]["version"]
+    from importlib.metadata import version
+
+    return version("attack-exposure-model")
+
+
+def _version_callback(value: bool) -> None:
+    if value:
+        console.print(f"aem {project_version()}", highlight=False)
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: bool = typer.Option(False, "--version", callback=_version_callback, is_eager=True,
+                                 help="Muestra la versión (de pyproject.toml) y termina."),
+) -> None:
+    """Prototipo de tesis: evaluación de exposición a técnicas MITRE ATT&CK asistida por IA (solo para
+    reproducibilidad; no es una herramienta de producción)."""
+
 DEMO_REPORT = DATA_DIR / "reports" / "gunra_aa26-222a_stripped.txt"
 DEMO_OUT = RUNS_DIR / "demo" / "gunra"
 REVIEW_SHEETS_DIR = config.REPO_ROOT / "eval" / "review_sheets"

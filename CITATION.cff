@@ -1,0 +1,15 @@
+# Same data as the BibTeX entry of README.md / README.es.md.
+# PENDIENTE (version): the BibTeX entry still marks the published version as pending, so `version` and
+# `date-released` are left out until the first release. No DOI or ORCID is recorded.
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "attack-exposure-model: prototipo de un modelo de evaluación de amenazas cibernéticas asistido por IA basado en MITRE ATT&CK"
+authors:
+  - family-names: "Murillo Mora"
+    given-names: "Sebastián"
+    affiliation: "Universidad Fidélitas"
+repository-code: "https://github.com/Mumogg/attack-exposure-model"
+url: "https://github.com/Mumogg/attack-exposure-model"
+license: MIT
+notes: "Trabajo Final de Graduación, Universidad Fidélitas."

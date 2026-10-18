@@ -81,7 +81,11 @@ aem fetch-data      # descarga ATT&CK v19.2 (verifica su SHA-256) y prepara los 
 pytest              # ninguna prueba llama a la API real
 ```
 
-`aem --help` y `aem <comando> --help` muestran la ayuda en español.
+`aem --help` y `aem <comando> --help` muestran la ayuda en español; `aem --version` muestra la versión declarada en `pyproject.toml`.
+
+**Versiones exactas (opcional).** `requirements.lock` fija cada dependencia tal como se instaló para la tesis (venv limpio, `pip install -e ".[dev]"` + `pip freeze`, Python 3.14.7 en Linux). Sirve solo para reproducir ese entorno: `pip install -r requirements.lock && pip install -e . --no-deps`. La instalación normal sigue siendo `pip install -e ".[dev]"`.
+
+**Integración continua.** `.github/workflows/tests.yml` corre `pytest` con Python 3.11 y 3.12 en cada push y pull request. Instala con `pip install -e ".[dev]"` y ejecuta `aem fetch-data`, para que los tests de ATT&CK no se omitan. Tiene permisos de solo lectura y ningún secreto ni API key; `tests/conftest.py` hace fallar cualquier test que intente llegar a la API de Gemini.
 
 Pasos para correr los experimentos reales (API key, Akira, prevalencia, `aem eval`, revisión manual, qué versionar): `docs/RUNBOOK.md`.
 
@@ -142,6 +146,7 @@ Archivos de salida en `--out`:
 | `aem eval` | Corre el experimento completo y genera las tablas de los 5 indicadores. Ejecuta antes el preflight y no arranca si hay un FALTA. Use siempre `--run-id <fecha>`. |
 | `aem report` | Resume una corrida real (`--run-id <fecha>`) en `docs/resultados/<fecha>/`: una tabla por indicador, gráficos de los indicadores 1 y 3, datos faltantes y límites (C1–C3, D-67). Se niega con resultados FAKE. |
 | `aem report --html` | Una sola página autocontenida (CSS y JS en línea, funciona sin conexión) en `runs/<fecha>/results/report.html`: los cinco indicadores con gráficos y tablas, modelo frente al enfoque tradicional, acciones, cobertura y un mapa por táctica de ATT&CK, una tabla de técnicas filtrable, sensibilidad, limitaciones y la declaración de IA. En inglés, con un botón para pasar a español. Citas de evidencia solo de los reportes públicos (CISA). `--private` escribe además `runs/<fecha>/private/report_full.html` (ignorado por git, con las citas de Akira). Antes de escribir, la página pública se compara con la copia local del reporte de DFIR (ventanas de 8 palabras y valores de IoC). |
+| `aem sensitivity` | Análisis de sensibilidad sin la API (`--run-id <fecha>`): recalcula los pasos 2 y 3 y el indicador 3 cambiando un parámetro a la vez (`covered_min` 3/4/5, `partial_min` 1/2, `no_inherit`/`inherit_parent`), en `runs/<fecha>/results/sensitivity/`. Es un complemento, no un resultado principal: la configuración confirmada no cambia, y la fila con los parámetros actuales debe ser igual al indicador 3 de `results.json` (D-77). |
 | `aem review-check` | Valida las hojas de revisión manual de los indicadores 4 y 5 (`--run-id <fecha>`): solo si/no, observación en la respuesta negativa, ninguna columna generada modificada; informa «revisión incompleta: N de M filas» y nunca un porcentaje hasta que todas las hojas estén completas. |
 | `aem check-repo` | Revisa los archivos versionados y todo el historial de git en busca de `.env`, API keys, texto del reporte de DFIR y archivos `private/`. Obligatorio antes de subir a GitHub. |
 | `aem demo` | Atajo: Gunra en modo demo. |
@@ -156,6 +161,7 @@ aem make-variants
 aem preflight
 aem eval --run-id 2026-10-20   # con API key; o `aem eval --demo --run-id …` con la caché publicada
 aem report --run-id 2026-10-20
+aem sensitivity --run-id 2026-10-20     # complemento opcional (D-77)
 aem report --html --run-id 2026-10-20   # página autocontenida; con --private, la copia completa local
 ```
 

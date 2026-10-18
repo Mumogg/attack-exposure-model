@@ -223,3 +223,13 @@ def test_eval_announces_omitted_scenarios_at_start_and_end(files, tmp_path, monk
     assert text.count("ESCENARIOS OMITIDOS: akira (sin texto local)") == 2
     assert text.index("ESCENARIOS OMITIDOS") < text.index("Listo.") < text.index("RESULTADO PARCIAL: faltan escenarios")
     assert order == ["run"]
+
+
+def test_version_comes_from_pyproject():
+    import tomllib
+
+    from aem.config import REPO_ROOT
+
+    expected = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    res = runner.invoke(app, ["--version"])
+    assert res.exit_code == 0 and res.output.strip() == f"aem {expected}"
