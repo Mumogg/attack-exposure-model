@@ -214,13 +214,13 @@ Antes de dárselo al LLM, de cada reporte se elimina la sección del mapeo ATT&C
 - **El LLM no es determinístico** aun con `temperature = 0`; por eso se hacen 5 corridas. Los resultados dependen del modelo y la fecha (se registran ambos).
 - Los resúmenes del paso 4 se generan **una vez por técnica** (caché compartida entre escenarios y corridas); los indicadores 4 y 5 los evalúan una vez por técnica.
 - El chequeo automático de los resúmenes y la lista de patrones evaluativos son aproximaciones; la revisión manual de una muestra es parte del método.
-- En ATT&CK v18+ las fuentes de datos se modelan como componentes de datos de las estrategias de detección; la columna `data_sources` lista esos componentes (D-03, pendiente de confirmar).
+- En ATT&CK v18+ las fuentes de datos se modelan como componentes de datos de las estrategias de detección; la columna `data_sources` lista esos componentes (D-03, confirmada).
 - Los límites de Gemini (`GEMINI_RPM` y las cuotas diarias) no son cifras oficiales del proyecto y pueden cambiar. Las corridas de la tesis usan la capa de pago (D-75). Cada 429 queda registrado con su cuota en `runs/<run-id>/api_events.jsonl` (D-74).
 - **C1 — El enfoque tradicional da 0 % por construcción:** en `mut` y `anon` ningún IoC del original sobrevive (lo verifica el código), así que el enfoque tradicional siempre da 0 %. Es un punto de referencia, **no una medición independiente**.
 - **C2 — Reconocimiento por el nombre:** `mut` conserva los nombres del actor y del malware, así que parte de la persistencia del modelo en `mut` podría deberse a que el LLM reconoce la amenaza por su nombre y no por el comportamiento. La versión `anon`, que reemplaza esos nombres, sirve para controlarlo (D-72).
 - **C3 — Datos de entrenamiento:** el modelo de lenguaje pudo conocer estos reportes (públicos) durante su entrenamiento; ni `mut` ni `anon` eliminan ese efecto.
 
-Las decisiones marcadas **PENDIENTE DE CONFIRMAR** están en `docs/DECISIONS.md`.
+Las decisiones de diseño están en `docs/DECISIONS.md`. Al 2026-10-18 ninguna está marcada **PENDIENTE DE CONFIRMAR**: las que se tomaron sin confirmación explícita del autor ya están marcadas **CONFIRMADA**.
 
 ## Licencia
 

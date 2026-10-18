@@ -214,13 +214,13 @@ Before giving it to the LLM, the ATT&CK mapping section and **every** technique 
 - **The LLM is not deterministic** even with `temperature = 0`; that is why 5 runs are made. The results depend on the model and the date (both are recorded).
 - The step 4 summaries are generated **once per technique** (cache shared across scenarios and runs); indicators 4 and 5 evaluate them once per technique.
 - The automatic check of the summaries and the list of evaluative patterns are approximations; manual review of a sample is part of the method.
-- In ATT&CK v18+ data sources are modeled as data components of the detection strategies; the `data_sources` column lists those components (D-03, pending confirmation).
+- In ATT&CK v18+ data sources are modeled as data components of the detection strategies; the `data_sources` column lists those components (D-03, confirmed).
 - Gemini's limits (`GEMINI_RPM` and the daily quotas) are not official figures of the project and may change. The thesis runs use the paid tier (D-75). Every 429 is logged with its quota in `runs/<run-id>/api_events.jsonl` (D-74).
 - **C1 — The traditional approach gives 0 % by construction:** in `mut` and `anon` no IoC from the original survives (the code verifies it), so the traditional approach always gives 0 %. It is a reference point, **not an independent measurement**.
 - **C2 — Recognition by name:** `mut` keeps the names of the actor and the malware, so part of the model's persistence in `mut` could be due to the LLM recognizing the threat by its name and not by the behavior. The `anon` version, which replaces those names, serves to control for it (D-72).
 - **C3 — Training data:** the language model may have known these (public) reports during its training; neither `mut` nor `anon` removes that effect.
 
-The decisions marked **PENDIENTE DE CONFIRMAR** (pending confirmation) are in `docs/DECISIONS.md`.
+The design decisions are in `docs/DECISIONS.md`. As of 2026-10-18 none is marked **PENDIENTE DE CONFIRMAR** (pending confirmation): the ones taken without the author's explicit confirmation are now marked **CONFIRMADA**.
 
 ## License
 
