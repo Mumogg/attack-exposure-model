@@ -130,3 +130,20 @@ def test_gitignore_keeps_copyrighted_material_out():
     for rule in ("data/reports/akira_dfir_2026*", "runs/llm_cache_private/", "runs/*/private/",
                  "eval/review_sheets/private/", ".env"):
         assert rule in rules, rule
+
+
+def test_fetch_data_reports_changed_page_clearly(tmp_path, monkeypatch, mini_attack):
+    import shutil
+    from aem.config import SCENARIOS_FILE
+
+    data = tmp_path / "data"
+    data.mkdir()
+    shutil.copy(SCENARIOS_FILE, data / "scenarios.yaml")
+    monkeypatch.setattr("aem.cli.SCENARIOS_FILE", data / "scenarios.yaml")
+    monkeypatch.setattr("aem.cli._fetch_attack", lambda: mini_attack.bundle_path)
+    page = '<div class="l-page-section--rich-text csaf-imported"><h2>Otra cosa</h2><p>x</p></div>'
+    monkeypatch.setattr("aem.cli.http_get", lambda url: page.encode("utf-8"))
+    res = runner.invoke(app, ["fetch-data"])
+    assert res.exit_code == 1
+    assert "gunra" in res.output and "ATT&CK" in res.output
+    assert res.exception is None or isinstance(res.exception, SystemExit)

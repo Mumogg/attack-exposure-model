@@ -116,7 +116,11 @@ def _prepare_reports(attack_path: Path, force: bool, download: bool) -> None:
             if download or not sc.raw_html.exists():
                 sc.raw_html.parent.mkdir(parents=True, exist_ok=True)
                 sc.raw_html.write_bytes(http_get(sc.url))
-            log = prepare_cisa(sc, sc.raw_html.read_text(encoding="utf-8"), attack)
+            try:
+                log = prepare_cisa(sc, sc.raw_html.read_text(encoding="utf-8"), attack)
+            except AttackSectionNotFound as exc:
+                _fail(f"{sc.name}: {exc}. La página de CISA pudo haber cambiado de estructura ({sc.url}); "
+                      "revise el HTML en data/reports/raw/.")
             console.print(f"{sc.name}: {sc.stripped.name} y {sc.reference.name} "
                           f"({log['reference_techniques']} técnicas de referencia)")
         else:

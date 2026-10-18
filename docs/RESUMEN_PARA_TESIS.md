@@ -78,7 +78,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | ATT&CK | Enterprise **v19.2**, `enterprise-attack-19.2.json`, SHA-256 `dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4` |
 | Python | ≥ 3.11 (desarrollo con 3.14.7) |
 | Bibliotecas | `mitreattack-python` 6.3.1, `pydantic` 2.14.1, `typer` 0.27.3, `rich` 15.0.0, `PyYAML` 6.0.3, `pytest` 9.1.1 |
-| Pruebas | 236 pruebas automatizadas; ninguna llama a la API real |
+| Pruebas | 237 pruebas automatizadas; ninguna llama a la API real |
 
 ### 2.3 Diseño experimental
 
