@@ -4,7 +4,7 @@ Español: [README.es.md](README.es.md)
 
 Minimal prototype of the model proposed in the undergraduate thesis (Trabajo Final de Graduación):
 
-> **«Diseño de un modelo de evaluación de amenazas cibernéticas asistido por inteligencia artificial basado en MITRE ATT&CK para entornos empresariales»**
+> **«Diseño de un modelo de evaluación de amenazas cibernéticas asistido por inteligencia artificial basado en MITRE ATT&CK para entornos empresariales»** (Design of an AI-assisted cyber threat evaluation model based on MITRE ATT&CK for enterprise environments)
 > Sebastián Murillo Mora · Licenciatura en Ingeniería en Sistemas de Computación · Universidad Fidélitas, Costa Rica · 2026
 
 **Language:** the documentation in `docs/` and the command-line messages are in Spanish, because this work is a thesis at Universidad Fidélitas (Costa Rica). The code, comments, commit messages, LLM prompts, step 4 summaries (D-45) and the column names of the outputs are in English; some cell values (e.g. `sin cobertura`, `sin dato disponible`) are in Spanish.
