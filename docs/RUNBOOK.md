@@ -65,22 +65,44 @@ La carpeta `runs/prueba/` se puede borrar o versionar; lo que importa conservar 
    ```
 
    Debe decir que los IDs de la sección **coinciden** con `data/reference_mappings/akira.csv`. Si dice «NO coincide», no siga: revise el texto pegado.
-3. Genere las variantes `mut` de los tres escenarios y los IoC conocidos:
+3. **Complete los nombres de Akira para la versión `anon`.** `data/anon_names.yaml` trae para Akira solo los nombres del título: Akira → ActorX, BumbleBee → LoaderX, AdaptixC2 → C2FrameworkX. Lea el texto y agregue, con el mismo formato, cada nombre propio **de la amenaza**:
+   - el actor o grupo y sus alias;
+   - la familia de ransomware;
+   - el malware (loaders, backdoors, RAT, ladrones de información) y los frameworks de C2 propios de la campaña.
+
+   **No agregue** herramientas legítimas o de uso general (PowerShell, RDP, AnyDesk, PsExec, Impacket, RClone, Rubeus, Cobalt Strike…), nombres de técnicas, CVE ni nombres de archivo. Para ver candidatos, este comando lista las palabras con mayúscula más frecuentes del texto:
+
+   ```bash
+   python -c "import re,collections; t=open('data/reports/akira_dfir_2026_stripped.txt',encoding='utf-8').read(); print(collections.Counter(re.findall(r'\b[A-Z][A-Za-z0-9]{2,}\b', t)).most_common(80))"
+   ```
+
+   Si una grafía distinta aparece en el texto (p. ej. «Bumblebee» o «Adaptix C2»), no hace falta agregarla: las mayúsculas no importan y el espacio también se busca como guion. Una grafía con otra forma (p. ej. un nombre corto) sí se agrega como fila aparte.
+4. Genere las versiones `mut` y `anon` de los tres escenarios y los IoC conocidos:
 
    ```bash
    aem make-variants
    ```
 
-   Por escenario muestra cuántos IoC se reemplazaron y cierra con «verificación: ningún IoC del original queda en mut». Si queda alguno, el comando falla e indica el valor y la línea. En ese caso, avíseme con ese mensaje (no edite la variante a mano).
-   También lista los «tokens sin defang con forma de IoC» que dejó intactos (en Gunra e Interlock, los enlaces de referencia de las notas). Para Akira, abra `data/reports/akira_dfir_2026_mut.diff` y revise que esa lista no contenga un IoC real del actor escrito sin defang. Si lo contiene, avíseme.
-4. Ejecute `pytest -q`. Ahora también corren sobre Akira la prueba de que el texto `stripped` no tiene IDs y la de que `mut` no conserva IoC.
-5. Compruebe que nada de Akira quedó a la vista de git:
+   Por escenario muestra cuántos IoC se reemplazaron en `mut` y cuántos nombres en `anon`, y cierra con la verificación de que no sobrevive ninguno. Si sobrevive alguno, el comando falla e indica cuál y en qué línea: avíseme con ese mensaje y no edite la variante a mano. Si dice «no aparecen en el texto: …», ese nombre de la lista no está en el reporte; revise la grafía.
+5. **Revise los tokens sin defang que `make-variants` dejó intactos en Akira.** La consola los lista como «tokens sin defang con forma de IoC se dejaron intactos» con su línea (también están en `plain_candidates_kept` de `data/reports/akira_dfir_2026_mut_log.json`). Para cada uno:
+
+   | Qué es | Qué hacer |
+   |---|---|
+   | Enlace de referencia o fuente (blog, otro informe, MITRE, VirusTotal) | Nada: es una cita, no un IoC. |
+   | Nombre de archivo o script (`x.ps1`, `y.pl`, `z.exe`) o versión (`1.2.3.4`) | Nada: describe comportamiento. |
+   | Servicio legítimo (p. ej. `mega.io`, `temp.sh`) usado por el actor | Nada: es comportamiento. Si el reporte lo lista en su sección de IoC, avíseme. |
+   | IP, dominio o correo **del actor** escrito sin defang que no figura en la sección de IoC defanged | Avíseme con el valor y la línea: hay que tratarlo como IoC para que también cambie en `mut`/`anon`. |
+   | IP privada de la red de la víctima (`10.x`, `192.168.x`) | Nada: no es un IoC del actor. |
+
+   Para verlos en contexto, abra `data/reports/akira_dfir_2026_mut.diff` o busque la línea en `data/reports/akira_dfir_2026_stripped.txt`.
+6. Ejecute `pytest -q`. Ahora también corren sobre Akira las pruebas de que el texto `stripped` no tiene IDs y de que `mut` y `anon` no conservan IoC ni nombres.
+7. Compruebe que nada de Akira quedó a la vista de git:
 
    ```bash
    git status --short            # no debe aparecer ningún data/reports/akira_dfir_2026*
    ```
 
-   `aem make-variants` reescribe `data/org/known_iocs_generated.yaml`, que **sí** se versiona: solo contiene IoC (hashes, IP, dominios), no texto del reporte.
+   `aem make-variants` reescribe `data/org/known_iocs_generated.yaml` y los `*_mut*`/`*_anon*` de CISA, que **sí** se versionan.
 
 ## d. CSV de prevalencia (Red Canary 2026)
 
@@ -110,9 +132,17 @@ T0000.000,998,EJEMPLO - valor inventado
 
 La prevalencia no cambia ninguna llamada al LLM ni ningún indicador; solo aparece en el CSV de `aem run`.
 
-## e. `aem eval` completo
+## e. `aem preflight` y `aem eval` completo
 
-Use siempre un `--run-id` explícito. El nombre por defecto es la fecha de hoy, y si reanuda otro día crearía una carpeta distinta.
+Primero, la comprobación (no gasta llamadas de generación; solo consulta que el modelo exista):
+
+```bash
+aem preflight
+```
+
+Muestra una línea por comprobación con **OK**, **FALTA** o **AVISO**: API key y modelo, checksum de ATT&CK, texto de Akira y que su versión `stripped` no tenga IDs, prevalencia, versiones `orig`/`mut`/`anon` de los tres escenarios y reglas de `.gitignore`. Al final da la estimación de llamadas y tiempo. Corrija cada **FALTA** antes de seguir; un **AVISO** (p. ej. prevalencia vacía) no bloquea. `aem eval` repite esta comprobación al empezar y **no arranca** si hay un FALTA.
+
+**Obligatorio: use siempre `--run-id <fecha>`.** Sin él, el nombre es la fecha de hoy, y si reanuda otro día crearía otra carpeta con una corrida a medias.
 
 | Sistema | Comando (evita que el equipo se suspenda) |
 |---|---|
@@ -122,11 +152,12 @@ Use siempre un `--run-id` explícito. El nombre por defecto es la fecha de hoy, 
 
 (Cambie `2026-10-20` por la fecha en que lo inicie.)
 
-- **Duración estimada** (`docs/PLAN.md`): ≈ 110–150 llamadas, **20–35 minutos** con `GEMINI_RPM=10`; hasta ≈ 190 llamadas si Akira se divide en muchos fragmentos. Los reintentos por HTTP 429 la alargan.
+- **Duración estimada** (`docs/PLAN.md`): 3 escenarios × 3 versiones (`orig`, `mut`, `anon`) × 5 corridas = 45 extracciones (105 si Akira se divide en 5 fragmentos) + 80–120 resúmenes ≈ **125–165 llamadas**, **25–45 minutos** con `GEMINI_RPM=10`; hasta ≈ 225 llamadas y ≈ 60 minutos en el peor caso. Los reintentos por HTTP 429 la alargan. `aem preflight` da la cifra exacta de extracciones.
 - La consola muestra `escenario · versión · corrida k/5`. Al final indica cuántas corridas no tuvieron salida utilizable y dónde quedó `results.md`.
 - **Si se corta por un límite de la API** (cuota diaria, 429 persistente, sin conexión), el comando termina con un error claro. Todas las respuestas ya obtenidas quedan en la caché. Para reanudar, repita **exactamente el mismo comando** (mismo `--run-id`, mismo `GEMINI_MODEL`); si fue la cuota diaria, espere a que se renueve. Solo se piden las llamadas que faltan. Repítalo hasta que termine sin error.
 - Resultado: `runs/2026-10-20/results/` (`results.md`, un CSV por tabla y `results.json`). **Si en lugar de eso aparece `results_FAKE/`**, alguna respuesta no vino de la API real: esas tablas no sirven para la tesis.
-- Revise primero la tabla «Corridas por escenario y versión» de `results.md`: `runs_total`, `runs_valid`, `failed_runs` y el motivo de cada falla. Cada indicador trae dos medias: `_valid` (solo corridas válidas) y `_fail0` (las fallidas cuentan como 0).
+- Revise primero la tabla «Corridas por escenario y versión» de `results.md`: `runs_total`, `runs_valid`, `failed_runs` y el motivo de cada falla. Cada indicador trae dos medias: `_fail0` (las fallidas cuentan como 0) y `_valid` (solo corridas válidas). En los indicadores 1 y 3 la **principal es `_fail0`**; en el 5, ambas pesan igual (D-67).
+- El indicador 3 compara `orig` con `mut` y con `anon`: la diferencia entre `mut` y `anon` estima cuánto de la persistencia se debe a reconocer la amenaza por su nombre (limitación C2).
 - Cada fila de cada tabla lleva `llm_source`, `model`, `model_version`, `run_date` y `prompt_templates_sha256`, que son los datos para citar la corrida.
 - Comprobación de reproducibilidad (sin API key ni llamadas, segundos):
 
@@ -165,7 +196,7 @@ python -c "import csv,sys; r=list(csv.DictReader(open(sys.argv[1],encoding='utf-
 | `runs/llm_cache/` (caché pública, necesaria para `--demo`) | `.env` (su API key) |
 | `runs/<run-id>/results/` y las salidas de Gunra e Interlock en `runs/<run-id>/` | `runs/llm_cache_private/` (prompts con el texto de Akira) |
 | `eval/review_sheets/*.csv` llenas | `runs/*/private/` (salidas de Akira con citas) |
-| `data/prevalence/red_canary_2026.csv`, `data/org/known_iocs_generated.yaml`, `data/reports/*_mut*` de CISA | `eval/review_sheets/private/` (muestra de Akira) |
+| `data/prevalence/red_canary_2026.csv`, `data/org/known_iocs_generated.yaml`, `data/reports/*_mut*` y `*_anon*` de CISA, `data/anon_names.yaml` (solo nombres, no texto) | `eval/review_sheets/private/` (muestra de Akira) |
 | | `data/reports/akira_dfir_2026*` (texto, `stripped`, variante y diff) |
 
 Todo lo de la columna derecha ya está en `.gitignore`. Antes de cada commit, verifique:
@@ -181,6 +212,20 @@ git commit -m "eval: corrida real 2026-10-20"
 
 En Windows (PowerShell), cambie `grep -i -E "…"` por `Select-String -Pattern "akira_dfir|private|\.env$"`. Si `git check-ignore` no imprime una de las rutas, esa ruta **no** está ignorada: no haga commit y avíseme. Puede ser normal si la carpeta todavía no existe.
 
+**Obligatorio antes de subir a GitHub (y recomendable después de cada commit):**
+
+```bash
+aem check-repo
+```
+
+Revisa los archivos versionados, el índice y **todo el historial de git** en busca de:
+- un `.env`;
+- patrones de API keys (nunca imprime la clave);
+- archivos dentro de carpetas `private/` o `llm_cache_private/` y los archivos `data/reports/akira_dfir_2026*`;
+- texto del reporte de DFIR, buscando frases distintivas de su copia local en `data/reports/akira_dfir_2026.txt`. Sin esa copia, avisa que no pudo buscarlo.
+
+Termina con **OK** o con la lista exacta de hallazgos (`archivo:línea (en <commits>)`) y código de salida 1. Si encuentra algo, **no suba**: avíseme. Si está en el historial, borrar el archivo no basta, hay que reescribir el historial antes de publicar.
+
 ## h. URL del repositorio y declaración de uso de IA en el README
 
 1. Cree el repositorio en GitHub, vacío y sin README. Con `gh`: `gh repo create Mumogg/attack-exposure-model --public` (o `--private`). También puede hacerlo desde github.com.
@@ -191,9 +236,10 @@ En Windows (PowerShell), cambie `grep -i -E "…"` por `Select-String -Pattern "
 
    > Este repositorio se desarrolló con asistencia de Claude Code (Anthropic), que escribió código, pruebas y documentación siguiendo las especificaciones y decisiones del autor, quien revisó y aprobó cada cambio. El modelo evaluado usa Gemini (Google) como componente en los pasos 1 y 4, tal como se describe arriba. Los resultados reportados provienen de la ejecución con la API real de Gemini; ningún resultado fue generado ni editado por el asistente de desarrollo.
 
-4. Enlace el remoto y suba, cuando lo decida:
+4. Ejecute `aem check-repo` (paso g). Solo si termina en **OK**, enlace el remoto y suba cuando lo decida:
 
    ```bash
+   aem check-repo
    git remote add origin https://github.com/Mumogg/attack-exposure-model.git
    git push -u origin main
    ```
@@ -204,7 +250,8 @@ En Windows (PowerShell), cambie `grep -i -E "…"` por `Select-String -Pattern "
 2. En el resumen, agregue o actualice:
    - **Datos de la corrida:** `run-id`, fecha, `model` y `model_version`, y los hashes de `prompt_templates_sha256`.
    - **Corridas:** por escenario y versión, las totales, válidas y fallidas, con el motivo de cada falla.
-   - **Indicadores 1, 3 y 5:** media ± desviación estándar en las dos vistas, `_valid` y `_fail0`, junto con `failed_runs`. Decida cuál es la principal (D-67).
+   - **Indicadores 1 y 3:** media ± desviación estándar con `_fail0` como cifra principal y `_valid` como secundaria, junto con `failed_runs` (D-67). En el indicador 3, las tres versiones (`orig`, `mut`, `anon`) y las razones mut/orig y anon/orig.
+   - **Indicador 5:** `_fail0` y `_valid` con el mismo peso, con el aviso de que contar una falla como 0 favorece al modelo.
    - **Indicador 2:** exactitud y discrepancias.
    - **Indicadores 4 y 5:** resultados de su revisión manual (conteos del paso f).
 3. Revise la tabla de decisiones `PENDIENTE DE CONFIRMAR` del resumen (D-03, D-62, D-65 y las que se agreguen). Confirme o cambie cada una en `docs/DECISIONS.md`.

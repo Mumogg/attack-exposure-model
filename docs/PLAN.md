@@ -46,6 +46,30 @@ La de `CLAUDE.md` §4, con estos agregados:
 4. Nombres de archivo (`main.exe`, `psexec.py`) que parecen dominios → el extractor de IoC no debe tratarlos como dominios al generar la variante `mut` (test).
 5. Técnicas extraídas que no figuran en `analyst_context` → en modo `auto` se usa un activo por defecto declarado en el YAML, nunca un valor inventado (test).
 
+## Estimación de llamadas con la versión `anon` (vigente, 2026-10-17)
+
+Reemplaza la estimación del bloque 9 (abajo, conservada como registro). `aem preflight` calcula las llamadas de extracción exactas para los textos presentes.
+
+**Paso 1 (extracción).** 3 escenarios × **3 versiones** (`orig`, `mut`, `anon`) × 5 corridas = **45 combinaciones**, una llamada por fragmento.
+- Gunra: `stripped` 33 194 caracteres, `mut` 33 077, `anon` 33 180 → 1 fragmento cada uno.
+- Interlock: 29 608, 29 608 y 29 358 → 1 fragmento cada uno.
+- Gunra e Interlock suman **30 llamadas**: es la cifra que muestra `aem preflight` hoy, sin Akira.
+- Akira: si queda ≤ 100 000 caracteres, **15 llamadas**; con ~120 000 caracteres (5 fragmentos), **75**.
+- Total paso 1: **45 llamadas**, o **105** en el peor caso de Akira.
+
+**Paso 4 (resúmenes).** Sin cambios: un resumen por técnica distinta (D-44). La versión `anon` no agrega técnicas por sí misma.
+- Cota inferior: **78** (las técnicas distintas de los tres mapeos; es el «al menos 78» de `aem preflight`).
+- Estimación: **80–120 llamadas**.
+
+**Total estimado: ≈ 125–165 llamadas**, hasta ≈ 225 en el peor caso de fragmentación de Akira. Son ≈ 15 extracciones más que antes, más las de Akira si se fragmenta.
+
+**Tiempo a `GEMINI_RPM` = 10** (pausa mínima de 6 s entre llamadas):
+- **Solo por el límite:** 125–165 × 6 s ≈ **13–17 min** (≈ 23 min en el peor caso).
+- **Latencia:** cada extracción tarda 10–40 s, frente a los 6 s de la pausa. Las 45 extracciones añaden ≈ 3–25 min.
+- **Estimación realista: 25–45 minutos** para la primera corrida completa (hasta ≈ 60 en el peor caso de Akira).
+- Los reintentos por HTTP 429 la alargan. Si se corta, repetir **el mismo comando con el mismo `--run-id`** reutiliza la caché.
+- La corrida de prueba de `aem run` con Gunra (RUNBOOK, paso b) ya deja en la caché la extracción de `orig` corrida 0 y sus resúmenes.
+
 ## Estimación de llamadas a la API para `aem eval` (bloque 9, 2026-10-17)
 
 **Paso 1 (extracción).** 3 escenarios × 2 versiones (`orig`, `mut`) × 5 corridas = **30 combinaciones**. Cada combinación hace una llamada por fragmento del reporte (D-11: el texto se envía completo si tiene ≤ 100 000 caracteres).
@@ -77,3 +101,4 @@ La de `CLAUDE.md` §4, con estos agregados:
 - Bloque 9 ✔ estimación de llamadas (arriba), eval/metrics.py (5 indicadores), eval/run_experiments.py, aem eval (CSV + Markdown + JSON, hojas de revisión en eval/review_sheets/), ApiError vs InvalidResponse en llm.py + tests (229). Pendiente: Sebas corre `aem eval` con la API key real.
 - Bloque 10 ✔ README en español, revisión de secretos (sin claves ni texto de DFIR en el historial), caché/salidas privadas para Akira (D-69), docs/RESUMEN_PARA_TESIS.md + tests (236). Pendiente de Sebas: texto de Akira, prevalencia, `aem eval` con API key, decisiones PENDIENTE DE CONFIRMAR.
 - Ajustes previos a la corrida real (2026-10-17) ✔ D-67: tabla `runs` con corridas totales, válidas y fallidas (y su motivo); medias `_valid` y `_fail0`. Variantes `mut` verificadas: `check_variant`/`VariantLeak` con test por escenario, menciones sin defang y hashes en URL. Auditoría de IoC (Gunra 34/34, Interlock 38/38) y tipos qTox y cuentas (D-70). Protección FAKE (D-71). Revisión independiente de eval/ (docs/REVISION_EVAL.md: A1–A7 corregidos, C1–C10 abiertos). docs/RUNBOOK.md, `--help` en español + tests (269).
+- Última tanda previa a la corrida real (2026-10-17) ✔ D-63/66/67/68/70 CONFIRMADAS; `_fail0` es la media principal de los indicadores 1 y 3. Versión `anon` (D-72, PENDIENTE). `aem preflight` (eval no arranca con FALTA). `aem check-repo` (historial completo). Limitaciones C1–C3 en README y resumen. RUNBOOK y RESUMEN_PARA_TESIS actualizados + tests (300).

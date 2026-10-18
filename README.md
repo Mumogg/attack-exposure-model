@@ -128,9 +128,11 @@ Archivos de salida en `--out`:
 |---|---|
 | `aem fetch-data` | Descarga ATT&CK v19.2 y los boletines de CISA; genera los textos, las versiones `stripped` y los mapeos de referencia. |
 | `aem prepare-reports` | Prepara el texto de Akira que usted coloque (y regenera los de CISA con `--force`). |
-| `aem make-variants` | Genera la variante `mut` de cada reporte y los IoC «conocidos» de la organización. |
+| `aem make-variants` | Genera las versiones `mut` (IoC cambiados) y `anon` (además, nombres de la amenaza cambiados) de cada reporte, y los IoC «conocidos» de la organización. Falla si algún IoC o nombre del original sobrevive. |
 | `aem run` | Corre los 4 pasos sobre un reporte. |
-| `aem eval` | Corre el experimento completo y genera las tablas de los 5 indicadores. |
+| `aem preflight` | Comprueba que todo está listo antes de gastar llamadas (OK / FALTA / AVISO) y estima llamadas y tiempo. |
+| `aem eval` | Corre el experimento completo y genera las tablas de los 5 indicadores. Ejecuta antes el preflight y no arranca si hay un FALTA. Use siempre `--run-id <fecha>`. |
+| `aem check-repo` | Revisa los archivos versionados y todo el historial de git en busca de `.env`, API keys, texto del reporte de DFIR y archivos `private/`. Obligatorio antes de subir a GitHub. |
 | `aem demo` | Atajo: Gunra en modo demo. |
 
 ## Reproducir los resultados de la tesis
@@ -140,16 +142,17 @@ aem fetch-data
 # Opcional (Akira): coloque el texto en data/reports/akira_dfir_2026.txt (ver docs/report_preparation.md)
 aem prepare-reports
 aem make-variants
-aem eval                 # con API key; o `aem eval --demo` con la caché publicada
+aem preflight
+aem eval --run-id 2026-10-20   # con API key; o `aem eval --demo --run-id …` con la caché publicada
 ```
 
-`aem eval` corre **3 escenarios × 2 versiones (`orig`, `mut`) × 5 corridas** con los mismos parámetros (`temperature = 0`) y reporta media y desviación estándar. Resultados en `runs/<fecha>/results/` (`results.md`, CSV y JSON; cada tabla lleva modelo, versión, fecha y hash de las plantillas de prompt) y hojas de revisión manual en `eval/review_sheets/`. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). La estimación de llamadas y tiempo está en `docs/PLAN.md` (≈ 110–150 llamadas, 20–35 minutos con `GEMINI_RPM=10`).
+`aem eval` corre **3 escenarios × 3 versiones (`orig`, `mut`, `anon`) × 5 corridas** con los mismos parámetros (`temperature = 0`) y reporta media y desviación estándar. Resultados en `runs/<fecha>/results/` (`results.md`, CSV y JSON; cada tabla lleva modelo, versión, fecha y hash de las plantillas de prompt) y hojas de revisión manual en `eval/review_sheets/`. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). La estimación de llamadas y tiempo está en `docs/PLAN.md` (≈ 125–165 llamadas, 25–45 minutos con `GEMINI_RPM=10`). En los indicadores 1 y 3 la media principal es `_fail0` (las corridas fallidas cuentan como 0); `_valid` es secundaria (D-67). El paso a paso completo está en `docs/RUNBOOK.md`.
 
 | Indicador | Qué mide |
 |---|---|
 | 1 | Precisión y exhaustividad del paso 1 (`extracted_raw` frente al mapeo de referencia), a nivel de sub-técnica exacta y de técnica padre, con las omitidas y erróneas. |
 | 2 | Corrección del cruce de cobertura del paso 2 sobre la lista de referencia frente a las brechas declaradas en `coverage_design` (debe dar 100 %). |
-| 3 | Persistencia: porcentaje de técnicas cuya brecha (modelo) o presencia (enfoque tradicional por IoC) se reconoce en la variante con IoC modificados, frente al original. |
+| 3 | Persistencia: porcentaje de técnicas cuya brecha (modelo) o presencia (enfoque tradicional por IoC) se reconoce en `mut` (IoC modificados) y en `anon` (IoC y nombres de la amenaza modificados), frente al original. |
 | 4 | Fidelidad de los resúmenes: hoja de revisión manual + chequeo automático básico. |
 | 5 | Cumplimiento de los límites: campos o lenguaje evaluativo en cualquier salida de la IA (+ muestra para revisión manual). |
 
@@ -194,6 +197,9 @@ Antes de dárselo al LLM, de cada reporte se elimina la sección del mapeo ATT&C
 - El chequeo automático de los resúmenes y la lista de patrones evaluativos son aproximaciones; la revisión manual de una muestra es parte del método.
 - En ATT&CK v18+ las fuentes de datos se modelan como componentes de datos de las estrategias de detección; la columna `data_sources` lista esos componentes (D-03, pendiente de confirmar).
 - Los límites de la capa gratuita de Gemini no son cifras oficiales.
+- **C1 — El enfoque tradicional da 0 % por construcción:** en `mut` y `anon` ningún IoC del original sobrevive (lo verifica el código), así que el enfoque tradicional siempre da 0 %. Es un punto de referencia, **no una medición independiente**.
+- **C2 — Reconocimiento por el nombre:** `mut` conserva los nombres del actor y del malware, así que parte de la persistencia del modelo en `mut` podría deberse a que el LLM reconoce la amenaza por su nombre y no por el comportamiento. La versión `anon`, que reemplaza esos nombres, sirve para controlarlo (D-72).
+- **C3 — Datos de entrenamiento:** el modelo de lenguaje pudo conocer estos reportes (públicos) durante su entrenamiento; ni `mut` ni `anon` eliminan ese efecto.
 
 Las decisiones marcadas **PENDIENTE DE CONFIRMAR** están en `docs/DECISIONS.md`.
 

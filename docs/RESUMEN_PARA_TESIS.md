@@ -36,13 +36,17 @@ Fuentes de verdad, por si algo cambia: `data/model_config.yaml` (parámetros), `
 
 ### 1.4 Evaluación (`eval/`, `aem eval`)
 
-`eval/run_experiments.py` corre cada escenario × versión (`orig`, `mut`) × 5 corridas con el mismo pipeline de `aem run` en modo `auto`, guarda cada respuesta cruda y cada salida en `runs/<fecha>/…`, y calcula los cinco indicadores (`eval/metrics.py`). Produce tablas en CSV y Markdown (`runs/<fecha>/results/`) y dos hojas de revisión manual (`eval/review_sheets/`). Cada fila de cada tabla lleva el origen de las respuestas, el ID y la versión del modelo, la fecha y el SHA-256 de las plantillas de prompt. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71).
+`eval/run_experiments.py` corre cada escenario × versión (`orig`, `mut`, `anon`) × 5 corridas con el mismo pipeline de `aem run` en modo `auto`, guarda cada respuesta cruda y cada salida en `runs/<fecha>/…`, y calcula los cinco indicadores (`eval/metrics.py`). Produce tablas en CSV y Markdown (`runs/<fecha>/results/`) y dos hojas de revisión manual (`eval/review_sheets/`). Cada fila de cada tabla lleva el origen de las respuestas, el ID y la versión del modelo, la fecha y el SHA-256 de las plantillas de prompt. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). Antes de empezar, `aem eval` ejecuta `aem preflight` y no arranca si falta algo (API key, modelo, checksum de ATT&CK, texto de Akira, versiones, reglas de `.gitignore`).
+
+**Versiones de cada escenario:** `orig` (texto sin la sección del mapeo ni los IDs), `mut` (además, IoC cambiados, D-66) y `anon` (además, nombres del actor, de la familia y del malware cambiados por nombres genéricos como ActorX o LoaderX, D-72). `anon` sirve para controlar si la persistencia del modelo se debe a que reconoce la amenaza por su nombre (limitación C2).
+
+**Media principal (D-67, confirmada):** cada media se informa dos veces. `_fail0` cuenta cada corrida fallida como 0 y es la **principal** en los indicadores 1 y 3 (modelo); `_valid` usa solo las corridas válidas y es secundaria. En el indicador 5 se reportan las dos con el mismo peso, con el aviso de que contar una falla como 0 violaciones favorece al modelo. La tabla `runs` informa por escenario y versión las corridas totales, válidas y fallidas, con el motivo de cada falla.
 
 | Indicador | Definición implementada |
 |---|---|
 | 1. Precisión y exhaustividad del paso 1 | Sobre `extracted_raw` frente al mapeo de referencia (filas válidas en v19.2). Precisión = propuestas correctas / propuestas; exhaustividad = referencia identificada / referencia. A nivel de **sub-técnica exacta** y de **técnica padre**. Lista de omitidas y erróneas con su frecuencia en las corridas. |
 | 2. Corrección del cruce de cobertura | El paso 2 se aplica a la **lista de referencia** (aísla el error del LLM) y se compara con `coverage_design`. Debe dar 100 %; otra cifra indica un error de programación. |
-| 3. Persistencia | Modelo: % de técnicas de referencia con brecha (`parcial` o `sin cobertura`) cuyo ID exacto aparece en `extracted_raw`, en `orig` y en `mut`, y la razón mut/orig. Enfoque tradicional: IoC del reporte extraídos con expresiones regulares y comparados con los IoC conocidos; con ≥ 1 coincidencia reconoce todas las técnicas del escenario (100 %), si no, ninguna (0 %). |
+| 3. Persistencia | Modelo: % de técnicas de referencia con brecha (`parcial` o `sin cobertura`) cuyo ID exacto aparece en `extracted_raw`, en `orig`, `mut` y `anon`, y las razones mut/orig y anon/orig. Enfoque tradicional: IoC del reporte extraídos con expresiones regulares y comparados con los IoC conocidos; con ≥ 1 coincidencia reconoce todas las técnicas del escenario (100 %), si no, ninguna (0 %). En `anon` se reporta igual que en `mut`. |
 | 4. Fidelidad de los resúmenes | Hoja de revisión manual (descripción original, resumen, `ok (si/no)`, `observación`) + chequeo automático (IDs o cifras ausentes de la fuente, más de 3 oraciones). |
 | 5. Cumplimiento de los límites | Conteo automático de violaciones en toda salida de la IA: campos fuera del esquema y patrones evaluativos en español e inglés (`data/boundary_patterns.yaml`) que no estén en el texto fuente. Muestra aleatoria de 30 salidas para revisión manual. |
 
@@ -78,7 +82,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | ATT&CK | Enterprise **v19.2**, `enterprise-attack-19.2.json`, SHA-256 `dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4` |
 | Python | ≥ 3.11 (desarrollo con 3.14.7) |
 | Bibliotecas | `mitreattack-python` 6.3.1, `pydantic` 2.14.1, `typer` 0.27.3, `rich` 15.0.0, `PyYAML` 6.0.3, `pytest` 9.1.1 |
-| Pruebas | 269 pruebas automatizadas; ninguna llama a la API real |
+| Pruebas | 300 pruebas automatizadas; ninguna llama a la API real |
 
 ### 2.3 Diseño experimental
 
@@ -92,7 +96,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | Modo del analista en los experimentos | `auto` (criticidad y exposición predefinidas en `analyst_context`) |
 | Estadísticos | media y desviación estándar muestral (n−1); porcentajes con 2 decimales |
 | Muestra para revisión manual (indicador 5) | 30 salidas, semilla 20261017 |
-| Estimación de llamadas | ≈ 110–150 (detalle en `docs/PLAN.md`), 20–35 min con `GEMINI_RPM = 10` |
+| Estimación de llamadas | 45 de extracción (3 escenarios × 3 versiones × 5 corridas, si Akira cabe en 1 fragmento; 105 si se divide en 5) + 80–120 resúmenes (al menos 78) ≈ **125–165 llamadas** (hasta ≈ 225); **25–45 min** realistas con `GEMINI_RPM = 10` (13–17 min solo por el límite; hasta ≈ 60 min en el peor caso). Detalle en `docs/PLAN.md`; `aem preflight` da la cifra exacta de extracción |
 
 ### 2.4 Organización ficticia (borrador; brechas definidas por Sebas)
 
@@ -122,6 +126,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | Reemplazos realizados en `mut` | Gunra: 34 IoC distintos (38 apariciones): 17 IPv4, 4 dominios, 4 correos, 4 SHA-256, 4 qTox, 1 cuenta · Interlock: 38 (40): 35 SHA-256, 3 SHA-1 · Akira: al colocar el texto. Los enlaces de referencia de las notas no se tocan (solo el hash dentro de la URL de VirusTotal) |
 | IoC conocidos por la organización | 50 % de los IoC únicos de `orig` (redondeo hacia arriba), semilla 20261017: Gunra 17 de 34, Interlock 19 de 38 |
 | Umbral de reconocimiento | ≥ 1 coincidencia |
+| Versión `anon` (D-72) | `mut` + nombres propios de la amenaza reemplazados (`data/anon_names.yaml`), sin distinguir mayúsculas, en prosa, tablas y enlaces, nunca dentro de otra palabra. Gunra: Gunra → ActorX, Golden Community → ActorY, Conti → RansomwareW (94 reemplazos) · Interlock: Interlock → ActorX, Interlock RAT → RatX, NodeSnake → RatY, Rhysida → RansomwareW, Lumma Stealer → StealerX, Berserk Stealer → StealerY, SystemBC → MalwareX, DarkGate → MalwareY (82) · Akira: Akira → ActorX, BumbleBee → LoaderX, AdaptixC2 → C2FrameworkX (lista provisional, solo del título). No se tocan herramientas legítimas o de uso general (PowerShell, RDP, AnyDesk, PsExec, Impacket, RClone, FileZilla, Cobalt Strike), técnicas (ClickFix), CVE ni nombres de archivo. La generación falla si sobrevive algún nombre o IoC |
 
 ---
 
@@ -178,6 +183,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-69 | Material con derechos de autor fuera de git | Técnica |
 | D-70 | Tipos de IoC adicionales (qTox, cuentas; cuentas genéricas excluidas) para un enfoque tradicional justo | **CONFIRMADA** (2026-10-17) |
 | D-71 | Resultados con LLM simulado marcados FAKE y separados | Técnica |
+| D-72 | Versión `anon` y listas de nombres reemplazados | PENDIENTE DE CONFIRMAR |
 
 ---
 
@@ -187,7 +193,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 2. **El paso 3 no se valida de forma independiente:** en la simulación lo ejecuta el autor con criticidad y exposición definidas de antemano (`analyst_context`, modo `auto`); la revisión global queda sin responder.
 3. **Brechas definidas por el autor:** el indicador 2 verifica la implementación del paso 2, no la calidad del perfil de la organización.
 4. **Adaptaciones propias sin validación externa:** umbrales sobre la escala de DeTT&CT, política de sub-técnicas, árbol SSVC aplicado a técnicas adversarias (SSVC fue diseñado para vulnerabilidades).
-5. **Enfoque tradicional simplificado:** una coincidencia de IoC basta para «reconocer» todas las técnicas; los IoC conocidos son una fracción fija de los del propio reporte. En `mut` no hay coincidencias por construcción, así que su 0 % es esperado y lo que el indicador 3 compara es la persistencia del modelo frente a esa referencia. La fila tradicional (orig 100 %, mut 0 %) es un punto de referencia analítico fijado por construcción, no un resultado empírico (`docs/REVISION_EVAL.md` C1).
+5. **C1 — El enfoque tradicional da 0 % por construcción:** en `mut` y `anon` ningún IoC del original sobrevive (lo verifica el código), así que el enfoque tradicional siempre da 0 % (y 100 % en `orig`, porque los IoC conocidos son una fracción de los del propio reporte y basta una coincidencia). Es un punto de referencia, **no una medición independiente**; lo que el indicador 3 mide es la persistencia del modelo (`docs/REVISION_EVAL.md` C1).
 6. **No determinismo del LLM** aun con temperatura 0; se mitiga con 5 corridas y se reporta la dispersión. Los resultados dependen del modelo y la fecha (se registran).
 7. **Mapeo de referencia como verdad:** las tablas de CISA y la sección de The DFIR Report son el criterio de corrección; una técnica descrita en el texto pero ausente de esas tablas cuenta como «errónea».
 8. **Resúmenes una vez por técnica:** los indicadores 4 y 5 los evalúan una vez, no cinco; el chequeo automático de fidelidad es aproximado y la revisión manual es la medida principal.
@@ -197,15 +203,17 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 12. **Reproducibilidad de Akira:** su caché no se publica (derechos de autor); quien clone el repositorio reproduce Gunra e Interlock en modo demo, no Akira.
 13. **Capa gratuita de Gemini:** los límites no son oficiales y pueden cambiar.
 14. **Reportes de CISA en línea:** el sitio puede cambiar; el repositorio conserva el texto convertido usado en la tesis.
-15. **Información asimétrica en `mut`:** la variante conserva los nombres del actor y del malware, las herramientas y los CVE. El LLM podría reconocer la amenaza por su nombre y recordar técnicas de su entrenamiento (los boletines son públicos), de modo que parte de su persistencia podría no deberse a la extracción del comportamiento (`docs/REVISION_EVAL.md` C2).
-16. **Revisión independiente del código de evaluación:** hallazgos corregidos y cuestiones abiertas en `docs/REVISION_EVAL.md`.
+15. **C2 — Reconocimiento por el nombre:** `mut` conserva los nombres del actor y del malware, así que parte de la persistencia del modelo en `mut` podría deberse a que el LLM reconoce la amenaza por su nombre. La versión `anon`, que reemplaza esos nombres, sirve para controlarlo: la diferencia entre `mut` y `anon` estima ese efecto (D-72; `docs/REVISION_EVAL.md` C2).
+16. **C3 — Datos de entrenamiento:** el modelo de lenguaje pudo conocer estos reportes (públicos) durante su entrenamiento. Ni `mut` ni `anon` eliminan ese efecto: el comportamiento descrito sigue siendo el mismo texto.
+17. **Revisión independiente del código de evaluación:** hallazgos corregidos y cuestiones abiertas en `docs/REVISION_EVAL.md`.
 
 ---
 
 ## 6. Pendientes de Sebas antes de la corrida final
 
-- Colocar el texto de Akira (`docs/report_preparation.md`) y ejecutar `aem prepare-reports` y `aem make-variants`.
+- Colocar el texto de Akira (`docs/report_preparation.md`), completar sus nombres en `data/anon_names.yaml` y ejecutar `aem prepare-reports` y `aem make-variants`.
 - Llenar `data/prevalence/red_canary_2026.csv`.
 - Revisar `coverage_design` y las decisiones **PENDIENTE DE CONFIRMAR**.
-- Seguir `docs/RUNBOOK.md`. Ejecutar `aem eval` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
+- Seguir `docs/RUNBOOK.md`: `aem preflight`, luego `aem eval --run-id <fecha>` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
+- Ejecutar `aem check-repo` antes de subir a GitHub.
 - Confirmar la redacción de la declaración de uso de IA en el README.
