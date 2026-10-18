@@ -2,6 +2,8 @@
 
 Documento de apoyo para redactar el marco metodológico de la tesis. Describe lo que hay **en el código** al 2026-10-17. Las cifras de resultados **no** están aquí: se obtienen al correr `aem eval` con la API key real (`runs/<fecha>/results/results.md`).
 
+Repositorio público del prototipo: https://github.com/Mumogg/attack-exposure-model
+
 Fuentes de verdad, por si algo cambia: `data/model_config.yaml` (parámetros), `docs/DECISIONS.md` (decisiones), `docs/report_preparation.md` (preparación de reportes), `docs/PLAN.md` (estimación de llamadas y bitácora).
 
 ---

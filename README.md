@@ -95,14 +95,17 @@ Solo hace falta para correr el modelo con reportes nuevos o para regenerar las r
 
 Toda respuesta del LLM se guarda en `runs/llm_cache/` con clave = SHA-256 de (modelo + prompt + parámetros + esquema + número de réplica). Con `--demo` el programa usa **solo** esa caché y, si falta una respuesta, se detiene con un mensaje claro.
 
+Antes del primer `aem demo`, descargue los datos de ATT&CK v19.2 (no necesita API key):
+
 ```bash
+aem fetch-data                    # una sola vez: ATT&CK v19.2 + verificación de checksum
 aem demo                          # escenario Gunra (AA26-222A) de punta a punta, sin API key
 aem eval --demo                   # experimento completo desde la caché
 ```
 
 Las solicitudes construidas con el texto de Akira (derechos de autor) se guardan en `runs/llm_cache_private/`, que **no** se publica: quien clone el repositorio reproduce Gunra e Interlock, y Akira aparece como «sin caché privada» (D-69).
 
-> [PENDIENTE: Sebas] La caché de las corridas finales se genera con la API key real (`aem eval`) y se sube al repositorio. Hasta entonces, `aem demo` termina con el aviso «Modo demo: no hay respuesta guardada…».
+> [PENDIENTE: Sebas] La caché de las corridas finales se genera con la API key real (`aem eval`) y se sube al repositorio. Mientras no existan resultados reales de `aem eval` publicados en `runs/llm_cache/`, `aem demo` y `aem eval --demo` terminan con el aviso «Modo demo: no hay respuesta guardada…»: es lo esperado, no un error de instalación.
 
 ## Uso
 
