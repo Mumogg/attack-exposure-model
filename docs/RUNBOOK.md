@@ -72,6 +72,7 @@ La carpeta `runs/prueba/` se puede borrar o versionar; lo que importa conservar 
    ```
 
    Por escenario muestra cuántos IoC se reemplazaron y cierra con «verificación: ningún IoC del original queda en mut». Si queda alguno, el comando falla e indica el valor y la línea. En ese caso, avíseme con ese mensaje (no edite la variante a mano).
+   También lista los «tokens sin defang con forma de IoC» que dejó intactos (en Gunra e Interlock, los enlaces de referencia de las notas). Para Akira, abra `data/reports/akira_dfir_2026_mut.diff` y revise que esa lista no contenga un IoC real del actor escrito sin defang. Si lo contiene, avíseme.
 4. Ejecute `pytest -q`. Ahora también corren sobre Akira la prueba de que el texto `stripped` no tiene IDs y la de que `mut` no conserva IoC.
 5. Compruebe que nada de Akira quedó a la vista de git:
 
