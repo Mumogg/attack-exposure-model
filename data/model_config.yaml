@@ -23,6 +23,12 @@ ioc:                   # (D-63)
   # IPv4, dominios, URL y correos solo cuentan como IoC si están "defanged" ([.], hxxp), como los escriben
   # CISA y The DFIR Report; así los enlaces de referencia de las notas no se toman por IoC.
   require_defang: true
+  # (D-70) Tipos que los propios boletines listan como IoC además de los clásicos:
+  #   qtox: ID de qTox (76 caracteres; se toleran erratas de transcripción si hay >= qtox_min_hex hexadecimales)
+  #   account: cuentas listadas en tablas cuya columna se llama como en account_columns (y cada mención en el texto)
+  extra_types: [qtox, account]
+  account_columns: [Username, User Account, Account Name]
+  qtox_min_hex: 70
   # Un dominio sin "[.]" ni esquema http(s) solo cuenta como IoC si su TLD está aquí.
   domain_tlds: [com, net, org, io, info, biz, xyz, top, online, site, cloud, cc, onion, me, co, us, ru, su, cn, tk,
                 live, app, dev, link, pw, ws, to, pro, club, shop, store, icu, buzz, fun, space, website, tech,
@@ -31,8 +37,9 @@ ioc:                   # (D-63)
                      www.cisa.gov, www.fbi.gov, www.ic3.gov, github.com, microsoft.com, learn.microsoft.com,
                      thedfirreport.com, report.cisa.gov, stopransomware.gov]
 
-variants:
+variants:              # (D-66)
   seed: 20261017
+  require_defang: false  # la variante mut reemplaza también IoC escritos sin defang (p. ej. dentro de URL de notas)
 
 experiment:
   replicates: 5              # corridas por escenario x versión

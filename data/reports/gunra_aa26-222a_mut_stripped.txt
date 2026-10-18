@@ -129,7 +129,7 @@ After the binary completes the encryption process for all files in a specific di
 
 In their ransom notes, Gunra actors typically demand that victims initiate negotiation discussions within five to seven days via a Tor-based negotiation portal or qTox, or risk having their data leaked on Gunra’s DLS. The FBI observed Gunra actors attempting to communicate directly with management staff at victim companies via email to solicit ransom payments with limited success. Gunra actors instructed victims to send ransom payments to specific cryptocurrency wallet addresses and generally started negotiations at arbitrarily high ransom amounts (over tens of millions in US dollars).
 
-If Gunra victims do not negotiate or pay ransom, the actors publicly disclose the victims on their DLS and offer a preview of victims’ leaked data. This preview typically includes a directory listing of a victim’s exposed OneDrive and SharePoint files, but not the content of the files. Between June and July of 2025, Gunra actors operated a clearnet mirror of their Tor-based DLS at domain datapub.news. By March 2026, Gunra had moved their original Tor-based DLS to a different .onion address. On Gunra’s current Tor-based DLS, the actors advertise the sale of datasets from specific victims and instruct interested parties to contact them via qTox for more information.
+If Gunra victims do not negotiate or pay ransom, the actors publicly disclose the victims on their DLS and offer a preview of victims’ leaked data. This preview typically includes a directory listing of a victim’s exposed OneDrive and SharePoint files, but not the content of the files. Between June and July of 2025, Gunra actors operated a clearnet mirror of their Tor-based DLS at domain ykxthqpddj.invalid. By March 2026, Gunra had moved their original Tor-based DLS to a different .onion address. On Gunra’s current Tor-based DLS, the actors advertise the sale of datasets from specific victims and instruct interested parties to contact them via qTox for more information.
 
 To increase the likelihood of ransom payment and prevent system recovery, Gunra actors also used Windows Management Instrumentation (WMI) to initiate deletion of volume shadow copies prior to encryption, as demonstrated in the following example:13
 
@@ -204,30 +204,30 @@ Table 3. Gunra Email Addresses
 
 The following qTox IDs are associated with Gunra actors:
 
-- 2507312EC10BB44ED9DAA04E3C5C27E8C13154649B1A02E73ACFAE1681EE0208D05133A8FB22
+- 9B29A3E164A3818A0BFD680A6F78B757D96A5BE4BA46DF2F6C52821FEF73FBB5515DF1DD9A60
 
-- 0FE87CED0C611AE97E049C64288557F49E8271E91399E849328B078DA789A573031783235BEF
+- 7884970881A112FC90E58D0449FF757AB29F033A710EDBF5D33DF45FD7191616B22DFA5EA0ED
 
-- 47829AF1C943D4C296C910706923AS199BDA4995B076ED9A9016F7DEF161D445DF00F13E6900
+- E29F72A45D266956BA96BC3B8908C7DEECB6C59E51CBF820A224947DB908BEC0185CA14104C4
 
-- 9500B1A73716BCF40745086F7184A33EA0141B7D3F852431C8FDD2E1E8FAF9277E9FDC117B47
+- 10AA1E88C76D98478B9AF02115EDF70D91AAB47E955385679E17FC3ACA3697A15908B4F661B8
 
 Table 4 lists malicious files associated with Gunra ransomware.
 
 Table 4. Malicious Files (SHA256)
 
 | Filename | Hash (SHA256) | Description |
-| main.exe | 9b29a3e164a3818a0bfd680a6f78b757d96a5be4ba46df2f6c52821fef73fbb5 | Tool to exfil OneDrive and SharePoint |
-| main.exe | 515df1dd9a607884970881a112fc90e58d0449ff757ab29f033a710edbf5d33d | Tool to exfil OneDrive and SharePoint |
-| cryptor.exe | f45fd7191616b22dfa5ea0ede29f72a45d266956ba96bc3b8908c7deecb6c59e | Malicious executable |
-| msmp.exe | 51cbf820a224947db908bec0185ca14104c410aa1e88c76d98478b9af02115ed | Malicious executable |
+| main.exe | 4d93cb1fdcb8511d89c45d81506a2a2c5f8b08bd37d4637794286c90e42bd610 | Tool to exfil OneDrive and SharePoint |
+| main.exe | 406729a65e80cd5b2a744a0dd9c33264c753bb5a0298e87596304e5a05180ee6 | Tool to exfil OneDrive and SharePoint |
+| cryptor.exe | 43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b | Malicious executable |
+| msmp.exe | 54692c2561e6913837fc5041a774a0e325fac1593ee5c23bfdf280f5a09338e6 | Malicious executable |
 
 Table 5 lists malicious accounts created by Gunra actors to gain initial access to victim Fortinet devices.
 
 Table 5. Malicious Fortinet User Accounts
 
 | Username | Details |
-| forticloud-sync | CVE-2024-55591 and CVE-2025-24472 allow threat actors to exploit scheduled tasks on vulnerable FortiOS firewall devices to create a new, malicious persistent user forticloud-sync with super user privileges and a hard-coded password. |
+| acct-wjeoekmb | CVE-2024-55591 and CVE-2025-24472 allow threat actors to exploit scheduled tasks on vulnerable FortiOS firewall devices to create a new, malicious persistent user acct-wjeoekmb with super user privileges and a hard-coded password. |
 
 ## Incident Response
 
@@ -337,9 +337,9 @@ August 10, 2026: Initial version.
 
 1 For information on historical Conti ransomware activity, see CISA and FBI’s Conti Ransomware advisory.
 
-2 Breakglass Intelligence, “Gunra Ransomware’s Linux Variant Has a Fatal Flaw: time()-Seeded rand() Makes Encrypted Files Recoverable Without Paying,” Breakglass Intelligence, March 12, 2026, https://intel.breakglass.tech/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying; Jeffrey Francis Bonaobra, Melvin Singwa, Emmanuel Panopio “Gunra Ransomware Group Unveils Efficient Linux Variant,” Trend Micro, July 29, 2025, https://www.trendmicro.com/en_us/research/25/g/gunra-ransomware-linux-variant.html; and CYFIRMA, “Gunra Ransomware – A Brief Analysis,” CYFIRMA, May 3, 2025, https://www.cyfirma.com/research/gunra-ransomware-a-brief-analysis/.
+2 Breakglass Intelligence, “Gunra Ransomware’s Linux Variant Has a Fatal Flaw: time()-Seeded rand() Makes Encrypted Files Recoverable Without Paying,” Breakglass Intelligence, March 12, 2026, https://yestgnkzhw.invalid/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying; Jeffrey Francis Bonaobra, Melvin Singwa, Emmanuel Panopio “Gunra Ransomware Group Unveils Efficient Linux Variant,” Trend Micro, July 29, 2025, https://kmozfxtckh.invalid/en_us/research/25/g/gunra-ransomware-linux-variant.html; and CYFIRMA, “Gunra Ransomware – A Brief Analysis,” CYFIRMA, May 3, 2025, https://tteetbezjv.invalid/research/gunra-ransomware-a-brief-analysis/.
 
-3 CloudSEK, “Inside Gunra RaaS: From Affiliate Recruitment on the Dark Web to Full Technical Dissection of their Locker,” CloudSEK, February 11, 2026, https://www.cloudsek.com/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker.
+3 CloudSEK, “Inside Gunra RaaS: From Affiliate Recruitment on the Dark Web to Full Technical Dissection of their Locker,” CloudSEK, February 11, 2026, https://gapzwosfif.invalid/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker.
 
 4 CYFIRMA, “Gunra Ransomware – A Brief Analysis”; and Breakglass Intelligence, “Gunra Ransomware’s Linux Variant Has a Fatal Flaw.”
 
@@ -355,7 +355,7 @@ August 10, 2026: Initial version.
 
 10 Bonaobra, “Gunra Ransomware Group Unveils Efficient Linux Variant.”
 
-11 VirusTotal, “VirusTotal - File - f45fd7191616b22dfa5ea0ede29f72a45d266956ba96bc3b8908c7deecb6c59e,” VirusTotal, https://www.virustotal.com/gui/file/91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0/details.
+11 VirusTotal, “VirusTotal - File - 43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b,” VirusTotal, https://lwhtphseym.invalid/gui/file/43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b/details.
 
 12 CloudSEK, “Inside Gunra RaaS.”
 

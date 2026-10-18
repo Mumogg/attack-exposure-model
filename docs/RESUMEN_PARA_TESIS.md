@@ -115,10 +115,12 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | IPv4 de reemplazo | rangos de documentación **RFC 5737**: `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` |
 | Dominios de reemplazo | 10 letras aleatorias + TLD **`.invalid`** (RFC 2606); también para el host de las URL y el dominio de los correos |
 | Hashes de reemplazo | hexadecimal aleatorio del mismo largo (MD5 32, SHA-1 40, SHA-256 64) y mismas mayúsculas |
-| Comportamiento | resto del texto idéntico byte a byte (verificado por prueba); diff y tabla de reemplazos guardados |
-| IoC reconocidos | MD5, SHA-1, SHA-256, IPv4, URL, correo y dominio; IPv4/URL/dominio/correo solo si están «defanged» (`[.]`, `hxxp`) |
-| Reemplazos realizados | Gunra: 17 IPv4, 4 dominios, 4 correos, 4 SHA-256 · Interlock: 35 SHA-256, 3 SHA-1 · Akira: al colocar el texto |
-| IoC conocidos por la organización | 50 % de los IoC únicos de `orig` (redondeo hacia arriba), semilla 20261017: Gunra 15 de 29, Interlock 19 de 38 |
+| ID de qTox y cuentas de reemplazo | caracteres aleatorios del mismo largo · `acct-` + 8 letras |
+| Comportamiento | resto del texto idéntico byte a byte (verificado por prueba); diff y tabla de reemplazos guardados; la generación falla si algún IoC del original (con o sin defang) sigue en `mut`, indicando valor y línea |
+| IoC reconocidos (enfoque tradicional) | MD5, SHA-1, SHA-256, IPv4, URL, correo, dominio, ID de qTox y cuentas listadas en tablas; IPv4/URL/dominio/correo solo si están «defanged» (`[.]`, `hxxp`) |
+| Auditoría frente a la sección de IoC de cada boletín | Gunra: 34 listados, 34 extraídos · Interlock: 38 listados, 38 extraídos · ningún IoC extraído fuera de la sección |
+| Reemplazos realizados en `mut` | Gunra: 40 formas escritas (43 apariciones): 17 IPv4, 5 dominios, 4 correos, 4 SHA-256, 4 qTox, 1 cuenta, 5 URL de notas · Interlock: 47 (49): 35 SHA-256, 3 SHA-1, 8 URL de notas, 1 correo de contacto · Akira: al colocar el texto |
+| IoC conocidos por la organización | 50 % de los IoC únicos de `orig` (redondeo hacia arriba), semilla 20261017: Gunra 17 de 34, Interlock 19 de 38 |
 | Umbral de reconocimiento | ≥ 1 coincidencia |
 
 ---
@@ -174,6 +176,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-67 | Cálculo de métricas (repetidos, corridas fallidas, n−1) | PENDIENTE DE CONFIRMAR |
 | D-68 | Chequeo automático del indicador 4 | PENDIENTE DE CONFIRMAR |
 | D-69 | Material con derechos de autor fuera de git | Técnica |
+| D-70 | Tipos de IoC adicionales (qTox, cuentas) para un enfoque tradicional justo | PENDIENTE DE CONFIRMAR |
 
 ---
 

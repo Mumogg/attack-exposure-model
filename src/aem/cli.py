@@ -172,7 +172,9 @@ def make_variants() -> None:
     scenarios = load_scenarios(SCENARIOS_FILE)
     logs = build_variants(scenarios, cfg, KNOWN_IOCS_FILE)
     for log in logs:
-        console.print(f"{log['scenario']}: {log['variant']} — reemplazos {log['replacements_by_type']}")
+        console.print(f"{log['scenario']}: {log['variant']} — {log['unique_replaced']} formas escritas de IoC reemplazadas "
+                      f"({log['occurrences_replaced']} apariciones) {log['replacements_by_type']}; "
+                      "verificación: ningún IoC del original queda en mut")
     for name in sorted(set(scenarios) - {log["scenario"] for log in logs}):
         console.print(f"[yellow]{name}:[/yellow] sin texto preparado; ejecute `aem prepare-reports` primero.")
     console.print(f"semilla {cfg.variants.seed}; IoC conocidos de la organización: {KNOWN_IOCS_FILE}")

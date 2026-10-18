@@ -140,3 +140,91 @@ def test_build_variants_writes_variant_diff_log_and_known_iocs(tmp_path):
     data = yaml.safe_load(known.read_text(encoding="utf-8"))
     assert {k["scenario"] for k in data["known_iocs"]} == {"gunra"} and len(data["known_iocs"]) == 1
     assert data["policy"]["known_ioc_fraction"] == 0.5
+
+
+# --- D-70: IoC types listed by the bulletins themselves (fair baseline) -------------------------
+
+QTOX = "2507312EC10BB44ED9DAA04E3C5C27E8C13154649B1A02E73ACFAE1681EE0208D05133A8FB22"
+QTOX_TYPO = "47829AF1C943D4C296C910706923AS199BDA4995B076ED9A9016F7DEF161D445DF00F13E6900"  # as printed by CISA
+ACCOUNTS = ("| Username | Details |\n| forticloud-sync | creates a new, malicious persistent user forticloud-sync |\n\n"
+            "Later the actors logged in as forticloud-sync again.")
+
+
+def test_qtox_ids_are_iocs():
+    found = {(i.type, i.value) for i in extract_iocs(f"- {QTOX}\n- {QTOX_TYPO}\n", DEFAULT)}
+    assert found == {("qtox", QTOX.lower()), ("qtox", QTOX_TYPO.lower())}
+
+
+def test_accounts_from_username_column_and_every_mention():
+    iocs = [i for i in extract_iocs(ACCOUNTS, DEFAULT) if i.type == "account"]
+    assert {i.value for i in iocs} == {"forticloud-sync"} and len(iocs) == 3
+
+
+def test_extra_types_can_be_disabled():
+    cfg = DEFAULT.model_copy(update={"extra_types": []})
+    assert not extract_iocs(f"- {QTOX}\n" + ACCOUNTS, cfg)
+
+
+# --- complete mut variants ------------------------------------------------------------------------
+
+
+def test_hash_inside_a_url_is_replaced():
+    from eval.make_variants import check_variant
+    text = "See https://www.virustotal.com/gui/file/91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0/x"
+    loose = DEFAULT.model_copy(update={"require_defang": False})
+    new, _ = make_variant(text, loose, seed=1, salt="u")
+    assert "91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0" not in new
+    assert check_variant(text, new, DEFAULT) == []
+
+
+def test_check_variant_names_value_and_line():
+    from eval.make_variants import check_variant
+    original = "intro\nC2 45.61.136[.]10 here\n"
+    leaks = check_variant(original, "intro\nstill 45.61.136.10\n", DEFAULT)
+    assert leaks == [{"type": "ipv4", "value": "45.61.136.10", "line": 2}]
+
+
+def test_build_variants_fails_on_leak(tmp_path, monkeypatch):
+    import eval.make_variants as mv
+    from aem.config import SCENARIOS_FILE
+    from aem.scenarios import load_scenarios
+
+    scenarios = {k: v.relocated(tmp_path) for k, v in load_scenarios(SCENARIOS_FILE).items()}
+    g = scenarios["gunra"]
+    g.stripped.parent.mkdir(parents=True)
+    g.stripped.write_text("x\nC2 45.61.136[.]10\n", encoding="utf-8")
+    monkeypatch.setattr(mv, "make_variant", lambda text, cfg, seed, salt: (text, []))  # simulate a missed IoC
+    with pytest.raises(mv.VariantLeak, match=r"45\.61\.136\.10.*línea 2"):
+        mv.build_variants(scenarios, load_model_config(), tmp_path / "known.yaml")
+
+
+def _prepared_scenarios():
+    from aem.config import SCENARIOS_FILE
+    from aem.scenarios import load_scenarios
+    return [sc for sc in load_scenarios(SCENARIOS_FILE).values() if sc.stripped.exists()]
+
+
+@pytest.mark.parametrize("sc", _prepared_scenarios(), ids=lambda s: s.name)
+def test_no_original_ioc_survives_in_mut(sc):
+    """Every IoC of the original (defanged or not, prose, tables, notes) is gone from the mut text."""
+    from eval.make_variants import check_variant, variant_ioc_config
+    cfg = load_model_config()
+    original = sc.stripped.read_text(encoding="utf-8")
+    variant, mapping = make_variant(original, variant_ioc_config(cfg), seed=cfg.variants.seed, salt=sc.name)
+    assert mapping
+    assert check_variant(original, variant, cfg.ioc) == []
+
+
+def test_fanged_mention_of_a_detected_ioc_is_replaced():
+    """A domain listed defanged in a table is also replaced where the prose writes it plainly."""
+    from eval.make_variants import check_variant
+    text = "They mirrored the DLS at datapub.news.\n\n| Domain |\n| datapub[.]news |\n"
+    new, _ = make_variant(text, DEFAULT, seed=1, salt="d")
+    assert check_variant(text, new, DEFAULT) == []
+    assert new.replace("[.]", ".").count(".invalid") == 2
+
+
+def test_mapping_counts_every_occurrence():
+    text = "| Domain |\n| datapub[.]news |\nmirror at datapub.news and datapub[.]news\n"
+    _, mapping = make_variant(text, DEFAULT, seed=1, salt="o")
+    assert sum(m["occurrences"] for m in mapping) == 3

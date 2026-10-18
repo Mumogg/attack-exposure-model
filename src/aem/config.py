@@ -65,12 +65,16 @@ class BaselineConfig(_Cfg):
 
 class IocConfig(_Cfg):
     require_defang: bool = True
+    extra_types: list[Literal["qtox", "account"]] = Field(default_factory=lambda: ["qtox", "account"])
+    account_columns: list[str] = Field(default_factory=lambda: ["Username", "User Account", "Account Name"])
+    qtox_min_hex: int = Field(70, ge=1, le=76)
     domain_tlds: list[str] = Field(default_factory=list)
     excluded_domains: list[str] = Field(default_factory=list)
 
 
 class VariantConfig(_Cfg):
     seed: int = 20261017
+    require_defang: bool = False  # the mut text replaces IoCs written with or without defang (D-66)
 
 
 class ExperimentConfig(_Cfg):

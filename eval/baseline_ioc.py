@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 import random
 import re
+import string
 from dataclasses import dataclass
 
 from aem.config import BaselineConfig, IocConfig
@@ -22,14 +23,14 @@ _HASH = re.compile(r"(?<![0-9A-Za-z])(?:[0-9a-fA-F]{64}|[0-9a-fA-F]{40}|[0-9a-fA
 _IPV4 = re.compile(rf"(?<![\d.])(?:\d{{1,3}}{DOT}){{3}}\d{{1,3}}(?!\d|\.\d)")
 _LABELS = rf"(?:[a-z0-9](?:[a-z0-9-]{{0,61}}[a-z0-9])?{DOT})+[a-z]{{2,24}}"
 _EMAIL = re.compile(rf"(?<![\w.+-])[\w.+-]+@{_LABELS}(?![\w-]|\.[a-z0-9])", re.IGNORECASE)
-_DOMAIN = re.compile(rf"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{{0,61}}[a-z0-9])?{DOT})+[a-z]{{2,24}}(?![\w-]|\.[a-z0-9])",
-                     re.IGNORECASE)
+_DOMAIN = re.compile(rf"(?<![\w.-]){_LABELS}(?![\w-]|\.[a-z0-9])", re.IGNORECASE)
+_QTOX = re.compile(r"(?<![0-9A-Za-z])[0-9A-Za-z]{76}(?![0-9A-Za-z])")
 _HASH_TYPES = {32: "md5", 40: "sha1", 64: "sha256"}
 
 
 @dataclass(frozen=True)
 class Ioc:
-    type: str  # md5 | sha1 | sha256 | ipv4 | domain | url | email
+    type: str  # md5 | sha1 | sha256 | ipv4 | domain | url | email | qtox | account
     value: str  # normalized (refanged, lower-case where case does not matter)
     raw: str
     start: int
@@ -66,6 +67,30 @@ def _normalize_url(raw: str) -> str:
     scheme, rest = url.split("//", 1)
     host, sep, path = rest.partition("/")
     return f"{scheme.lower()}//{host.lower()}{sep}{path}"
+
+
+def _is_qtox(raw: str, cfg: IocConfig) -> bool:
+    """qTox ID: 76 characters, almost all hexadecimal (tolerates transcription typos, D-70)."""
+    return sum(c in string.hexdigits for c in raw) >= cfg.qtox_min_hex
+
+
+def table_accounts(text: str, columns: list[str]) -> list[str]:
+    """Values of the markdown-table columns whose header is one of `columns` (case-insensitive)."""
+    wanted = {c.strip().lower() for c in columns}
+    found: list[str] = []
+    col = None
+    for line in text.splitlines():
+        if not line.lstrip().startswith("|"):
+            col = None
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        heads = [i for i, c in enumerate(cells) if c.lower() in wanted]
+        if heads:
+            col = heads[0]
+        elif col is not None and col < len(cells) and cells[col] and not set(cells[col]) <= set("-: "):
+            if cells[col] not in found:
+                found.append(cells[col])
+    return found
 
 
 def scan(text: str, cfg: IocConfig) -> list[tuple[Ioc, bool]]:
@@ -112,6 +137,17 @@ def scan(text: str, cfg: IocConfig) -> list[tuple[Ioc, bool]]:
         host = refang(raw).lower()
         taken.append(m.span())
         found.append((Ioc("domain", host, raw, *m.span()), _excluded(host, cfg)))
+    if "qtox" in cfg.extra_types:
+        for m in _QTOX.finditer(text):
+            if free(m.start(), m.end()) and _is_qtox(m.group(0), cfg):
+                taken.append(m.span())
+                found.append((Ioc("qtox", m.group(0).lower(), m.group(0), *m.span()), False))
+    if "account" in cfg.extra_types:
+        for name in table_accounts(text, cfg.account_columns):
+            for m in re.finditer(rf"(?<![\w-]){re.escape(name)}(?![\w-])", text, re.IGNORECASE):
+                if free(m.start(), m.end()):
+                    taken.append(m.span())
+                    found.append((Ioc("account", name.lower(), m.group(0), *m.span()), False))
     return sorted(found, key=lambda x: x[0].start)
 
 
