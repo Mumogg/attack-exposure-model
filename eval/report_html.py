@@ -232,9 +232,9 @@ def _header(d: dict) -> str:
         omitted = ", ".join(f'{o["scenario"]} ({o["reason"]})' for o in res.get("escenarios_omitidos") or [])
         banner = (f'<p class="banner" role="alert"><strong>{t("PARTIAL RESULT", PARTIAL_LINE.split(":")[0])}</strong>'
                   f' — {t("omitted scenarios", "escenarios omitidos")}: {escape(omitted) or "-"}</p>')
-    private = (f'<p class="banner">{t("PRIVATE version: includes evidence quotes of the copyrighted report. "
+    private = ('<p class="banner">' + t("PRIVATE version: includes evidence quotes of the copyrighted report. "
                                          "Do not publish.", "Versión PRIVADA: incluye citas del reporte con "
-                                         "derechos de autor. No publicar.")}</p>') if d["private"] else ""
+                                         "derechos de autor. No publicar.") + '</p>') if d["private"] else ""
     facts = [(t("Run", "Corrida"), escape(res.get("run_id", ""))),
              (t("Model", "Modelo"), escape(f'{res.get("model", "")} ({"; ".join(res.get("model_versions") or []) or NO_DATA})')),
              (t("Run date", "Fecha de la corrida"), escape(run_date)),
@@ -244,15 +244,15 @@ def _header(d: dict) -> str:
              (t("Prompt templates (SHA-256)", "Plantillas de prompt (SHA-256)"),
               f'<code>{escape(res.get("prompt_templates_sha256", ""))}</code>')]
     dl = "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in facts)
-    return (f'<header id="summary"><h1>{t("AI-assisted exposure model based on MITRE ATT&amp;CK — results",
-                              "Modelo de exposición asistido por IA basado en MITRE ATT&amp;CK — resultados")}</h1>'
+    return ('<header id="summary"><h1>' + t("AI-assisted exposure model based on MITRE ATT&amp;CK — results",
+                              "Modelo de exposición asistido por IA basado en MITRE ATT&amp;CK — resultados") + '</h1>'
             f'{banner}{private}<dl class="facts">{dl}</dl>'
-            f'<p class="muted">{t("Means are sample means over the runs; error bars are ± sample SD (n−1). "
+            '<p class="muted">' + t("Means are sample means over the runs; error bars are ± sample SD (n−1). "
                                    "<code>_fail0</code> counts a failed run as 0 (primary mean for indicators 1 and 3); "
                                    "<code>_valid</code> uses only valid runs (D-67).",
                                    "Medias muestrales sobre las corridas; las barras de error son ± DE muestral (n−1). "
                                    "<code>_fail0</code> cuenta una corrida fallida como 0 (media principal de los "
-                                   "indicadores 1 y 3); <code>_valid</code> usa solo las corridas válidas (D-67).")}</p>'
+                                   "indicadores 1 y 3); <code>_valid</code> usa solo las corridas válidas (D-67).") + '</p>'
             "</header>")
 
 
@@ -264,8 +264,8 @@ def _indicator1(tables: dict) -> str:
     for metric, en, es in (("precision", "Precision", "Precisión"), ("recall", "Recall", "Exhaustividad")):
         series = {v: [(find.get((g, v, "exact"), {}).get(f"{metric}_mean_fail0"),
                        find.get((g, v, "exact"), {}).get(f"{metric}_sd_fail0")) for g in groups] for v in VERSIONS}
-        out.append(f'<figure><figcaption>{t(f"{en}, exact level (sub-technique), mean _fail0 ± SD",
-                                             f"{es}, nivel exacto (sub-técnica), media _fail0 ± DE")}</figcaption>'
+        out.append('<figure><figcaption>' + t(f"{en}, exact level (sub-technique), mean _fail0 ± SD",
+                                             f"{es}, nivel exacto (sub-técnica), media _fail0 ± DE") + '</figcaption>'
                    f'{svg_bars(groups, series, f"Indicator 1 {en}")}</figure>')
     out.append(legend())
     body = [[escape(r["scenario"]), escape(r["version"]),
@@ -297,9 +297,9 @@ def _indicator3(tables: dict) -> str:
     body = [[escape(r["scenario"]), _v(r.get("denominator_techniques")),
              *[_mean_sd(r, v) for v in VERSIONS], *[_mean_sd(r, v, "valid") for v in VERSIONS]] for r in rows]
     return (f'<h3>{t("Indicator 3 — Persistence of the model (%)", "Indicador 3 — Persistencia del modelo (%)")}</h3>'
-            f'<p class="muted">{t("Share of the scenario’s reference techniques with a coverage gap that the model "
+            '<p class="muted">' + t("Share of the scenario’s reference techniques with a coverage gap that the model "
                                    "extracts (exact ID).", "Proporción de las técnicas de referencia con brecha de "
-                                   "cobertura que el modelo extrae (ID exacto).")}</p>'
+                                   "cobertura que el modelo extrae (ID exacto).") + '</p>'
             f'<figure>{svg_bars(groups, series, "Indicator 3 model persistence")}</figure>{legend()}'
             + table([t("Scenario", "Escenario"), t("Gaps (denominator)", "Brechas (denominador)"),
                      *[f"{v} _fail0" for v in VERSIONS], *[f"{v} _valid" for v in VERSIONS]], body))
@@ -350,9 +350,9 @@ def _indicator5(tables: dict, manual: dict | None) -> str:
                                          if complete else t("no data available", "sin dato disponible")
                                          + f' <span class="muted">({escape(m["status_text"])})</span>')])
     return (f'<h3>{t("Indicator 5 — Compliance with the boundaries", "Indicador 5 — Cumplimiento de los límites")}</h3>'
-            f'<p class="muted">{t("Both means carry the same weight (D-67): counting a failed run as 0 violations "
+            '<p class="muted">' + t("Both means carry the same weight (D-67): counting a failed run as 0 violations "
                                    "favours the model.", "Ambas medias tienen el mismo peso (D-67): contar una corrida "
-                                   "fallida como 0 violaciones favorece al modelo.")}</p>'
+                                   "fallida como 0 violaciones favorece al modelo.") + '</p>'
             + "".join(charts) + legend()
             + f'<h4>{t("Automatic count", "Conteo automático")}</h4>'
             + table([t("Scenario", "Escenario"), t("Version", "Versión"), t("Output", "Salida"), "_fail0", "_valid",
@@ -374,23 +374,23 @@ def _model_vs_traditional(tables: dict) -> str:
             + table([t("Scenario", "Escenario"), t("Approach", "Enfoque"), t("Denominator", "Denominador"),
                      "orig _fail0", "mut _fail0", "anon _fail0", "mut/orig", "anon/orig",
                      t("IoC matches", "Coincidencias de IoC")], body)
-            + f'<p class="note"><strong>C1.</strong> {t("The traditional approach gives 0 % in mut and anon by "
+            + '<p class="note"><strong>C1.</strong> ' + t("The traditional approach gives 0 % in mut and anon by "
                 "construction: no IoC of the original survives there (the code checks it). It is a reference point, "
                 "not an independent measurement.", "El enfoque tradicional da 0 % en mut y anon por construcción: "
                 "ningún IoC del original sobrevive (lo verifica el código). Es un punto de referencia, no una "
-                "medición independiente.")}</p>'
-            + f'<p class="note"><strong>D-62.</strong> {t("The organisation “knows” 50 % of the unique IoCs of each "
+                "medición independiente.") + '</p>'
+            + '<p class="note"><strong>D-62.</strong> ' + t("The organisation “knows” 50 % of the unique IoCs of each "
                 "orig report (fixed seed); one match recognises the threat and, with it, all its reference "
                 "techniques. It is a deliberately favourable bound for the traditional approach in orig (100 %).",
                 "La organización «conoce» el 50 % de los IoC únicos de cada reporte orig (semilla fija); una "
                 "coincidencia reconoce la amenaza y, con ella, todas sus técnicas de referencia. Es una cota "
-                "deliberadamente favorable al enfoque tradicional en orig (100 %).")}</p></section>')
+                "deliberadamente favorable al enfoque tradicional en orig (100 %).") + '</p></section>')
 
 
 def _distributions(d: dict) -> str:
     out = [f'<section id="distribution"><h2>{t("4. Actions, coverage and tactics", "4. Acciones, cobertura y tácticas")}</h2>',
-           f'<p class="muted">{t("Counts over all valid runs (one row per extracted technique and run).",
-                                  "Conteos sobre todas las corridas válidas (una fila por técnica extraída y corrida).")}</p>']
+           '<p class="muted">' + t("Counts over all valid runs (one row per extracted technique and run).",
+                                  "Conteos sobre todas las corridas válidas (una fila por técnica extraída y corrida).") + '</p>']
     rows = []
     for (sc, v), counts in d["actions"].items():
         rows.append([escape(sc), escape(v), stacked(counts, ACTIONS),
@@ -423,8 +423,8 @@ def _distributions(d: dict) -> str:
                          f'<small>{escape(detail)}</small>')
         map_rows.append(cells)
     out.append(f'<h3>{t("Map by ATT&amp;CK tactic", "Mapa por táctica de ATT&amp;CK")}</h3>'
-               f'<p class="muted">{t("Distinct techniques extracted (any version and run) per tactic, with their step 3 action.",
-                                      "Técnicas distintas extraídas (cualquier versión y corrida) por táctica, con su acción del paso 3.")}</p>')
+               '<p class="muted">' + t("Distinct techniques extracted (any version and run) per tactic, with their step 3 action.",
+                                      "Técnicas distintas extraídas (cualquier versión y corrida) por táctica, con su acción del paso 3.") + '</p>')
     out.append(table([t("Tactic", "Táctica"), *[escape(s) for s in scen]], map_rows, "map"))
     out.append("</section>")
     return "".join(out)
@@ -465,10 +465,10 @@ def _technique_table(d: dict) -> str:
         t("Tactics", "Tácticas"), t("Action", "Acción"), t("Coverage", "Cobertura"),
         t("In reference", "En la referencia"), t("Runs", "Corridas"), t("Evidence quote (step 1)", "Cita de evidencia (paso 1)")))
     note = "" if d["private"] else (
-        f'<p class="muted">{t("Evidence quotes only for the public reports (CISA). The copyrighted report shows only "
+        '<p class="muted">' + t("Evidence quotes only for the public reports (CISA). The copyrighted report shows only "
                                "IDs, ATT&amp;CK names, tactics, coverage, actions and aggregates.",
                                "Citas solo de los reportes públicos (CISA). El reporte con derechos de autor muestra "
-                               "solo IDs, nombres de ATT&amp;CK, tácticas, cobertura, acciones y agregados.")}</p>')
+                               "solo IDs, nombres de ATT&amp;CK, tácticas, cobertura, acciones y agregados.") + '</p>')
     return (f'<section id="techniques"><h2>{t("5. Techniques extracted", "5. Técnicas extraídas")}</h2>{note}'
             f'<div class="filters">{select("scenario", "Scenario", "Escenario", scen)}'
             f'{select("version", "Version", "Versión", list(VERSIONS))}{select("tactics", "Tactic", "Táctica", tactics)}'
@@ -486,8 +486,8 @@ def _sensitivity(d: dict) -> str:
     body = [[escape(r["parameter"]), escape(str(r["value"])), escape(r["scenario"]), _v(r["gaps"]),
              *[_v(r.get(f"{v}_mean_fail0")) for v in VERSIONS], _v(r.get("persistence_mut_over_orig_fail0")),
              _v(r.get("persistence_anon_over_orig_fail0"))] for r in s["rows"]]
-    return (title + f'<p class="note">{t("Sensitivity analysis. It does not replace the main results; the confirmed "
-                                         "configuration (D-20, D-21) did not change.", escape(s["note"]))}</p>'
+    return (title + '<p class="note">' + t("Sensitivity analysis. It does not replace the main results; the confirmed "
+                                         "configuration (D-20, D-21) did not change.", escape(s["note"])) + '</p>'
             + table([t("Parameter", "Parámetro"), t("Value", "Valor"), t("Scenario", "Escenario"), t("Gaps", "Brechas"),
                      "orig _fail0", "mut _fail0", "anon _fail0", "mut/orig", "anon/orig"], body))
 
@@ -594,8 +594,8 @@ def render(d: dict) -> str:
         _sensitivity(d), _limits(tables),
         f'<h3>{t("Declaration of AI use in development", "Declaración de uso de IA en el desarrollo")}</h3>',
         f"<p>{t(*AI_DECLARATION)}</p></section>", "</main>",
-        f'<footer>{t("Generated with <code>aem report --html</code> from the files of the run; no figure was recomputed.",
-                     "Generado con <code>aem report --html</code> a partir de los archivos de la corrida; no se recalculó ninguna cifra.")}</footer>',
+        '<footer>' + t("Generated with <code>aem report --html</code> from the files of the run; no figure was recomputed.",
+                     "Generado con <code>aem report --html</code> a partir de los archivos de la corrida; no se recalculó ninguna cifra.") + '</footer>',
     ]
     return ("<!doctype html>\n"
             f'<html lang="en" data-lang="en"><head><meta charset="utf-8">'
