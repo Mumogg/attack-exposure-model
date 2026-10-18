@@ -1,0 +1,89 @@
+--- gunra_aa26-222a_stripped.txt (orig)
++++ gunra_aa26-222a_stripped.txt (mut)
+@@ -170,37 +170,37 @@
+ Table 2. IP Addresses/Domains
+ 
+ | IP Address/Domain | First Seen | Last Seen |
+-| 23.239.119[.]2 | July 2025 | Nov. 6, 2025 |
+-| 23.239.119[.]3 | July 2025 | Nov. 6, 2025 |
+-| 23.239.119[.]4 | July 2025 | Nov. 6, 2025 |
+-| 23.239.119[.]5 | July 2025 | Nov. 6, 2025 |
+-| 23.239.119[.]6 | July 2025 | Nov. 6, 2025 |
+-| 86.54.28[.]216 | June 7, 2025 | July 23, 2025 |
+-| 103.125.234[.]14 | Nov. 2025 | Dec. 2025 |
+-| 70.36.99[.]82 | Nov. 2025 | Dec. 2025 |
+-| 211.21.210[.]181 | Nov. 2025 | Dec. 2025 |
+-| 123.184.143[.]105 | Nov. 2025 | Dec. 2025 |
+-| 182.204.21[.]240 | Nov. 2025 | Dec. 2025 |
+-| 182.204.16[.]112 | Nov. 2025 | Dec. 2025 |
+-| 123.244.187[.]144 | Nov. 2025 | Dec. 2025 |
+-| 182.204.39[.]118 | Nov. 2025 | Dec. 2025 |
+-| 67.43.53[.]10 | Nov. 2025 | Dec. 2025 |
+-| 123.246.37[.]108 | Nov. 2025 | Dec. 2025 |
+-| 91.201.66[.]146 | Nov. 2025 | Dec. 2025 |
+-| Datapub[.]news | June 2025 | July 2025 |
+-| gunrabxbig445sjqa535uaymzerj6fp4nwc6ngc2xughf2pedjdhk4ad[.]onion | Apr. 2025 | Feb. 2026 |
+-| lgiil72vkmdtbc3qv4tyq6wedyjxqr2qd4ze7xl2cxgerdnymxj7soqd[.]onion | Mar. 2026 | July 2026 |
+-| nsnhzysbntsqdwpys6mhml33muccsvterxewh5rkbmcab7bg2ttevjqd[.]onion | Jan. 2026 | Jan. 2026 |
++| 203.0.113[.]224 | July 2025 | Nov. 6, 2025 |
++| 198.51.100[.]236 | July 2025 | Nov. 6, 2025 |
++| 198.51.100[.]90 | July 2025 | Nov. 6, 2025 |
++| 192.0.2[.]224 | July 2025 | Nov. 6, 2025 |
++| 203.0.113[.]10 | July 2025 | Nov. 6, 2025 |
++| 198.51.100[.]189 | June 7, 2025 | July 23, 2025 |
++| 203.0.113[.]198 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]147 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]126 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]43 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]211 | Nov. 2025 | Dec. 2025 |
++| 192.0.2[.]19 | Nov. 2025 | Dec. 2025 |
++| 192.0.2[.]113 | Nov. 2025 | Dec. 2025 |
++| 192.0.2[.]183 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]28 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]157 | Nov. 2025 | Dec. 2025 |
++| 198.51.100[.]164 | Nov. 2025 | Dec. 2025 |
++| ykxthqpddj[.]invalid | June 2025 | July 2025 |
++| asauoaolco[.]invalid | Apr. 2025 | Feb. 2026 |
++| tvfttxgjjd[.]invalid | Mar. 2026 | July 2026 |
++| nycierqrnf[.]invalid | Jan. 2026 | Jan. 2026 |
+ 
+ Table 3 lists email addresses associated with Gunra actors.
+ 
+ Table 3. Gunra Email Addresses
+ 
+ | Email Address | Description |
+-| a00f105546345756@proton[.]me | Ransom negotiation |
+-| 4569f6322bc3b22e9@proton[.]me | Ransom negotiation |
+-| ilovemycubscout@gmail[.]com | Ransom negotiation |
+-| 6449a3c1e612168526@proton[.]me | Ransom negotiation |
++| a00f105546345756@ajivhlaier[.]invalid | Ransom negotiation |
++| 4569f6322bc3b22e9@ajivhlaier[.]invalid | Ransom negotiation |
++| ilovemycubscout@rsgzznbybk[.]invalid | Ransom negotiation |
++| 6449a3c1e612168526@ajivhlaier[.]invalid | Ransom negotiation |
+ 
+ The following qTox IDs are associated with Gunra actors:
+ 
+@@ -217,10 +217,10 @@
+ Table 4. Malicious Files (SHA256)
+ 
+ | Filename | Hash (SHA256) | Description |
+-| main.exe | 2dc70a12d158d437e45a55b1d52f3d61c6082a1e1667573302ba3b62813e2751 | Tool to exfil OneDrive and SharePoint |
+-| main.exe | 834efe9b392c6c000877ea5613a079445affc16fe8af5997d68c55cafc95e5d1 | Tool to exfil OneDrive and SharePoint |
+-| cryptor.exe | 91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0 | Malicious executable |
+-| msmp.exe | a82e496b7b5279cb6b93393ec167dd3f50aff1557366784b25f9e51cb23689d9 | Malicious executable |
++| main.exe | 9b29a3e164a3818a0bfd680a6f78b757d96a5be4ba46df2f6c52821fef73fbb5 | Tool to exfil OneDrive and SharePoint |
++| main.exe | 515df1dd9a607884970881a112fc90e58d0449ff757ab29f033a710edbf5d33d | Tool to exfil OneDrive and SharePoint |
++| cryptor.exe | f45fd7191616b22dfa5ea0ede29f72a45d266956ba96bc3b8908c7deecb6c59e | Malicious executable |
++| msmp.exe | 51cbf820a224947db908bec0185ca14104c410aa1e88c76d98478b9af02115ed | Malicious executable |
+ 
+ Table 5 lists malicious accounts created by Gunra actors to gain initial access to victim Fortinet devices.
+ 
+@@ -355,7 +355,7 @@
+ 
+ 10 Bonaobra, “Gunra Ransomware Group Unveils Efficient Linux Variant.”
+ 
+-11 VirusTotal, “VirusTotal - File - 91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0,” VirusTotal, https://www.virustotal.com/gui/file/91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0/details.
++11 VirusTotal, “VirusTotal - File - f45fd7191616b22dfa5ea0ede29f72a45d266956ba96bc3b8908c7deecb6c59e,” VirusTotal, https://www.virustotal.com/gui/file/91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0/details.
+ 
+ 12 CloudSEK, “Inside Gunra RaaS.”
+ 

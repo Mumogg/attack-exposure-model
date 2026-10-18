@@ -55,7 +55,7 @@ class AnalystContext(Strict):
 
 
 class KnownIoc(Strict):
-    type: Literal["md5", "sha1", "sha256", "ipv4", "domain", "url"]
+    type: Literal["md5", "sha1", "sha256", "ipv4", "domain", "url", "email"]
     value: str
     scenario: str = ""
 

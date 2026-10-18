@@ -20,6 +20,9 @@ baseline:              # (D-62) enfoque tradicional basado en IoC
   seed: 20261017
 
 ioc:                   # (D-63)
+  # IPv4, dominios, URL y correos solo cuentan como IoC si están "defanged" ([.], hxxp), como los escriben
+  # CISA y The DFIR Report; así los enlaces de referencia de las notas no se toman por IoC.
+  require_defang: true
   # Un dominio sin "[.]" ni esquema http(s) solo cuenta como IoC si su TLD está aquí.
   domain_tlds: [com, net, org, io, info, biz, xyz, top, online, site, cloud, cc, onion, me, co, us, ru, su, cn, tk,
                 live, app, dev, link, pw, ws, to, pro, club, shop, store, icu, buzz, fun, space, website, tech,

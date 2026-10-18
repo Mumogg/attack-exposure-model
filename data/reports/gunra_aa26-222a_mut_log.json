@@ -1,0 +1,160 @@
+{
+  "scenario": "gunra",
+  "seed": 20261017,
+  "salt": "gunra",
+  "source": "gunra_aa26-222a_stripped.txt",
+  "variant": "gunra_aa26-222a_mut_stripped.txt",
+  "replacements_by_type": {
+    "domain": 4,
+    "email": 4,
+    "ipv4": 17,
+    "sha256": 4
+  },
+  "mapping": [
+    {
+      "type": "ipv4",
+      "original": "23.239.119[.]2",
+      "replacement": "203.0.113[.]224"
+    },
+    {
+      "type": "ipv4",
+      "original": "23.239.119[.]3",
+      "replacement": "198.51.100[.]236"
+    },
+    {
+      "type": "ipv4",
+      "original": "23.239.119[.]4",
+      "replacement": "198.51.100[.]90"
+    },
+    {
+      "type": "ipv4",
+      "original": "23.239.119[.]5",
+      "replacement": "192.0.2[.]224"
+    },
+    {
+      "type": "ipv4",
+      "original": "23.239.119[.]6",
+      "replacement": "203.0.113[.]10"
+    },
+    {
+      "type": "ipv4",
+      "original": "86.54.28[.]216",
+      "replacement": "198.51.100[.]189"
+    },
+    {
+      "type": "ipv4",
+      "original": "103.125.234[.]14",
+      "replacement": "203.0.113[.]198"
+    },
+    {
+      "type": "ipv4",
+      "original": "70.36.99[.]82",
+      "replacement": "198.51.100[.]147"
+    },
+    {
+      "type": "ipv4",
+      "original": "211.21.210[.]181",
+      "replacement": "198.51.100[.]126"
+    },
+    {
+      "type": "ipv4",
+      "original": "123.184.143[.]105",
+      "replacement": "198.51.100[.]43"
+    },
+    {
+      "type": "ipv4",
+      "original": "182.204.21[.]240",
+      "replacement": "198.51.100[.]211"
+    },
+    {
+      "type": "ipv4",
+      "original": "182.204.16[.]112",
+      "replacement": "192.0.2[.]19"
+    },
+    {
+      "type": "ipv4",
+      "original": "123.244.187[.]144",
+      "replacement": "192.0.2[.]113"
+    },
+    {
+      "type": "ipv4",
+      "original": "182.204.39[.]118",
+      "replacement": "192.0.2[.]183"
+    },
+    {
+      "type": "ipv4",
+      "original": "67.43.53[.]10",
+      "replacement": "198.51.100[.]28"
+    },
+    {
+      "type": "ipv4",
+      "original": "123.246.37[.]108",
+      "replacement": "198.51.100[.]157"
+    },
+    {
+      "type": "ipv4",
+      "original": "91.201.66[.]146",
+      "replacement": "198.51.100[.]164"
+    },
+    {
+      "type": "domain",
+      "original": "Datapub[.]news",
+      "replacement": "ykxthqpddj[.]invalid"
+    },
+    {
+      "type": "domain",
+      "original": "gunrabxbig445sjqa535uaymzerj6fp4nwc6ngc2xughf2pedjdhk4ad[.]onion",
+      "replacement": "asauoaolco[.]invalid"
+    },
+    {
+      "type": "domain",
+      "original": "lgiil72vkmdtbc3qv4tyq6wedyjxqr2qd4ze7xl2cxgerdnymxj7soqd[.]onion",
+      "replacement": "tvfttxgjjd[.]invalid"
+    },
+    {
+      "type": "domain",
+      "original": "nsnhzysbntsqdwpys6mhml33muccsvterxewh5rkbmcab7bg2ttevjqd[.]onion",
+      "replacement": "nycierqrnf[.]invalid"
+    },
+    {
+      "type": "email",
+      "original": "a00f105546345756@proton[.]me",
+      "replacement": "a00f105546345756@ajivhlaier[.]invalid"
+    },
+    {
+      "type": "email",
+      "original": "4569f6322bc3b22e9@proton[.]me",
+      "replacement": "4569f6322bc3b22e9@ajivhlaier[.]invalid"
+    },
+    {
+      "type": "email",
+      "original": "ilovemycubscout@gmail[.]com",
+      "replacement": "ilovemycubscout@rsgzznbybk[.]invalid"
+    },
+    {
+      "type": "email",
+      "original": "6449a3c1e612168526@proton[.]me",
+      "replacement": "6449a3c1e612168526@ajivhlaier[.]invalid"
+    },
+    {
+      "type": "sha256",
+      "original": "2dc70a12d158d437e45a55b1d52f3d61c6082a1e1667573302ba3b62813e2751",
+      "replacement": "9b29a3e164a3818a0bfd680a6f78b757d96a5be4ba46df2f6c52821fef73fbb5"
+    },
+    {
+      "type": "sha256",
+      "original": "834efe9b392c6c000877ea5613a079445affc16fe8af5997d68c55cafc95e5d1",
+      "replacement": "515df1dd9a607884970881a112fc90e58d0449ff757ab29f033a710edbf5d33d"
+    },
+    {
+      "type": "sha256",
+      "original": "91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0",
+      "replacement": "f45fd7191616b22dfa5ea0ede29f72a45d266956ba96bc3b8908c7deecb6c59e"
+    },
+    {
+      "type": "sha256",
+      "original": "a82e496b7b5279cb6b93393ec167dd3f50aff1557366784b25f9e51cb23689d9",
+      "replacement": "51cbf820a224947db908bec0185ca14104c410aa1e88c76d98478b9af02115ed"
+    }
+  ]
+}

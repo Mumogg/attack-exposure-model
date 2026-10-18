@@ -23,6 +23,7 @@ ATTACK_CHECKSUMS = DATA_DIR / "attack" / "CHECKSUMS.sha256"
 MODEL_CONFIG_FILE = DATA_DIR / "model_config.yaml"
 SSVC_TREE_FILE = DATA_DIR / "ssvc_tree.yaml"
 ORG_FILE = DATA_DIR / "org" / "fictional_org.yaml"
+KNOWN_IOCS_FILE = DATA_DIR / "org" / "known_iocs_generated.yaml"
 PREVALENCE_FILE = DATA_DIR / "prevalence" / "red_canary_2026.csv"
 SCENARIOS_FILE = DATA_DIR / "scenarios.yaml"
 BOUNDARY_PATTERNS_FILE = DATA_DIR / "boundary_patterns.yaml"
@@ -62,6 +63,7 @@ class BaselineConfig(_Cfg):
 
 
 class IocConfig(_Cfg):
+    require_defang: bool = True
     domain_tlds: list[str] = Field(default_factory=list)
     excluded_domains: list[str] = Field(default_factory=list)
 

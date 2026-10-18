@@ -86,3 +86,20 @@ def test_fetch_data_prepares_cisa_reports(tmp_path, monkeypatch, mini_attack):
     assert (data / "reports" / "interlock_aa25-203a_stripped.txt").exists()
     assert (data / "reference_mappings" / "gunra.csv").exists()
     assert "akira_dfir_2026.txt" in res.output.replace("\n", "")  # tells Sebas where to place the DFIR text
+
+
+def test_make_variants_command(tmp_path, monkeypatch):
+    import shutil
+    from aem.config import SCENARIOS_FILE
+
+    data = tmp_path / "data"
+    (data / "reports").mkdir(parents=True)
+    shutil.copy(SCENARIOS_FILE, data / "scenarios.yaml")
+    (data / "reports" / "gunra_aa26-222a_stripped.txt").write_text("C2 45.61.136[.]10\n", encoding="utf-8")
+    monkeypatch.setattr("aem.cli.SCENARIOS_FILE", data / "scenarios.yaml")
+    monkeypatch.setattr("aem.cli.KNOWN_IOCS_FILE", tmp_path / "known.yaml")
+    res = runner.invoke(app, ["make-variants"])
+    assert res.exit_code == 0, res.output
+    assert (data / "reports" / "gunra_aa26-222a_mut_stripped.txt").exists()
+    assert (tmp_path / "known.yaml").exists()
+    assert "semilla" in res.output

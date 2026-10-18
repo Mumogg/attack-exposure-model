@@ -9,7 +9,7 @@ from rich.console import Console
 
 from aem import config
 from aem.config import (
-    ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, LLM_CACHE_DIR, ORG_FILE, PREVALENCE_FILE, RUNS_DIR,
+    ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, LLM_CACHE_DIR, ORG_FILE, PREVALENCE_FILE, RUNS_DIR,
     SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
 )
 from aem.fetch import http_get
@@ -140,6 +140,22 @@ def prepare_reports(
         _prepare_reports(attack, force=force, download=False)
     except (FileNotFoundError, OSError) as exc:
         _fail(str(exc))
+
+
+@app.command("make-variants")
+def make_variants() -> None:
+    """Genera la variante «mut» de cada reporte (IoC modificados, comportamiento intacto) y los IoC conocidos."""
+    from aem.scenarios import load_scenarios
+    from eval.make_variants import build_variants
+
+    cfg = load_model_config()
+    scenarios = load_scenarios(SCENARIOS_FILE)
+    logs = build_variants(scenarios, cfg, KNOWN_IOCS_FILE)
+    for log in logs:
+        console.print(f"{log['scenario']}: {log['variant']} — reemplazos {log['replacements_by_type']}")
+    for name in sorted(set(scenarios) - {log["scenario"] for log in logs}):
+        console.print(f"[yellow]{name}:[/yellow] sin texto preparado; ejecute `aem prepare-reports` primero.")
+    console.print(f"semilla {cfg.variants.seed}; IoC conocidos de la organización: {KNOWN_IOCS_FILE}")
 
 
 @app.command("run")

@@ -94,10 +94,27 @@ Se usan las **38 técnicas** que muestra la sección «MITRE ATT&CK» del report
 Las tablas de CISA incluyen a veces un ID de táctica (p. ej. `TA0009` Collection) en lugar de una técnica. Esas filas no entran en el mapeo de referencia, porque no son técnicas; se listan en `docs/report_preparation.md`. En concreto, las filas TA0005, TA0006, TA0009 y TA0011 quedan fuera: la comparación es a nivel de técnica/sub-técnica.
 
 ### D-62. Enfoque tradicional (IoC) — **PENDIENTE DE CONFIRMAR**
-`baseline.known_ioc_fraction` (por defecto 0,5) de los IoC del reporte `orig` se toman, con semilla fija, como `known_iocs` de la organización (archivo generado `data/org/known_iocs_generated.yaml`, referenciado desde el YAML). Si hay ≥ `baseline.min_matches` (por defecto 1) coincidencias, se reconocen todas las técnicas del escenario; si no, ninguna.
+`aem make-variants` toma, con semilla fija (`baseline.seed` = 20261017), una fracción `baseline.known_ioc_fraction` (por defecto 0,5, redondeo hacia arriba) de los IoC **únicos** de la versión `orig` (stripped) de cada escenario y los escribe en `data/org/known_iocs_generated.yaml`, que el YAML de la organización referencia con `known_iocs_file`. Los IoC conocidos se comparan contra **todos** los escenarios (la organización «los conoce», sin importar de qué boletín vinieron). Si hay ≥ `baseline.min_matches` (por defecto 1) coincidencias por tipo y valor normalizado, el enfoque tradicional «reconoce» la amenaza y con ella todas las técnicas de referencia del escenario; si no, ninguna. Es una simplificación deliberada y configurable.
+
+Nota: si Sebas coloca el texto de Akira y ejecuta `aem make-variants`, el archivo generado incluirá IoC de ese reporte (valores de indicadores, no texto del reporte). Sebas decide si se versiona.
 
 ### D-63. Extracción de IoC y dominios de referencia — **PENDIENTE DE CONFIRMAR**
-Se reconocen como IoC: hashes MD5/SHA-1/SHA-256, IPv4 (también con `[.]`), URL y dominios. Para no confundir nombres de archivo (`main.exe`, `secretsdump.py`) con dominios, un dominio sin `[.]` ni esquema `http(s)` solo cuenta si su TLD está en una lista blanca (`data/model_config.yaml`). Los dominios institucionales del propio boletín (`cisa.gov`, `fbi.gov`, `ic3.gov`, `mitre.org`…) se excluyen (lista configurable).
+Tipos reconocidos (`eval/baseline_ioc.py`): MD5, SHA-1, SHA-256 (hexadecimal de 32/40/64 caracteres aislado), IPv4, URL, correo electrónico y dominio. Reglas:
+- `ioc.require_defang: true` (por defecto): IPv4, URL, dominios y correos solo cuentan si están escritos «defanged» (`[.]`, `[:]`, `hxxp`), que es como CISA y The DFIR Report publican los IoC. Así los enlaces de referencia de la sección «Notes» (Trend Micro, Talos, cisecurity.org…) no se toman por IoC. Los hashes no requieren esa marca.
+- Con `require_defang: false`, un dominio sin `[.]` ni esquema solo cuenta si su TLD está en `ioc.domain_tlds`, para no confundir nombres de archivo (`main.exe`, `secretsdump.py`) con dominios.
+- Los dominios institucionales (`cisa.gov`, `fbi.gov`, `mitre.org`…, lista `ioc.excluded_domains`) y sus subdominios se excluyen.
+- En un correo, el IoC es la dirección completa (p. ej. `x@proton[.]me`), no el dominio del proveedor.
+- Una URL ocupa su tramo completo: un hash dentro de una URL de referencia no cuenta por separado.
+- Resultado con los boletines (2026-10-17): Gunra 29 IoC únicos (17 IPv4, 4 dominios, 4 correos, 4 SHA-256); Interlock 38 (35 SHA-256, 3 SHA-1).
+
+### D-66. Variante `mut` (`eval/make_variants.py`) — **PENDIENTE DE CONFIRMAR**
+Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado según D-63 se reemplaza; todo lo demás queda idéntico byte a byte (test que revierte el mapeo y recupera el original).
+- Hashes → hexadecimal aleatorio del mismo largo y las mismas mayúsculas/minúsculas.
+- IPv4 → direcciones de los rangos de documentación RFC 5737 (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), sin repetir.
+- Dominios (también el host de una URL y el dominio de un correo) → nombre aleatorio de 10 letras con TLD `.invalid` (RFC 2606). Se conserva la ruta de la URL y la parte local del correo.
+- Se conserva el estilo «defanged» en la misma posición (`45.61.136[.]10` → `198.51.100[.]23`).
+- Un mismo IoC recibe siempre el mismo reemplazo dentro del reporte.
+- Semilla: `variants.seed` = 20261017, combinada con el nombre del escenario. Por cada escenario se guardan `<reporte>_mut_stripped.txt`, `<reporte>_mut.diff` y `<reporte>_mut_log.json` (semilla y tabla de reemplazos).
 
 ### D-64. Indicador 3 del modelo
 Denominador: técnicas de la referencia (válidas en v19.2) cuya cobertura en el YAML es `parcial` o `sin cobertura`. Numerador: las que aparecen con ID exacto en `extracted_raw`. Se reporta el porcentaje en `orig`, en `mut` y la razón mut/orig.

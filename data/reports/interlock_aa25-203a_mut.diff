@@ -1,0 +1,93 @@
+--- interlock_aa25-203a_stripped.txt (orig)
++++ interlock_aa25-203a_stripped.txt (mut)
+@@ -112,50 +112,50 @@
+ Table 3. Files Used by Interlock Ransomware Actors (SHA-256)
+ 
+ | File Name | Hash |
+-| 1.ps1 | fba4883bf4f73aa48a957d894051d78e0085ecc3170b1ff50e61ccec6aeee2cd |
+-| advanced_port_scanner.exe | 4b036cc9930bb42454172f888b8fde1087797fc0c9d31ab546748bd2496bd3e5 |
+-| Aisa.exe | 18a507bf1c533aad8e6f2a2b023fbbcac02a477e8f05b095ee29b52b90d47421 |
+-| AnyDesk.exe | 1a70f4eef11fbecb721b9bab1c9ff43a8c4cd7b2cafef08c033c77070c6fe069 |
+-| autoservice.dll | a4069aa29628e64ea63b4fb3e29d16dcc368c5add304358a47097eedafbbb565 |
+-| Autostart.exe | d535bdc9970a3c6f7ebf0b229c695082a73eaeaf35a63cd8a0e7e6e3ceb22795 |
+-| cht | FAFCD5404A992850FFCFFEE46221F9B2FF716006AECB637B80E5CD5AA112D79C |
+-| cht.exe | C20BABA26EBB596DE14B403B9F78DDC3C13CE9870EEA332476AC2C1DD582AA07 |
+-| cleanup.dll (SystemBC) | 1845a910dcde8c6e45ad2e0c48439e5ab8bbbeb731f2af11a1b7bbab3bfe0127 |
+-| conhost | 44887125aa2df864226421ee694d51e5535d8c6f70e327e9bcb366e43fd892c1 |
+-| conhost.dll | a70af759e38219ca3a7f7645f3e103b13c9fb1db6d13b68f3d468b7987540ddf |
+-| conhost.dll | 96babe53d6569ee3b4d8fc09c2a6557e49ebc2ed1b965abda0f7f51378557eb1 |
+-| difxepi.dll (SystemBC) | 1845a910dcde8c6e45ad2e0c48439e5ab8bbbeb731f2af11a1b7bbab3bfe0127 |
+-| iexplore.exe | d0c1662ce239e4d288048c0e3324ec52962f6ddda77da0cb7af9c1d9c2f1e2eb |
+-| klg.dll | A4F0B68052E8DA9A80B70407A92400C6A5DEF19717E0240AC608612476E1137E |
+-| !!!OPEN_ME!!!.txt | 68A49D5A097E3850F3BB572BAF2B75A8E158DADB70BADDC205C2628A9B660E7A |
+-| processhacker-2.39-bin.zip | 88f26f3721076f74996f8518469d98bf9be0eaee5b9eccc72867ebfc25ea4e83 |
+-| PsExec.exe | 078163d5c16f64caa5a14784323fd51451b8c831c73396b967b4e35e6879937b |
+-| putty.exe | 7a43789216ce242524e321d2222fa50820a532e29175e0a2e685459a19e09069 |
+-| puttyportable.exe | 97931d2e2e449ac3691eb526f6f60e2f828de89074bdac07bd7dbdfd51af9fa0 |
+-| PuTTYPortable.zip | ff7ad2376ae01e4b3f1e1d7ae630f87b8262b5c11bc5d953e1ac34ffe81401b5 |
+-| qrpce91.exe.asd | 64a0ab00d90682b1807c5d7da1a4ae67cde4c5757fc7d995d8f126f0ec8ae983 |
+-| ScreenConnect.ClientService.exe | 2814b33ce81d2d2e528bb1ed4290d665569f112c9be54e65abca50c41314d462 |
+-| SophosendpointAgent.exe | f51b3d054995803d04a754ea3ff7d31823fab654393e8054b227092580be43db |
+-| SophosScaner.exe | dfb5ba578b81f05593c047f2c822eeb03785aecffb1504dcb7f8357e898b5024 |
+-| Starship.exe | 94bf0aba5f9f32b9c35e8dfc70afd8a35621ed6ef084453dc1b10719ae72f8e2 |
+-| start | 28c3c50d115d2b8ffc7ba0a8de9572fbe307907aaae3a486aabd8c0266e9426f |
+-| start.exe | 70bb799557da5ac4f18093decc60c96c13359e30f246683815a512d7f9824c8f |
+-| StorageExplorer.exe | 73a9a1e38ff40908bcc15df2954246883dadfb991f3c74f6c514b4cffdabde66 |
+-| Sysmon.sys | 1d04e33009bcd017898b9e1387e40b5c04279c02ebc110f12e4a724ccdb9e4fb |
+-| upd_2327991.exe | 7b9e12e3561285181634ab32015eb653ab5e5cfa157dd16cdd327104b258c332 |
+-| webujgd.lnk | 70EE22D394E107FBB807D86D187C216AD66B8537EDC67931559A8AEF18F6B5B3 |
+-| WinSCP-6.3.5-Setup.exe | 8eb7e3e8f3ee31d382359a8a232c984bdaa130584cad11683749026e5df1fdc3 |
+-| Proxy Tool | e4d6fe517cdf3790dfa51c62457f5acd8cb961ab1f083de37b15fd2fddeb9b8f |
+-| Encryptor | e86bb8361c436be94b0901e5b39db9b6666134f23cce1e5581421c2981405cb1 |
+-| Encryptor | c733d85f445004c9d6918f7c09a1e0d38a8f3b37ad825cd544b865dba36a1ba6 |
+-| Encryptor | 28c3c50d115d2b8ffc7ba0a8de9572fbe307907aaae3a486aabd8c0266e9426f |
++| 1.ps1 | cc60a84a6171f92c3b3adabb5fa9397762e90dc0b2ee60e17b910566039eed95 |
++| advanced_port_scanner.exe | 807c81ceb98ac5c8a439660786bd62e6c6196d608bf4e2326421cdb23fa04271 |
++| Aisa.exe | 983a51ea664911c1e7f5a7ce2105a7dce29d2240ad15931642b5bf289c913886 |
++| AnyDesk.exe | c72bfb7b78a93848c19deca3df94e79ea98456053dc278e635bd52ac68b92834 |
++| autoservice.dll | 0370b578dbb0d9808416ce3d063e15fb2e5e901ffb542db07b1198964ed24ff0 |
++| Autostart.exe | c5ff2818438a476f76fdf05310e3627593ed712d7fa18809e03365acbc668a1c |
++| cht | 6DE6B81B6A2EC1B68101344610B0EF2C39AEEE84BCF5FB76B70CEB6ED3869CA8 |
++| cht.exe | 580B52F87CE6D9CDB34040A5338AA3221E3325385660D636F7C6BE9753CC7B38 |
++| cleanup.dll (SystemBC) | 1031439ffec4d4aa31835c2e41b26728becace36553d50e9824bd056c6e92d77 |
++| conhost | cb8d64664c762b7c33236af2c085ae53929e0328d66da8b554f4ba1f7be48ef6 |
++| conhost.dll | 081d72ee069abadcdc1af22652da473b908a6cab99e6e2501b2bdba3dcd835e7 |
++| conhost.dll | 795d5ef6fb80ba71c5be723e5694098118927980c4aec8d398959f553ef97236 |
++| difxepi.dll (SystemBC) | 1031439ffec4d4aa31835c2e41b26728becace36553d50e9824bd056c6e92d77 |
++| iexplore.exe | 729bc5647bea970bcb165e6b543a0f528371e84d7286abfab48137f6fc0004cb |
++| klg.dll | E15A362934B6684AA0D4026FB68FA971BD5CD8BA064C97B47393D34FEF39CFD8 |
++| !!!OPEN_ME!!!.txt | 164159680E2F2B57BE3BFD5C6C6A79ED4E14800B936FDC80DC7F7F0AC70AD2AF |
++| processhacker-2.39-bin.zip | a54cf71f43776799231243d48ddb9f9e59abff4c89bb66458939e350421279ff |
++| PsExec.exe | 4f99687089452f5febba891b54dbbe95130af38b0899ff18e8f151ac8a52a624 |
++| putty.exe | ef83fb0a3304337a1a6dcc2ffb1b853bb2638767d33fd512220eb25629f65303 |
++| puttyportable.exe | 07cff003f225e500f60fa524b0ca6c4acc2d929afb79340e9cbd0e6025a68216 |
++| PuTTYPortable.zip | dacc0e30cf206a9ef6a90c7c9c545c9e3a91a3f788ad71ef6afbf93767d759e3 |
++| qrpce91.exe.asd | 7252bec3f471a0c422d606359e907e57d11a9714510c36244a9fe2323c317262 |
++| ScreenConnect.ClientService.exe | 2b31276c79204a923a5e004d0eb26f44a125cc3b9ebc0232db1af4bc0bdd33cb |
++| SophosendpointAgent.exe | bcf6736278b1e2ee06c90f67d76a28197ee2d98fc7e94238980baf06e0fd88dc |
++| SophosScaner.exe | ec9bb50676d605a79000a1358f5fdf71f07141fcdf03a184cce88250f54bbed1 |
++| Starship.exe | 9ec42003a9514521814625162d5cb55e523d22df549cf3eb6d753f3504f48b19 |
++| start | 6ddfc5658989ef1ef6068b26d236037211d089f02082a84b75fd07618e97e8d0 |
++| start.exe | 97bf3ea2ebb1b48501e682b7327914f13fa8f007fed7615d26302863c8cc3ee3 |
++| StorageExplorer.exe | 15d6cb529dfa60d3165a692c2364b7c9d57cc2e736dcb50c5a82ee3e900c21ed |
++| Sysmon.sys | 8f46a52b3043d4e64d607ba8b89f2384291f4ec334ad759864372c24c342e2c0 |
++| upd_2327991.exe | 517d077509b1b9db646f5db47355597f547ebdcb836cf0862deb45f2d40cad00 |
++| webujgd.lnk | D685C761D1278539B1FB05641991CF21C0FF27DA01B5C0CF798842BA04984427 |
++| WinSCP-6.3.5-Setup.exe | db537e8ccd01ef4c99c08ff5199711687950c711b03241867803f70d16ba7f28 |
++| Proxy Tool | cac83a55cc16a0904329c077775fb19e5aaaefd11ceb92c3aef0723a74e43ded |
++| Encryptor | e413b9027edf54aa67a8b13ed3e7742fe9a7801b00fdf38b6a2f6be0496e1f39 |
++| Encryptor | 7f5f13ca692c63a02e0ee9e54244009dcecd5e78ef285bc64c7de387da93f433 |
++| Encryptor | 6ddfc5658989ef1ef6068b26d236037211d089f02082a84b75fd07618e97e8d0 |
+ 
+ Table 4. Files Used by Interlock Ransomware Actors (SHA-1)
+ 
+ | File Name | Hash |
+-| autorun.log | 514946a8fc248de1ccf0dbeee2108a3b4d75b5f6 |
+-| jar.jar | b625cc9e4024d09084e80a4a42ab7ccaa6afb61d |
+-| pack.jar | 3703374c9622f74edc9c8e3a47a5d53007f7721e |
++| autorun.log | 77db01ba4177ef98c9414cc33b07c4b0290bdd30 |
++| jar.jar | b415d281df69287edc56a4f48886dfab12e9d505 |
++| pack.jar | 9f8b8e9397bbe0e5a9a91e388a7af75c0f3b6b70 |
+ 
+ ## Mitigations
+ 

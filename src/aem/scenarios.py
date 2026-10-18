@@ -53,6 +53,10 @@ class Scenario:
         return self._sibling("_mut.diff")
 
     @property
+    def variant_log(self) -> Path:
+        return self._sibling("_mut_log.json")
+
+    @property
     def preparation_log(self) -> Path:
         return self._sibling("_preparation.json")
 
