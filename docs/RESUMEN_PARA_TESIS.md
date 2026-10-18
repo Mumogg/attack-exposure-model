@@ -183,7 +183,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-69 | Material con derechos de autor fuera de git | Técnica |
 | D-70 | Tipos de IoC adicionales (qTox, cuentas; cuentas genéricas excluidas) para un enfoque tradicional justo | **CONFIRMADA** (2026-10-17) |
 | D-71 | Resultados con LLM simulado marcados FAKE y separados | Técnica |
-| D-72 | Versión `anon` y listas de nombres reemplazados | PENDIENTE DE CONFIRMAR |
+| D-72 | Versión `anon` y criterio de nombres reemplazados (lista de Akira provisional) | **CONFIRMADA** (2026-10-17) |
 
 ---
 

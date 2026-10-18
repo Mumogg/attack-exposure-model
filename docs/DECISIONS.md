@@ -13,6 +13,33 @@ Cada decisión tomada sin confirmación explícita de Sebas lleva la etiqueta **
 ### D-03. Campo `data_sources` del paso 4 — **PENDIENTE DE CONFIRMAR (Sebas lo verifica contra la documentación de ATT&CK v19)**
 En ATT&CK v18+ las técnicas ya no tienen el campo `x_mitre_data_sources`; la detección se modela como *estrategia de detección → analíticas → componentes de datos*. El campo `data_sources` de la salida lista los **nombres de los componentes de datos** (p. ej. `Process Creation`, `Logon Session Creation`) que alcanzan la técnica por esa cadena. Los objetos `x-mitre-data-source` de v19 están todos deprecados. En el CSV la columna conserva el nombre `data_sources` (instrucción de Sebas, 2026-10-17).
 
+**Verificación contra el bundle (2026-10-17).** Se hizo con un script independiente que lee el JSON sin usar la cadena del código, sobre `data/attack/enterprise-attack-19.2.json` con SHA-256 `dc1639ca…c3d8f4`.
+- **Campo `x_mitre_data_sources`:** no aparece en ninguna de las 697 técnicas activas (`attack-pattern` no revocadas ni deprecadas) ni en ninguno de los 858 `attack-pattern` del bundle.
+- **Objetos que existen:**
+
+  | Tipo | Total | Activos |
+  |---|---|---|
+  | `x-mitre-detection-strategy` | 699 | 697 |
+  | `x-mitre-analytic` | 1 758 | 1 758 |
+  | `x-mitre-data-component` | 109 | 106 |
+  | `x-mitre-data-source` | 38 | 0 (todos deprecados) |
+
+- **Relaciones:** la única relación `relationship` entre estos tipos es `x-mitre-detection-strategy --detects--> attack-pattern` (697 relaciones). El resto de la cadena va por referencias dentro de los objetos:
+  - la estrategia tiene `x_mitre_analytic_refs` (lista de analíticas);
+  - cada analítica tiene `x_mitre_log_source_references`, cuyos elementos apuntan con `x_mitre_data_component_ref` al componente de datos;
+  - el componente trae `x_mitre_log_sources` (no se usa).
+- **Qué hace el código** (`AttackData._data_components_by_technique`): técnica ← `detects` ← estrategia activa → analíticas activas → componentes de datos activos. Toma el `name` de cada componente. La columna `data_sources` del CSV es esa lista, ordenada y unida con `; ` (`step4_reference.build_reference` → `output._join`); si está vacía, dice `sin dato disponible`.
+- **Concordancia:** el script independiente y el código dan exactamente los mismos componentes en las 697 técnicas activas (0 discrepancias).
+- **Recuento:**
+  - técnicas activas **con** componentes: **652**;
+  - técnicas **sin** componentes: **45**, que en el CSV salen como `sin dato disponible` (por ejemplo `T1583.002`, `T1585.002`, `T1588.005`, que son técnicas de preparación de recursos);
+  - por tipo: sub-técnicas con componentes 439 de 475; técnicas padre 213 de 222.
+- **Ejemplos:**
+  - `T1059.001` PowerShell: estrategia `DET0455` «Abuse of PowerShell for Arbitrary Execution». Componentes: Command Execution; Module Load; Process Creation; Process Metadata.
+  - `T1021.001` Remote Desktop Protocol: estrategia `DET0327` «Multi-event Detection Strategy for RDP-Based Remote Logins and Post-Access Activity». Componentes: Logon Session Creation; Logon Session Metadata; Network Connection Creation; Process Creation.
+  - En ambos casos la columna `data_sources` del CSV contiene exactamente esa lista.
+- **Estado:** sigue PENDIENTE hasta que Sebas lo verifique contra la documentación oficial.
+
 **Nota sobre DeTT&CT:** el modelo de datos de DeTT&CT, en el que se inspira el YAML de la organización, es anterior a este cambio de ATT&CK (usa las *data sources* clásicas). Por eso el YAML declara sus fuentes con nombres propios (`data_sources[].name`, aquí escritos como componentes de datos de v19 para que sean legibles), que no se cruzan automáticamente con la columna `data_sources` del paso 4: son dos cosas distintas (lo que la organización registra frente a lo que ATT&CK asocia a la técnica).
 
 ### D-04. SDK de Gemini
@@ -158,7 +185,8 @@ Las pruebas usan transportes simulados en lugar de la API. Para que esos resulta
 - si no lo es: las salidas de `aem run` y de cada corrida llevan el prefijo `FAKE_`, las tablas de `aem eval` van a `runs/<corrida>/results_FAKE/` (nunca a `results/`) con prefijo `FAKE_` y un encabezado «FAKE» en `results.md`, y las hojas de revisión llevan el prefijo `FAKE_`; la consola lo avisa;
 - toda fila de toda tabla lleva `llm_source`, `model`, `model_version`, `run_date` y `prompt_templates_sha256` (SHA-256 de `extract_v1.txt` y `summary_v1.txt`).
 
-### D-72. Versión `anon` (nombres de la amenaza anonimizados) — **PENDIENTE DE CONFIRMAR**
+### D-72. Versión `anon` (nombres de la amenaza anonimizados) — **CONFIRMADA (2026-10-17)**
+Confirmada por Sebas, incluido el criterio de nombres (se conserva Cobalt Strike y se reemplaza AdaptixC2). La lista de Akira sigue provisional hasta revisarla con `aem suggest-anon-names --scenario akira`.
 Pedida por Sebas (2026-10-17) para controlar la limitación C2: `mut` conserva los nombres, y el LLM podría reconocer la amenaza por su nombre.
 - `anon` = todo lo de `mut` (D-66) + los nombres propios de la amenaza reemplazados de forma consistente por nombres genéricos, según `data/anon_names.yaml`.
 - **Se reemplazan:**
