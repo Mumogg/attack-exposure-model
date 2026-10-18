@@ -218,7 +218,7 @@ La caché del LLM guarda el prompt completo, que incluye el texto del reporte, y
 - en `aem eval --demo` sin caché privada (cualquier persona que clone el repositorio), Akira se omite con el aviso «sin caché privada» y el resto se reproduce;
 - las tablas de resultados (`runs/<corrida>/results/`) solo contienen IDs, cifras y nombres de ATT&CK, y sí se versionan.
 
-### D-73. Escenario con derechos de autor sin texto local: corrida parcial — **PENDIENTE DE CONFIRMAR**
+### D-73. Escenario con derechos de autor sin texto local: corrida parcial — **CONFIRMADA (2026-10-18)**
 Pedida por Sebas (2026-10-18) para poder correr Gunra e Interlock antes de colocar el texto de Akira.
 - **Cuándo se omite:** un escenario `copyrighted: true` cuyo texto (`data/reports/akira_dfir_2026.txt`) no existe en la máquina. Se omite completo, aunque hayan quedado archivos `stripped` antiguos. Un texto de CISA ausente sigue siendo **FALTA**.
 - **`aem preflight`:** ese caso pasa de FALTA a **AVISO** («`aem eval` omitirá el escenario y el resultado quedará marcado como PARCIAL»). La estimación de llamadas no cuenta sus extracciones ni sus técnicas de referencia, y lo dice («Escenarios omitidos, no contados»).
