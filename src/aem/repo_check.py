@@ -4,7 +4,10 @@ Looks at every commit reachable from any ref plus the index (staged files) for:
 - a committed `.env`, files inside a `private/` folder (D-69) and the DFIR report files;
 - API-key patterns (the matched value is never printed);
 - text of the DFIR report, found through distinctive phrases taken from the local copy;
-- IoC values of the DFIR report (refanged and as written), also taken from the local copy (D-76).
+- IoC values of the DFIR report (refanged and as written), also taken from the local copy (D-76);
+- runs of 8 consecutive words of the DFIR report (case and punctuation ignored, the report title left out
+  because the repository cites it) in the index and in the new, not ignored files of the working tree; with
+  `deep`, also in every file version of the history.
 """
 
 from __future__ import annotations
@@ -37,6 +40,8 @@ def distinctive_phrases(text: str, count: int = 30, min_line: int = 120, length:
     return [p for p in phrases if len(p) >= 60]
 
 
+WINDOW_WORDS = 8
+_MAX_WINDOW_FILE = 20_000_000  # bytes; larger files (e.g. a STIX bundle) are not scanned
 _WORD = re.compile(r"[^\W_]+")
 
 
@@ -44,13 +49,14 @@ def _words(text: str) -> list[str]:
     return [w.casefold() for w in _WORD.findall(text)]
 
 
-def copied_windows(text: str, source: str, n: int = 8) -> list[str]:
+def _windows(words: list[str], n: int) -> set[tuple[str, ...]]:
+    return {tuple(words[i:i + n]) for i in range(len(words) - n + 1)}
+
+
+def copied_windows(text: str, source: str, n: int = WINDOW_WORDS) -> list[str]:
     """Runs of `n` consecutive words of `source` (case, punctuation and spacing ignored) that also appear in
     `text`. Used to check a generated file against the local copy of the DFIR report."""
-    src = _words(source)
-    windows = {tuple(src[i:i + n]) for i in range(len(src) - n + 1)}
-    words = _words(text)
-    found = {tuple(words[i:i + n]) for i in range(len(words) - n + 1)} & windows
+    found = _windows(_words(text), n) & _windows(_words(source), n)
     return sorted(" ".join(w) for w in found)
 
 
@@ -108,7 +114,80 @@ def _group(kind: str, hits: list[tuple[str, str, str]]) -> list[dict]:
     return out
 
 
-def check_repo(repo: Path, phrases: list[str], iocs: list[str] = ()) -> dict:
+def _blobs(repo: Path, shas: list[str]) -> dict[str, bytes]:
+    """Contents of git blobs, read in one `git cat-file --batch` call."""
+    if not shas:
+        return {}
+    res = subprocess.run(["git", "-C", str(repo), "cat-file", "--batch"], input="\n".join(shas).encode() + b"\n",
+                         capture_output=True, timeout=600)
+    data, out, pos = res.stdout, {}, 0
+    for sha in shas:
+        end = data.index(b"\n", pos)
+        header = data[pos:end].split()
+        pos = end + 1
+        if len(header) < 3:  # "<sha> missing": no content follows
+            continue
+        size = int(header[2])
+        if header[1] == b"blob":
+            out[sha] = data[pos:pos + size]
+        pos += size + 1  # trees and other objects are skipped, but their content is still in the stream
+    return out
+
+
+def _text(content: bytes) -> str | None:
+    if b"\0" in content[:8000] or len(content) > _MAX_WINDOW_FILE:
+        return None
+    return content.decode("utf-8", errors="replace")
+
+
+def report_title(source: str) -> str:
+    """First non-empty line of the report: its title, which the repository cites (URL slug, references)."""
+    return next((line for line in source.splitlines() if line.strip()), "")
+
+
+def window_findings(repo: Path, source: str, deep: bool = False, n: int = WINDOW_WORDS,
+                    allowed: str = "") -> list[dict]:
+    """Files containing runs of `n` consecutive words of `source`, leaving out the runs of `allowed` (the
+    title: citing it is a bibliographic reference, not copied text). Only the file and the number of runs are
+    reported, never the matched words. Scans the index and the new, not ignored files of the working tree;
+    `deep` adds every file version in the history (each distinct blob once)."""
+    repo = Path(repo)
+    windows = _windows(_words(source), n) - _windows(_words(allowed), n)
+    if not windows:
+        return []
+    targets: list[tuple[str, str, str]] = []  # (where, path, blob sha or "")
+    for line in _out(_git(repo, "ls-files", "-s")):
+        meta, path = line.split("\t", 1)
+        targets.append(("índice", path, meta.split()[1]))
+    for path in _out(_git(repo, "ls-files", "--others", "--exclude-standard")):
+        targets.append(("árbol de trabajo, sin versionar", path, ""))
+    if deep:
+        seen = {sha for _, _, sha in targets}
+        objects = [line.split(" ", 1) for line in _out(_git(repo, "rev-list", "--all", "--objects")) if " " in line]
+        for sha, path in objects:
+            if sha not in seen:
+                seen.add(sha)
+                targets.append(("historial", path, sha))
+    contents = _blobs(repo, [sha for _, _, sha in targets if sha])
+    findings = []
+    for where, path, sha in targets:
+        if sha:
+            raw = contents.get(sha)
+        else:
+            file = repo / path
+            raw = file.read_bytes() if file.is_file() else None
+        text = _text(raw) if raw is not None else None
+        if text is None:
+            continue
+        hits = len(_windows(_words(text), n) & windows)
+        if hits:
+            findings.append({"kind": f"texto del reporte de DFIR ({n} palabras seguidas)",
+                             "where": f"{path} ({where}): {hits} fragmento(s)"})
+    return findings
+
+
+def check_repo(repo: Path, phrases: list[str], iocs: list[str] = (), source: str | None = None,
+               deep: bool = False) -> dict:
     repo = Path(repo)
     if _git(repo, "rev-parse", "--git-dir").returncode != 0:
         raise ValueError(f"{repo} no es un repositorio git")
@@ -139,4 +218,7 @@ def check_repo(repo: Path, phrases: list[str], iocs: list[str] = ()) -> dict:
         findings += _group("texto del reporte de DFIR", _grep(repo, revs, "-F", phrases))
     if iocs:
         findings += _group("IoC del reporte de DFIR", _grep(repo, revs, "-iF", list(iocs)))
-    return {"findings": findings, "commits": len(revs), "phrases": len(phrases), "iocs": len(iocs)}
+    if source:
+        findings += window_findings(repo, source, deep=deep, allowed=report_title(source))
+    return {"findings": findings, "commits": len(revs), "phrases": len(phrases), "iocs": len(iocs),
+            "windows": "historial completo" if deep and source else ("índice y árbol de trabajo" if source else "no")}

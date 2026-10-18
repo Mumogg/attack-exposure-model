@@ -291,7 +291,9 @@ Revisa los archivos versionados, el índice y **todo el historial de git** en bu
 - un `.env`;
 - patrones de API keys (nunca imprime la clave);
 - archivos dentro de carpetas `private/` o `llm_cache_private/` y los archivos `data/reports/akira_dfir_2026*`;
-- texto del reporte de DFIR, buscando frases distintivas de su copia local en `data/reports/akira_dfir_2026.txt`. Sin esa copia, avisa que no pudo buscarlo.
+- texto del reporte de DFIR, buscando frases distintivas de su copia local en `data/reports/akira_dfir_2026.txt`. Sin esa copia, avisa que no pudo buscarlo;
+- valores de IoC de esa copia (D-76);
+- **8 palabras seguidas** del reporte de DFIR, sin distinguir mayúsculas, puntuación ni saltos de línea. Por defecto revisa el índice y los archivos nuevos del árbol de trabajo que git no ignora. Con `aem check-repo --deep` revisa además cada versión de cada archivo en todo el historial; tarda un poco más. Solo informa el archivo y cuántos fragmentos encontró, nunca el texto. Deja fuera el título del artículo (la primera línea del texto): el repositorio lo cita en la URL y en las referencias.
 
 Termina con **OK** o con la lista exacta de hallazgos (`archivo:línea (en <commits>)`) y código de salida 1. Si encuentra algo, **no suba**: avíseme. Si está en el historial, borrar el archivo no basta, hay que reescribir el historial antes de publicar.
 

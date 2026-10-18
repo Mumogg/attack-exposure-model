@@ -359,13 +359,15 @@ def check_repo_cmd(
     repo: Path = typer.Option(config.REPO_ROOT, "--repo", help="Repositorio git a revisar."),
     dfir_text: Path = typer.Option(DATA_DIR / "reports" / "akira_dfir_2026.txt", "--dfir-text",
                                    help="Copia local del reporte de DFIR (para buscar sus frases)."),
+    deep: bool = typer.Option(False, "--deep", help="Buscar las ventanas de 8 palabras también en todas las "
+                                                    "versiones de archivos del historial (más lento)."),
 ) -> None:
     """Busca .env, API keys, texto del reporte de DFIR y archivos private/ en los archivos versionados y en todo
     el historial de git. Termina con código 1 si encuentra algo."""
     from aem.repo_check import check_repo, distinctive_phrases, ioc_values
     from eval.baseline_ioc import extract_iocs
 
-    phrases, iocs = [], []
+    phrases, iocs, text = [], [], None
     if Path(dfir_text).exists():
         text = Path(dfir_text).read_text(encoding="utf-8")
         phrases = distinctive_phrases(text)
@@ -374,11 +376,12 @@ def check_repo_cmd(
         console.print(f"[yellow]AVISO[/yellow] no existe {dfir_text}: no se buscó texto del reporte de DFIR "
                       "(solo .env, API keys y carpetas private/).", highlight=False)
     try:
-        result = check_repo(repo, phrases, iocs)
+        result = check_repo(repo, phrases, iocs, source=text if phrases or iocs else None, deep=deep)
     except ValueError as exc:
         _fail(str(exc))
     console.print(f"Revisados {result['commits']} commits y el índice; {result['phrases']} frases y "
-                  f"{result['iocs']} valores de IoC del reporte de DFIR.", highlight=False)
+                  f"{result['iocs']} valores de IoC del reporte de DFIR; ventanas de 8 palabras: "
+                  f"{result['windows']}.", highlight=False)
     if result["findings"]:
         for f in result["findings"]:
             console.print(f"[bold red]ENCONTRADO[/bold red] {f['kind']}: {f['where']}", highlight=False)

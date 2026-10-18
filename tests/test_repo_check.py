@@ -110,3 +110,56 @@ def test_cli_exit_code_and_locations(repo, tmp_path):
     assert bad.exit_code == 1 and "copy.md:1" in out and "texto del reporte de DFIR" in out
     missing = runner.invoke(app, ["check-repo", "--repo", str(repo), "--dfir-text", str(tmp_path / "no.txt")])
     assert "AVISO" in missing.output and missing.exit_code == 0
+
+
+# --- 8-word windows ---------------------------------------------------------------------------
+
+TITLED = "A Made Up Report Title About Loaders And Ransomware Deployment\n" + DFIR
+# 8 words of the second line of DFIR, rewrapped and with other case and punctuation
+COPIED = "Notes: the operators STAGED a second-stage implant, on the\nworkstation and began.\n"
+
+
+def _windows(repo, deep=False):
+    return [f for f in check_repo(repo, phrases=[], source=TITLED, deep=deep)["findings"]
+            if f["kind"].startswith("texto del reporte de DFIR (8")]
+
+
+def test_copied_words_in_the_index_are_found(repo):
+    (repo / "notes.md").write_text(COPIED, encoding="utf-8")
+    git(repo, "add", "notes.md")
+    found = _windows(repo)
+    assert [f["where"].split(" ")[0] for f in found] == ["notes.md"]
+    assert "índice" in found[0]["where"] and "staged" not in found[0]["where"].lower()  # no text printed
+
+
+def test_new_untracked_files_are_found_but_ignored_ones_are_not(repo):
+    (repo / ".gitignore").write_text("ignored.md\n", encoding="utf-8")
+    (repo / "new.md").write_text(COPIED, encoding="utf-8")
+    (repo / "ignored.md").write_text(COPIED, encoding="utf-8")
+    found = _windows(repo)
+    assert [f["where"].split(" ")[0] for f in found] == ["new.md"]
+    assert "árbol de trabajo" in found[0]["where"]
+
+
+def test_history_only_with_deep(repo):
+    commit(repo, "old.md", COPIED)
+    commit(repo, "old.md", "rewritten without the text\n")
+    assert _windows(repo) == []
+    found = _windows(repo, deep=True)
+    assert [f["where"].split(" ")[0] for f in found] == ["old.md"] and "historial" in found[0]["where"]
+
+
+def test_the_report_title_may_be_cited(repo):
+    commit(repo, "refs.md", "See a-made-up-report-title-about-loaders-and-ransomware-deployment (the source).\n")
+    assert _windows(repo, deep=True) == []
+
+
+def test_seven_words_are_not_a_finding(repo):
+    commit(repo, "short.md", "the operators staged a second stage implant\n")
+    assert _windows(repo, deep=True) == []
+
+
+def test_binary_files_are_skipped(repo):
+    (repo / "blob.bin").write_bytes(b"\0" + COPIED.encode())
+    git(repo, "add", "blob.bin")
+    assert _windows(repo) == []
