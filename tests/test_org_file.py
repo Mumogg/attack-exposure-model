@@ -10,8 +10,9 @@ def org():
     return load_org(ORG_FILE)
 
 
-def test_org_file_is_marked_as_draft():
-    assert ORG_FILE.read_text(encoding="utf-8").startswith("# BORRADOR: Sebas decide las brechas")
+def test_org_file_is_marked_as_confirmed():
+    head = ORG_FILE.read_text(encoding="utf-8").splitlines()[0]
+    assert head.startswith("# CONFIRMADA por Sebas (2026-10-18)") and "BORRADOR" not in head
 
 
 def test_step2_matches_declared_design(org):

@@ -219,7 +219,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 
 - Colocar el texto de Akira (`docs/report_preparation.md`), completar sus nombres en `data/anon_names.yaml` y ejecutar `aem prepare-reports` y `aem make-variants`.
 - Llenar `data/prevalence/red_canary_2026.csv`.
-- Revisar `coverage_design` (`fictional_org.yaml` sigue marcado BORRADOR). Las decisiones de `docs/DECISIONS.md` quedaron todas confirmadas el 2026-10-18.
+- `fictional_org.yaml` (con `coverage_design`) quedó confirmada por Sebas el 2026-10-18. Las decisiones de `docs/DECISIONS.md` quedaron todas confirmadas el 2026-10-18.
 - Seguir `docs/RUNBOOK.md`: `aem preflight`, luego `aem eval --run-id <fecha>` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
 - Ejecutar `aem check-repo` antes de subir a GitHub.
 - Confirmar la redacción de la declaración de uso de IA en `README.md` (inglés) y `README.es.md` (español).

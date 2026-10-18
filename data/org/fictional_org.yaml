@@ -1,4 +1,5 @@
-# BORRADOR: Sebas decide las brechas
+# CONFIRMADA por Sebas (2026-10-18). Se diseñó antes de generar resultados; sus brechas definen el denominador
+# del indicador 3 y la verdad de terreno del indicador 2 (`coverage_design`).
 # Organización FICTICIA para la simulación de la tesis (ver docs/DECISIONS.md D-22).
 # Esquema propio simplificado, inspirado en DeTT&CT (https://github.com/rabobank-cdc/DeTTECT).
 # Cubre las técnicas de referencia de los tres escenarios (Gunra, Interlock, Akira) con una mezcla
