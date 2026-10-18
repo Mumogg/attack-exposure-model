@@ -11,7 +11,8 @@ import csv
 import json
 from pathlib import Path
 
-from eval.run_experiments import NO_DATA
+from aem.scenarios import format_omitted
+from eval.run_experiments import NO_DATA, PARTIAL_LINE
 
 VERSIONS = ("orig", "mut", "anon")
 # grey levels and hatches: the series never depend on colour alone
@@ -231,7 +232,11 @@ def build_report(run_dir: Path, out_dir: Path) -> dict:
 
     first = next((r for rows in tables.values() for r in rows), {})
     run_date = first.get("run_date", str(data.get("started", NO_DATA))[:10])
-    md = [f"# Resumen de resultados — corrida `{data.get('run_id', run_dir.name)}`\n",
+    omitted = data.get("escenarios_omitidos") or []
+    md = [f"# Resumen de resultados — corrida `{data.get('run_id', run_dir.name)}`\n"]
+    if data.get("partial"):
+        md.append(f"**{PARTIAL_LINE}** — ESCENARIOS OMITIDOS: {format_omitted(omitted)}\n")
+    md += [
           "Generado con `aem report` a partir de `runs/" + run_dir.name + "/results/results.json`. Los números se "
           "copian tal como están en ese archivo, sin redondear.\n",
           f"- Modelo (ID): `{data.get('model', NO_DATA)}`",
@@ -260,6 +265,12 @@ def build_report(run_dir: Path, out_dir: Path) -> dict:
           "## Indicador 4 — Fidelidad de los resúmenes (chequeo automático)\n", _table(tables.get("indicator4", []), IND4_COLS),
           "## Indicador 5 — Cumplimiento de los límites (violaciones)\n",
           "`_fail0` y `_valid` con el mismo peso (D-67).\n", _table(tables.get("indicator5", []), IND5_COLS),
+          "## Escenarios omitidos\n",
+          f"- escenarios_omitidos: {format_omitted(omitted)}",
+          f"- Resultado parcial: {'sí' if data.get('partial') else 'no'}. Las tablas del LLM no tienen corridas de "
+          "los escenarios omitidos; si aparecen filas suyas en el indicador 2 o en el enfoque tradicional del "
+          "indicador 3, esas no dependen del LLM (D-73).\n" if data.get("partial") else
+          "- Resultado parcial: no.\n",
           "## Datos faltantes\n"]
     skipped = data.get("skipped") or []
     md.append("- Escenarios o versiones no evaluados: " + (", ".join(skipped) if skipped else "ninguno") + ".")

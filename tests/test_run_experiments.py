@@ -181,6 +181,7 @@ AKIRA = "Akira actors exploited a public-facing VPN appliance and then used cmd.
 
 def _with_akira(setup):
     a = setup["scenarios"]["akira"]
+    a.text.write_text("Raw Akira report placed by hand.", encoding="utf-8")
     a.stripped.write_text(AKIRA, encoding="utf-8")
     a.variant.write_text(AKIRA, encoding="utf-8")
 
@@ -275,3 +276,55 @@ def test_anon_version_is_in_every_llm_table(setup):
     assert float(m["anon_mean_fail0"]) == 100.0 and float(m["persistence_anon_over_orig_fail0"]) == 1.0
     assert m["failed_runs"] == "orig 0, mut 0, anon 0"
     assert float(t["anon_mean_fail0"]) == 0.0 and t["ioc_matches"] == "orig 1, mut 0, anon 0"
+
+
+# --- D-73: copyrighted scenario without local text → partial run, completed later from the cache ---------
+
+
+def test_missing_copyrighted_text_marks_run_partial(setup):
+    a = setup["scenarios"]["akira"]
+    a.stripped.write_text(AKIRA, encoding="utf-8")  # stale prepared text without the raw report: still omitted
+    t = RoutingTransport(extraction=EXTRACTION)
+    res = run_experiment(setup["ctx"](t), setup["scenarios"], setup["run"], setup["sheets"], replicates=1)
+    assert res["partial"] and {"scenario": "akira", "reason": "sin texto local"} in res["omitted"]
+    assert not any("Akira actors" in p for p in t.calls)
+    results = setup["run"] / "results"
+    meta = json.loads((results / "results.json").read_text(encoding="utf-8"))
+    assert meta["partial"] is True
+    assert {"scenario": "akira", "reason": "sin texto local"} in meta["escenarios_omitidos"]
+    for table in results.glob("*.csv"):
+        for r in read_csv(table):
+            assert r["resultado_parcial"] == "sí" and "akira (sin texto local)" in r["escenarios_omitidos"]
+    md = (results / "results.md").read_text(encoding="utf-8")
+    assert "RESULTADO PARCIAL: faltan escenarios" in md and "akira (sin texto local)" in md
+    history = json.loads((setup["run"] / "eval_history.json").read_text(encoding="utf-8"))
+    assert len(history) == 1 and history[0]["partial"] is True
+
+
+def test_partial_run_is_completed_later_from_the_cache(setup):
+    """Same run id after placing the Akira text: Gunra comes from the cache; only Akira reaches the API."""
+    first = RoutingTransport(extraction=EXTRACTION)
+    run_experiment(setup["ctx"](first), setup["scenarios"], setup["run"], setup["sheets"], replicates=2)
+    assert first.calls and not any("Akira actors" in p for p in first.calls)
+    gunra_before = [r for r in read_csv(setup["run"] / "results" / "indicator1.csv") if r["scenario"] == "gunra"]
+
+    _with_akira(setup)
+    a = setup["scenarios"]["akira"]
+    for v in ("mut", "anon"):  # distinct texts per version, as make-variants produces
+        a.report_for(v).write_text(f"{AKIRA} ({v})", encoding="utf-8")
+    second = RoutingTransport(extraction=EXTRACTION)
+    res = run_experiment(setup["ctx"](second), setup["scenarios"], setup["run"], setup["sheets"], replicates=2)
+
+    # 3 versions x 2 replicates of Akira extraction; summaries of the same techniques are already cached
+    assert len(second.calls) == 3 * 2
+    assert all("Akira actors" in p for p in second.calls)
+    assert not any(ORIG in p or MUT in p for p in second.calls)
+    assert {(r["scenario"], r["status"]) for r in res["runs"]} == {("gunra", "ok"), ("akira", "ok")}
+    assert not any(o["scenario"] == "akira" for o in res["omitted"])
+
+    gunra_after = [r for r in read_csv(setup["run"] / "results" / "indicator1.csv") if r["scenario"] == "gunra"]
+    strip = lambda rows: [{k: v for k, v in r.items() if k not in ("resultado_parcial", "escenarios_omitidos")}
+                          for r in rows]
+    assert strip(gunra_after) == strip(gunra_before)
+    history = json.loads((setup["run"] / "eval_history.json").read_text(encoding="utf-8"))
+    assert [any(o["scenario"] == "akira" for o in h["escenarios_omitidos"]) for h in history] == [True, False]

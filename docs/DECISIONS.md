@@ -217,3 +217,13 @@ La caché del LLM guarda el prompt completo, que incluye el texto del reporte, y
 - `aem run` detecta el reporte de Akira y avisa que no se suba la carpeta de salida;
 - en `aem eval --demo` sin caché privada (cualquier persona que clone el repositorio), Akira se omite con el aviso «sin caché privada» y el resto se reproduce;
 - las tablas de resultados (`runs/<corrida>/results/`) solo contienen IDs, cifras y nombres de ATT&CK, y sí se versionan.
+
+### D-73. Escenario con derechos de autor sin texto local: corrida parcial — **PENDIENTE DE CONFIRMAR**
+Pedida por Sebas (2026-10-18) para poder correr Gunra e Interlock antes de colocar el texto de Akira.
+- **Cuándo se omite:** un escenario `copyrighted: true` cuyo texto (`data/reports/akira_dfir_2026.txt`) no existe en la máquina. Se omite completo, aunque hayan quedado archivos `stripped` antiguos. Un texto de CISA ausente sigue siendo **FALTA**.
+- **`aem preflight`:** ese caso pasa de FALTA a **AVISO** («`aem eval` omitirá el escenario y el resultado quedará marcado como PARCIAL»). La estimación de llamadas no cuenta sus extracciones ni sus técnicas de referencia, y lo dice («Escenarios omitidos, no contados»).
+- **`aem eval`:** imprime al inicio y al final `ESCENARIOS OMITIDOS: akira (sin texto local)` y al final `RESULTADO PARCIAL: faltan escenarios`.
+- **Metadata de la corrida:** `results.json` lleva `partial: true` y `escenarios_omitidos` (lista de `{scenario, reason}`). Una corrida también es parcial si falta alguna versión o, en `--demo`, si falta la caché privada (motivo `sin caché privada`). Cada fila de cada CSV de resultados lleva `resultado_parcial` (`sí`/`no`) y `escenarios_omitidos`. `results.md` muestra la línea `RESULTADO PARCIAL: faltan escenarios` bajo el título. `runs/<run-id>/eval_history.json` agrega una entrada por cada ejecución de `aem eval` con ese run-id. Así, si la corrida se completa después, queda constancia de que empezó parcial.
+- **`aem report`:** repite la línea `RESULTADO PARCIAL` al inicio y agrega la sección «Escenarios omitidos».
+- **Completar la corrida:** después de colocar el texto y preparar las versiones, se repite `aem eval --run-id <el mismo>`. La clave de caché no depende del run-id (D-12), así que las extracciones de Gunra e Interlock y los resúmenes ya pedidos salen de la caché. Solo se llama a la API para Akira y para los resúmenes de técnicas nuevas. Las tablas se recalculan con los tres escenarios y `partial` pasa a `false`. Lo verifica `tests/test_run_experiments.py::test_partial_run_is_completed_later_from_the_cache`.
+- En una corrida parcial, las tablas que no dependen del LLM (indicador 2 y enfoque tradicional del indicador 3) pueden incluir filas del escenario omitido. Las tablas del LLM no tienen corridas suyas.

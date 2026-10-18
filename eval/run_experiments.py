@@ -26,7 +26,9 @@ from aem.pipeline import (
 )
 from aem.step1_extract import PROMPT_NAME
 from aem.step4_reference import SUMMARY_PROMPT
-from aem.scenarios import VERSIONS, Scenario, load_reference
+from aem.scenarios import (
+    OMITTED_NO_PRIVATE_CACHE, VERSIONS, Scenario, format_omitted, load_reference, omitted_before_run,
+)
 from eval.baseline_ioc import baseline_recognizes
 from eval.metrics import (
     aggregate, aggregate_with_failures, boundary_violations_extraction, coverage_correctness, extraction_scores, gap_techniques,
@@ -34,6 +36,7 @@ from eval.metrics import (
 )
 
 NO_DATA = "sin dato disponible"
+PARTIAL_LINE = "RESULTADO PARCIAL: faltan escenarios"
 
 
 # --- running ----------------------------------------------------------------------------------
@@ -324,7 +327,9 @@ def provenance_columns(meta: dict) -> dict:
     """Prepended to every row of every table, so a table copied on its own still says where it came from."""
     source = "gemini-api" if not meta["fake"] else "FAKE (" + ", ".join(meta["llm_sources"] or ["sin llamadas"]) + ")"
     return {"llm_source": source, "model": meta["model"], "model_version": "; ".join(meta["model_versions"]) or NO_DATA,
-            "run_date": meta["started"][:10], "prompt_templates_sha256": meta["prompt_templates_sha256"]}
+            "run_date": meta["started"][:10], "prompt_templates_sha256": meta["prompt_templates_sha256"],
+            "resultado_parcial": "sí" if meta.get("partial") else "no",
+            "escenarios_omitidos": format_omitted(meta.get("escenarios_omitidos") or [])}
 
 
 def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -> dict[str, Path]:
@@ -350,7 +355,10 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
         md += [f"# FAKE — resultados con un LLM simulado, no válidos para la tesis (corrida `{run_id}`)\n",
                f"> Origen de las respuestas: {prov['llm_source']}. Estas tablas no provienen de la API real de "
                "Gemini y no deben citarse.\n"]
-    md += [f"# Resultados de la evaluación — corrida `{run_id}`\n",
+    md.append(f"# Resultados de la evaluación — corrida `{run_id}`\n")
+    if meta.get("partial"):
+        md.append(f"**{PARTIAL_LINE}** — ESCENARIOS OMITIDOS: {prov['escenarios_omitidos']}\n")
+    md += [
           f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
           f"{meta['replicates']} corridas por escenario × versión · modo demo: {'sí' if meta['demo'] else 'no'}",
           f"- Media y desviación estándar muestral (n−1). «{NO_DATA}»: no hay corridas o el valor no está definido.",
@@ -376,12 +384,25 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
     return paths
 
 
+def _append_history(run_dir: Path, meta: dict) -> None:
+    """One entry per `aem eval` on this run id, so a run completed later still shows it was once partial (D-73)."""
+    path = run_dir / "eval_history.json"
+    history = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    history.append({k: meta[k] for k in ("started", "finished", "fake", "demo", "partial", "escenarios_omitidos",
+                                         "skipped")})
+    write_json(path, history)
+
+
 def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir: Path, sheets_dir: Path,
                    replicates: int, console=None) -> dict:
     run_dir, sheets_dir = Path(run_dir), Path(sheets_dir)
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
     runs, skipped = [], []
+    omitted = omitted_before_run(scenarios)  # copyrighted text not placed locally (D-73)
     for sc in scenarios.values():
+        if any(o["scenario"] == sc.name for o in omitted):
+            skipped += [f"{sc.name}: {v}" for v in VERSIONS]
+            continue
         for version in VERSIONS:
             path = sc.report_for(version)
             if not path.exists():
@@ -400,9 +421,14 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
                         raise
                     # the private cache is never published: without it, the copyrighted scenario cannot be replayed
                     skipped.append(f"{sc.name}: {version} (sin caché privada: texto con derechos de autor)")
+                    if not any(o["scenario"] == sc.name for o in omitted):
+                        omitted.append({"scenario": sc.name, "reason": OMITTED_NO_PRIVATE_CACHE})
                     done = []
                     break
             runs += done
+    evaluated = {r["scenario"] for r in runs}
+    omitted += [{"scenario": sc.name, "reason": "sin texto"} for sc in scenarios.values()
+                if sc.name not in evaluated and not any(o["scenario"] == sc.name for o in omitted)]
     computed = compute(runs, scenarios, ctx, replicates)
     provenance = ctx.client.provenance()
     meta = {"fake": not provenance["real"], "llm_sources": provenance["sources"],
@@ -411,6 +437,10 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
             "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"), "model": ctx.client.model,
             "temperature": TEMPERATURE, "attack_version": ctx.attack.version, "replicates": replicates,
             "demo": ctx.client.demo, "skipped": skipped,
+            # D-73: a run with scenarios or versions left out is partial, and says which ones
+            "partial": bool(omitted or skipped), "escenarios_omitidos": omitted,
             "runs": [{k: r[k] for k in ("scenario", "version", "replicate", "status", "error")} for r in runs]}
     paths = write_results(run_dir, sheets_dir, computed, meta)
-    return {"runs": meta["runs"], "skipped": skipped, "computed": computed, "paths": paths}
+    _append_history(run_dir, meta)
+    return {"runs": meta["runs"], "skipped": skipped, "omitted": omitted, "partial": meta["partial"],
+            "computed": computed, "paths": paths}

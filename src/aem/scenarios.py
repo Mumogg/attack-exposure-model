@@ -89,6 +89,25 @@ class Scenario:
     def relocated(self, data_dir: Path) -> "Scenario":
         return replace(self, data_dir=Path(data_dir))
 
+    @property
+    def omitted_locally(self) -> bool:
+        """Copyrighted text not placed on this machine: `aem eval` leaves the whole scenario out (D-73)."""
+        return self.copyrighted and not self.text.exists()
+
+
+OMITTED_NO_TEXT = "sin texto local"
+OMITTED_NO_PRIVATE_CACHE = "sin caché privada"
+
+
+def omitted_before_run(scenarios: dict[str, Scenario]) -> list[dict]:
+    """Scenarios `aem eval` will leave out before calling the LLM (D-73)."""
+    return [{"scenario": sc.name, "reason": OMITTED_NO_TEXT} for sc in scenarios.values() if sc.omitted_locally]
+
+
+def format_omitted(omitted: list[dict]) -> str:
+    """`[{"scenario": "akira", "reason": "sin texto local"}]` → `akira (sin texto local)`; empty → `ninguno`."""
+    return ", ".join(f"{o['scenario']} ({o['reason']})" for o in omitted) or "ninguno"
+
 
 def load_scenarios(path: Path) -> dict[str, Scenario]:
     out = {}

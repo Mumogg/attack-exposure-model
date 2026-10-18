@@ -181,3 +181,26 @@ def test_cli_report_refuses_fake(tmp_path, monkeypatch):
     monkeypatch.setattr(cli, "RESULTS_DOCS_DIR", tmp_path / "docs" / "resultados")
     res = CliRunner().invoke(cli.app, ["report", "--run-id", "2099-01-02"])
     assert res.exit_code == 1 and "FAKE" in res.output
+
+
+def test_partial_run_is_stated_in_the_report(tmp_path):
+    """D-73: a run with an omitted scenario says so at the top and in its own section."""
+    run = tmp_path / "runs" / "2099-01-02"
+    computed = {"tables": _tables(), "summary_sheet": [], "sample_sheet": [], "private_sample_sheet": []}
+    meta = dict(_meta(), partial=True, escenarios_omitidos=[{"scenario": "akira", "reason": "sin texto local"}])
+    write_results(run, tmp_path / "sheets", computed, meta)
+    md = build_report(run, tmp_path / "out")["markdown"].read_text(encoding="utf-8")
+    head = md.split("## Corridas")[0]
+    assert "RESULTADO PARCIAL: faltan escenarios" in head and "akira (sin texto local)" in head
+    assert "## Escenarios omitidos" in md and "escenarios_omitidos: akira (sin texto local)" in md
+    with (run / "results" / "indicator1.csv").open(encoding="utf-8-sig", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    assert rows and all(r["escenarios_omitidos"] == "akira (sin texto local)" for r in rows)
+
+
+def test_complete_run_is_not_marked_partial(tmp_path):
+    run = tmp_path / "runs" / "2099-01-02"
+    computed = {"tables": _tables(), "summary_sheet": [], "sample_sheet": [], "private_sample_sheet": []}
+    write_results(run, tmp_path / "sheets", computed, dict(_meta(), partial=False, escenarios_omitidos=[]))
+    md = build_report(run, tmp_path / "out")["markdown"].read_text(encoding="utf-8")
+    assert "RESULTADO PARCIAL" not in md and "escenarios_omitidos: ninguno" in md

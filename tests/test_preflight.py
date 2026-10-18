@@ -79,8 +79,30 @@ def test_akira_text_and_ids_in_stripped(env):
     check = [c for c in run(env) if "sin IDs" in c.item and "akira" in c.item][0]
     assert check.status == "FALTA" and "T1059.001" in check.detail
     akira.text.unlink()
-    assert [c for c in run(env) if "Texto de akira" in c.item][0].status == "FALTA"
     assert [c for c in run(env, demo=True) if "Texto de akira" in c.item][0].status == "AVISO"
+
+
+def test_missing_copyrighted_text_is_aviso_and_scenario_omitted(env):
+    """D-73: without the Akira text, preflight warns (not FALTA) and the estimate leaves Akira out."""
+    akira = env["scenarios"]["akira"]
+    for v in VERSIONS:
+        akira.report_for(v).unlink()
+    akira.text.unlink()
+    checks = run(env)
+    assert not [c for c in checks if c.status == "FALTA"], [c for c in checks if c.status == "FALTA"]
+    text = [c for c in checks if c.item == "Texto de akira"][0]
+    assert text.status == "AVISO" and "omitirá" in text.detail and "PARCIAL" in text.detail
+    assert not [c for c in checks if c.item == "Versiones de akira"]
+    est = estimate_calls(env["scenarios"], ModelConfig(), replicates=5, rpm=10)
+    assert est["extraction_calls"] == 2 * 3 * 5 and est["omitted"] == ["akira"]
+    assert "Escenarios omitidos, no contados: akira" in [c for c in checks if "Estimación" in c.item][0].detail
+
+
+def test_missing_cisa_text_is_still_falta(env):
+    """Only a copyrighted scenario can be omitted; a missing CISA text still blocks `aem eval`."""
+    env["scenarios"]["gunra"].stripped.unlink()
+    check = [c for c in run(env) if c.item == "Versiones de gunra"][0]
+    assert check.status == "FALTA"
 
 
 def test_empty_prevalence_is_aviso(env):

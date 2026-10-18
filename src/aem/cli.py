@@ -359,8 +359,8 @@ def eval_cmd(
     from datetime import date
 
     from aem.llm import LLMError
-    from aem.scenarios import load_scenarios
-    from eval.run_experiments import run_experiment
+    from aem.scenarios import format_omitted, load_scenarios, omitted_before_run
+    from eval.run_experiments import PARTIAL_LINE, run_experiment
 
     from aem.preflight import has_blocker
 
@@ -370,10 +370,14 @@ def eval_cmd(
         _fail("el preflight encontró al menos un FALTA (arriba); `aem eval` no se ejecuta. "
               "Corríjalo y vuelva a intentar (`aem preflight` repite solo la comprobación).")
     run_dir = RUNS_DIR / (run_id or date.today().isoformat())
+    scenarios = load_scenarios(SCENARIOS_FILE)
+    omitted = omitted_before_run(scenarios)
+    if omitted:  # D-73: the omission is announced before any call and again at the end
+        console.print(f"[bold yellow]ESCENARIOS OMITIDOS: {format_omitted(omitted)}[/bold yellow]", highlight=False)
     try:
         ctx = _build_context(org, attack, cache_dir, demo)
         n = replicates or ctx.model_cfg.experiment.replicates
-        result = run_experiment(ctx, load_scenarios(SCENARIOS_FILE), run_dir, REVIEW_SHEETS_DIR, n, console=console)
+        result = run_experiment(ctx, scenarios, run_dir, REVIEW_SHEETS_DIR, n, console=console)
     except (LLMError, FileNotFoundError, ValueError) as exc:
         _fail(f"{exc}\nLas respuestas ya obtenidas quedan en la caché: al repetir el comando se reutilizan.")
     for item in result["skipped"]:
@@ -383,6 +387,11 @@ def eval_cmd(
                       "quedaron en results_FAKE/ con prefijo FAKE_ y no sirven como resultados de la tesis.")
     failed = [r for r in result["runs"] if r["status"] != "ok"]
     console.print(f"[green]Listo.[/green] {len(result['runs'])} corridas ({len(failed)} sin salida utilizable).")
+    if result["partial"]:
+        console.print(f"[bold yellow]ESCENARIOS OMITIDOS: {format_omitted(result['omitted'])}[/bold yellow]",
+                      highlight=False)
+        console.print(f"[bold yellow]{PARTIAL_LINE}[/bold yellow] Para completar esta corrida, repita el mismo "
+                      f"comando con `--run-id {run_dir.name}`: lo ya obtenido sale de la caché.", highlight=False)
     for label in ("markdown", "indicator4_sheet", "indicator5_sheet"):
         console.print(f"  {label}: {result['paths'][label]}")
 

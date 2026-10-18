@@ -151,7 +151,7 @@ Primero, la comprobación (no gasta llamadas de generación; solo consulta que e
 aem preflight
 ```
 
-Muestra una línea por comprobación con **OK**, **FALTA** o **AVISO**: API key y modelo, checksum de ATT&CK, texto de Akira y que su versión `stripped` no tenga IDs, prevalencia, versiones `orig`/`mut`/`anon` de los tres escenarios y reglas de `.gitignore`. Al final da la estimación de llamadas y tiempo. Corrija cada **FALTA** antes de seguir; un **AVISO** (p. ej. prevalencia vacía) no bloquea. `aem eval` repite esta comprobación al empezar y **no arranca** si hay un FALTA.
+Muestra una línea por comprobación con **OK**, **FALTA** o **AVISO**: API key y modelo, checksum de ATT&CK, texto de Akira y que su versión `stripped` no tenga IDs, prevalencia, versiones `orig`/`mut`/`anon` de los tres escenarios y reglas de `.gitignore`. Al final da la estimación de llamadas y tiempo. Corrija cada **FALTA** antes de seguir; un **AVISO** (p. ej. prevalencia vacía) no bloquea. `aem eval` repite esta comprobación al empezar y **no arranca** si hay un FALTA. Si falta el texto de Akira, el preflight lo marca como AVISO: `aem eval` corre Gunra e Interlock, avisa «ESCENARIOS OMITIDOS: akira (sin texto local)» y deja la corrida marcada como «RESULTADO PARCIAL». Para completarla, coloque el texto (paso c) y repita `aem eval` con el **mismo** `--run-id`. Lo ya obtenido sale de la caché y solo se llama a la API para Akira (D-73).
 
 **Obligatorio: use siempre `--run-id <fecha>`.** Sin él, el nombre es la fecha de hoy, y si reanuda otro día crearía otra carpeta con una corrida a medias.
 

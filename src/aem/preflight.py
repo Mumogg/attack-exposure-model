@@ -72,14 +72,16 @@ def _attack_check(attack_path: Path, checksums_path: Path) -> Check:
 def _scenario_checks(scenarios: dict[str, Scenario], demo: bool) -> list[Check]:
     checks = []
     for sc in scenarios.values():
+        if sc.omitted_locally:
+            # copyrighted text not placed here: `aem eval` omits the scenario and marks the run partial (D-73)
+            checks.append(Check("AVISO", f"Texto de {sc.name}",
+                                f"no existe {sc.text} (docs/report_preparation.md §5); `aem eval` omitirá el "
+                                "escenario y el resultado quedará marcado como PARCIAL"))
+            continue
         # demo: a copyrighted scenario cannot be replayed by someone who clones the repo (D-69), so it may be absent
         absent = "AVISO" if demo and sc.copyrighted else "FALTA"
         if sc.copyrighted:
-            if sc.text.exists():
-                checks.append(Check("OK", f"Texto de {sc.name}", str(sc.text)))
-            else:
-                checks.append(Check(absent, f"Texto de {sc.name}",
-                                    f"no existe {sc.text} (docs/report_preparation.md §5)"))
+            checks.append(Check("OK", f"Texto de {sc.name}", str(sc.text)))
         if sc.stripped.exists():
             ids = ATTACK_ID.findall(sc.stripped.read_text(encoding="utf-8"))
             if ids:
@@ -131,6 +133,8 @@ def _gitignore_checks(repo_root: Path) -> list[Check]:
 def estimate_calls(scenarios: dict[str, Scenario], model_cfg: ModelConfig, replicates: int, rpm: int) -> dict:
     """Extraction calls are exact for the texts present; summaries have a lower bound (one per distinct
     reference technique, D-44) plus whatever valid technique the LLM proposes outside the references."""
+    omitted = [sc.name for sc in scenarios.values() if sc.omitted_locally]
+    scenarios = {k: sc for k, sc in scenarios.items() if not sc.omitted_locally}  # `aem eval` skips them (D-73)
     extraction, unknown = 0, []
     for sc in scenarios.values():
         for v in VERSIONS:
@@ -145,7 +149,8 @@ def estimate_calls(scenarios: dict[str, Scenario], model_cfg: ModelConfig, repli
             reference |= {r.technique_id for r in load_reference(sc.reference) if r.valid}
     seconds = 60.0 / max(rpm, 1)
     return {"extraction_calls": extraction, "summary_calls_min": len(reference), "unknown_texts": unknown,
-            "minutes_min": (extraction + len(reference)) * seconds / 60, "rpm": rpm, "replicates": replicates}
+            "omitted": omitted, "minutes_min": (extraction + len(reference)) * seconds / 60, "rpm": rpm,
+            "replicates": replicates}
 
 
 def run_preflight(*, settings: Settings, demo: bool, attack_path: Path, checksums_path: Path,
@@ -163,5 +168,7 @@ def run_preflight(*, settings: Settings, demo: bool, attack_path: Path, checksum
               f"GEMINI_RPM={est['rpm']} (sin contar reintentos ni lo que ya esté en la caché)")
     if est["unknown_texts"]:
         detail += f". Sin texto, no contados: {', '.join(est['unknown_texts'])}"
+    if est["omitted"]:
+        detail += f". Escenarios omitidos, no contados: {', '.join(est['omitted'])}"
     checks.append(Check("INFO", "Estimación de llamadas y tiempo", detail))
     return checks

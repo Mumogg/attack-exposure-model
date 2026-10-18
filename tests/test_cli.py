@@ -193,3 +193,33 @@ def test_eval_refuses_to_start_when_preflight_has_falta(files, tmp_path, monkeyp
     res = runner.invoke(app, ["eval", "--run-id", "x", "--attack", str(files["attack"]), "--org", str(files["org"])])
     assert res.exit_code == 1 and not called
     assert "preflight" in res.output and "Versiones de akira" in res.output.replace("\n", " ")
+
+
+def test_eval_announces_omitted_scenarios_at_start_and_end(files, tmp_path, monkeypatch):
+    """D-73: the CLI prints ESCENARIOS OMITIDOS before running and again, with RESULTADO PARCIAL, at the end."""
+    from aem.config import SCENARIOS_FILE
+    from aem.scenarios import load_scenarios
+
+    data = tmp_path / "data"
+    scenarios = {k: v.relocated(data) for k, v in load_scenarios(SCENARIOS_FILE).items()}
+    monkeypatch.setattr("aem.scenarios.load_scenarios", lambda path: scenarios)
+    monkeypatch.setattr("aem.cli._preflight_checks", lambda demo, replicates, attack: [])
+    monkeypatch.setattr("aem.cli.RUNS_DIR", tmp_path / "runs")
+    out = tmp_path / "results.md"
+    out.write_text("", encoding="utf-8")
+    order = []
+
+    def fake_run(ctx, scs, run_dir, sheets, n, console=None):
+        order.append("run")
+        return {"runs": [], "skipped": [], "partial": True, "paths": {"markdown": out, "indicator4_sheet": out,
+                                                                      "indicator5_sheet": out},
+                "omitted": [{"scenario": "akira", "reason": "sin texto local"}]}
+
+    monkeypatch.setattr("eval.run_experiments.run_experiment", fake_run)
+    res = runner.invoke(app, ["eval", "--run-id", "x", "--attack", str(files["attack"]), "--org", str(files["org"]),
+                              "--cache-dir", str(files["cache"]), "--replicates", "1"])
+    text = res.output.replace("\n", " ")
+    assert res.exit_code == 0, res.output
+    assert text.count("ESCENARIOS OMITIDOS: akira (sin texto local)") == 2
+    assert text.index("ESCENARIOS OMITIDOS") < text.index("Listo.") < text.index("RESULTADO PARCIAL: faltan escenarios")
+    assert order == ["run"]
