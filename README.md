@@ -1,54 +1,58 @@
+Español: [README.es.md](README.es.md)
+
 # attack-exposure-model
 
-Prototipo mínimo del modelo propuesto en el Trabajo Final de Graduación:
+Minimal prototype of the model proposed in the undergraduate thesis (Trabajo Final de Graduación):
 
 > **«Diseño de un modelo de evaluación de amenazas cibernéticas asistido por inteligencia artificial basado en MITRE ATT&CK para entornos empresariales»**
 > Sebastián Murillo Mora · Licenciatura en Ingeniería en Sistemas de Computación · Universidad Fidélitas, Costa Rica · 2026
 
-## Qué es y qué NO es
+**Language:** the documentation in `docs/` and the command-line messages are in Spanish, because this work is a thesis at Universidad Fidélitas (Costa Rica). The code, comments, commit messages, LLM prompts, step 4 summaries (D-45) and the column names of the outputs are in English; some cell values (e.g. `sin cobertura`, `sin dato disponible`) are in Spanish.
 
-**Es** un prototipo de línea de comandos que se publica **solo para que las simulaciones de la tesis se puedan reproducir**. Dado un reporte de amenaza (texto) y el perfil de una organización **ficticia**, produce un CSV con las técnicas de MITRE ATT&CK descritas en el reporte, la capacidad de detección que la organización tiene para cada una y la acción que asigna el analista.
+## What it is and what it is NOT
 
-**No es** una herramienta lista para producción, no detecta compromisos, no reemplaza a un analista y no se ha validado fuera de los escenarios de la tesis. La salida **no afirma que la organización haya sido comprometida**.
+**It is** a command-line prototype published **only so that the thesis simulations can be reproduced**. Given a threat report (text) and the profile of a **fictional** organization, it produces a CSV with the MITRE ATT&CK techniques described in the report, the detection capability the organization has for each one, and the action assigned by the analyst.
 
-## Idea central
+**It is not** a production-ready tool, it does not detect compromises, it does not replace an analyst, and it has not been validated outside the thesis scenarios. The output **does not claim that the organization has been compromised**.
 
-El modelo **no detecta si una organización fue comprometida**. Evalúa **para qué técnicas de ATT&CK la organización está expuesta o no tiene capacidad de detección**, dado un reporte de amenaza.
+## Central idea
 
-Por qué técnicas y no indicadores de compromiso (IoC): una IA puede mutar con facilidad los artefactos de un ataque (hashes, IP, dominios, código), pero no el comportamiento que el atacante necesita ejecutar. El indicador 3 de la evaluación mide exactamente eso, comparando el modelo con un enfoque tradicional basado en IoC.
+The model **does not detect whether an organization was compromised**. It assesses **for which ATT&CK techniques the organization is exposed or lacks detection capability**, given a threat report.
 
-### Principio de diseño
+Why techniques and not indicators of compromise (IoC): an AI can easily mutate the artifacts of an attack (hashes, IPs, domains, code), but not the behavior the attacker needs to execute. Indicator 3 of the evaluation measures exactly that, comparing the model with a traditional IoC-based approach.
 
-**IA donde hay lenguaje natural, código donde hay datos estructurados, criterio humano donde hay consecuencias.**
+### Design principle
 
-- La IA hace **solo dos cosas**: (1) extraer y mapear técnicas ATT&CK desde el texto del reporte; (2) condensar la descripción larga de una técnica en un resumen breve.
-- La IA **nunca** asigna prioridades, urgencia ni recomienda acciones. Esto se garantiza **por arquitectura**: el esquema de salida del LLM tiene campos fijos y ninguno es evaluativo (`technique_id`, `technique_name`, `evidence_quote`; y `summary`), y la acción se calcula en un paso donde la IA no participa. El prompt también lo prohíbe, pero el diseño no depende de eso. Un filtro de código descarta cualquier resumen con lenguaje evaluativo que no esté en la fuente.
+**AI where there is natural language, code where there is structured data, human judgment where there are consequences.**
 
-## Flujo
+- The AI does **only two things**: (1) extract and map ATT&CK techniques from the report text; (2) condense the long description of a technique into a brief summary.
+- The AI **never** assigns priorities or urgency, nor recommends actions. This is guaranteed **by architecture**: the LLM output schema has fixed fields and none of them is evaluative (`technique_id`, `technique_name`, `evidence_quote`; and `summary`), and the action is computed in a step where the AI does not take part. The prompt also forbids it, but the design does not depend on that. A code filter discards any summary with evaluative language that is not in the source.
+
+## Flow
 
 ```mermaid
 flowchart TD
-    R[Reporte de amenaza<br/>texto sin el mapeo ATT&CK] --> P1
-    O[YAML de la organización<br/>estilo DeTT&CT] --> P2
-    P1["Paso 1 · IA (Gemini)<br/>extracción de técnicas + cita textual"] --> V["Validación por código<br/>ID existe en ATT&CK v19.2, no revocado"]
-    V --> A1["Revisión del analista<br/>aceptar / quitar / agregar"]
-    A1 --> P2["Paso 2 · código<br/>cobertura: cubierta / parcial / sin cobertura"]
-    P2 --> P3["Paso 3 · analista + árbol SSVC adaptado<br/>Track · Track* · Attend · Act"]
-    P3 --> G["Revisión global de la cadena<br/>(pregunta al analista, global_review.json)"]
-    P3 --> P4["Paso 4 · código + IA solo para el resumen<br/>mitigaciones, fuentes de datos, grupos, prevalencia"]
-    P4 --> CSV["CSV por amenaza (UTF-8 con BOM)"]
+    R[Threat report<br/>text without the ATT&CK mapping] --> P1
+    O[Organization YAML<br/>DeTT&CT style] --> P2
+    P1["Step 1 · AI (Gemini)<br/>technique extraction + verbatim quote"] --> V["Validation by code<br/>ID exists in ATT&CK v19.2, not revoked"]
+    V --> A1["Analyst review<br/>accept / remove / add"]
+    A1 --> P2["Step 2 · code<br/>coverage: cubierta / parcial / sin cobertura"]
+    P2 --> P3["Step 3 · analyst + adapted SSVC tree<br/>Track · Track* · Attend · Act"]
+    P3 --> G["Global review of the chain<br/>(question to the analyst, global_review.json)"]
+    P3 --> P4["Step 4 · code + AI only for the summary<br/>mitigations, data sources, groups, prevalence"]
+    P4 --> CSV["CSV per threat (UTF-8 with BOM)"]
 ```
 
-| Paso | Quién | Qué hace |
+| Step | Who | What it does |
 |---|---|---|
-| 1 | IA + código + analista | El LLM devuelve técnicas con una cita del reporte. El código valida cada ID contra ATT&CK v19.2 y marca `needs_review` los inválidos o deprecados (no los descarta en silencio). El analista revisa. Se guardan por separado `extracted_raw` y `extracted_validated`. |
-| 2 | Código | Cruza cada técnica con las detecciones del YAML (escala de DeTT&CT 0–5): 0 o sin entrada → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. |
-| 3 | Analista + tabla | Árbol adaptado de SSVC v2.0 (cobertura × criticidad del activo; la exposición solo ajusta las técnicas de Acceso Inicial). Tabla editable en `data/ssvc_tree.yaml`. |
-| 4 | Código + IA | Resumen breve (IA, máx. 3 oraciones, en inglés), enlace a attack.mitre.org (por código), mitigaciones `M####`, fuentes de datos, grupos y prevalencia (Red Canary 2026). Sin campos de urgencia, riesgo ni recomendación. |
+| 1 | AI + code + analyst | The LLM returns techniques with a quote from the report. The code validates each ID against ATT&CK v19.2 and marks invalid or deprecated ones as `needs_review` (it does not discard them silently). The analyst reviews. `extracted_raw` and `extracted_validated` are stored separately. |
+| 2 | Code | Matches each technique against the YAML detections (DeTT&CT scale 0–5): 0 or no entry → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. |
+| 3 | Analyst + table | Tree adapted from SSVC v2.0 (coverage × asset criticality; exposure only adjusts Initial Access techniques). Editable table in `data/ssvc_tree.yaml`. |
+| 4 | Code + AI | Brief summary (AI, max. 3 sentences, in English), link to attack.mitre.org (by code), `M####` mitigations, data sources, groups and prevalence (Red Canary 2026). No urgency, risk or recommendation fields. |
 
-## Instalación
+## Installation
 
-Requisitos: **Python 3.11 o superior** y `git`.
+Requirements: **Python 3.11 or later** and `git`.
 
 **Linux / macOS**
 
@@ -70,150 +74,150 @@ py -3.11 -m venv .venv
 pip install -e ".[dev]"
 ```
 
-Luego, en cualquier sistema:
+Then, on any system:
 
 ```bash
-aem fetch-data      # descarga ATT&CK v19.2 (verifica su SHA-256) y prepara los boletines de CISA
-pytest              # ninguna prueba llama a la API real
+aem fetch-data      # downloads ATT&CK v19.2 (verifies its SHA-256) and prepares the CISA advisories
+pytest              # no test calls the real API
 ```
 
-`aem --help` y `aem <comando> --help` muestran la ayuda en español.
+`aem --help` and `aem <command> --help` show the help in Spanish.
 
-Pasos para correr los experimentos reales (API key, Akira, prevalencia, `aem eval`, revisión manual, qué versionar): `docs/RUNBOOK.md`.
+Steps to run the real experiments (API key, Akira, prevalence, `aem eval`, manual review, what to version): `docs/RUNBOOK.md`.
 
-## API key de Gemini
+## Gemini API key
 
-Solo hace falta para correr el modelo con reportes nuevos o para regenerar las respuestas del LLM.
+Only needed to run the model on new reports or to regenerate the LLM responses.
 
-1. Cree una clave en Google AI Studio (https://aistudio.google.com/). **La capa gratuita no alcanza para el experimento completo**: el 2026-10-18 la API informó, para `gemini-3.8-flash`, una cuota de 20 solicitudes por día y por proyecto (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`), y `aem eval` necesita más de 80. Las corridas de la tesis se hicieron con la facturación activada en el proyecto (D-75). El modo demo no necesita clave.
-2. Copie `.env.example` como `.env` y complete `GEMINI_API_KEY=`.
-3. Opcional: `GEMINI_MODEL` (por defecto `gemini-3.8-flash`; alternativo `gemini-3.5-flash-lite`) y `GEMINI_RPM` (solicitudes por minuto; por defecto 10, valor aproximado, no oficial).
+1. Create a key in Google AI Studio (https://aistudio.google.com/). **The free tier is not enough for the full experiment**: on 2026-10-18 the API reported, for `gemini-3.8-flash`, a quota of 20 requests per day per project (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`), and `aem eval` needs more than 80. The thesis runs were made with billing enabled on the project (D-75). Demo mode needs no key.
+2. Copy `.env.example` to `.env` and fill in `GEMINI_API_KEY=`.
+3. Optional: `GEMINI_MODEL` (default `gemini-3.8-flash`; alternative `gemini-3.5-flash-lite`) and `GEMINI_RPM` (requests per minute; default 10, approximate value, not official).
 
-`.env` está en `.gitignore`: **nunca** suba su clave al repositorio. En la primera llamada el programa verifica que el modelo exista y, si no, sugiere el alternativo.
+`.env` is in `.gitignore`: **never** commit your key to the repository. On the first call the program checks that the model exists and, if it does not, suggests the alternative.
 
-## Modo demo (sin API key)
+## Demo mode (no API key)
 
-Toda respuesta del LLM se guarda en `runs/llm_cache/` con clave = SHA-256 de (modelo + prompt + parámetros + esquema + número de réplica). Con `--demo` el programa usa **solo** esa caché y, si falta una respuesta, se detiene con un mensaje claro.
+Every LLM response is stored in `runs/llm_cache/` with key = SHA-256 of (model + prompt + parameters + schema + replicate number). With `--demo` the program uses **only** that cache and, if a response is missing, stops with a clear message.
 
-Antes del primer `aem demo`, descargue los datos de ATT&CK v19.2 (no necesita API key):
+Before the first `aem demo`, download the ATT&CK v19.2 data (no API key needed):
 
 ```bash
-aem fetch-data                    # una sola vez: ATT&CK v19.2 + verificación de checksum
-aem demo                          # escenario Gunra (AA26-222A) de punta a punta, sin API key
-aem eval --demo                   # experimento completo desde la caché
+aem fetch-data                    # once: ATT&CK v19.2 + checksum verification
+aem demo                          # Gunra scenario (AA26-222A) end to end, no API key
+aem eval --demo                   # full experiment from the cache
 ```
 
-Las solicitudes construidas con el texto de Akira (derechos de autor) se guardan en `runs/llm_cache_private/`, que **no** se publica: quien clone el repositorio reproduce Gunra e Interlock, y Akira aparece como «sin caché privada» (D-69).
+Requests built with the Akira text (copyrighted) are stored in `runs/llm_cache_private/`, which is **not** published: whoever clones the repository reproduces Gunra and Interlock, and Akira appears as «sin caché privada» (D-69).
 
-> [PENDIENTE: Sebas] La caché de las corridas finales se genera con la API key real (`aem eval`) y se sube al repositorio. Mientras no existan resultados reales de `aem eval` publicados en `runs/llm_cache/`, `aem demo` y `aem eval --demo` terminan con el aviso «Modo demo: no hay respuesta guardada…»: es lo esperado, no un error de instalación.
+> [PENDING: Sebas] The cache of the final runs is generated with the real API key (`aem eval`) and committed to the repository. As long as no real `aem eval` results are published in `runs/llm_cache/`, `aem demo` and `aem eval --demo` end with the notice «Modo demo: no hay respuesta guardada…»: this is expected, not an installation error.
 
-## Uso
+## Usage
 
 ```bash
 aem run --report data/reports/gunra_aa26-222a_stripped.txt --org data/org/fictional_org.yaml \
         --analyst-mode interactive --out salida/gunra
 ```
 
-- `--analyst-mode interactive`: el analista revisa en la terminal la lista del paso 1, valida la cobertura, indica criticidad (y exposición en Acceso Inicial) y responde la revisión global.
-- `--analyst-mode auto`: solo para experimentos; acepta lo válido y toma criticidad y exposición de `analyst_context` del YAML.
+- `--analyst-mode interactive`: the analyst reviews the step 1 list in the terminal, validates the coverage, states criticality (and exposure for Initial Access) and answers the global review.
+- `--analyst-mode auto`: for experiments only; accepts what is valid and takes criticality and exposure from `analyst_context` in the YAML.
 
-Archivos de salida en `--out`:
+Output files in `--out`:
 
-- `<reporte>_exposure.csv` — una fila por técnica, columnas fijas: `technique_id, technique_name, tactics, coverage_validated, criticality, exposure, action, summary, source_link, mitigations, data_sources, groups, prevalence`. Orden: por acción (`Act`, `Attend`, `Track*`, `Track`) y, dentro de cada grupo, por secuencia de ataque (orden de las tácticas leído de la matriz de ATT&CK v19.2). El script no establece prioridades entre técnicas con la misma acción. `exposure` solo se llena en técnicas de Acceso Inicial.
-- `global_review.json` — respuesta del analista a: *«¿Existe algún punto de la cadena en el que la organización cuente con cobertura suficiente para interrumpir el ataque?»*. El script no responde ni sugiere la respuesta; en modo `auto` queda `answer: null`.
-- `run_record.json` — auditoría: lista cruda y validada, acciones del analista, cobertura original y validada, cada resumen, modelo, temperatura, versión de ATT&CK y SHA-256 del reporte y de los prompts.
+- `<report>_exposure.csv` — one row per technique, fixed columns: `technique_id, technique_name, tactics, coverage_validated, criticality, exposure, action, summary, source_link, mitigations, data_sources, groups, prevalence`. Order: by action (`Act`, `Attend`, `Track*`, `Track`) and, within each group, by attack sequence (tactic order read from the ATT&CK v19.2 matrix). The script does not set priorities among techniques with the same action. `exposure` is only filled for Initial Access techniques.
+- `global_review.json` — the analyst's answer to: *«Is there any point in the chain where the organization has sufficient coverage to interrupt the attack?»*. The script neither answers nor suggests the answer; in `auto` mode it stays `answer: null`.
+- `run_record.json` — audit: raw and validated list, analyst actions, original and validated coverage, each summary, model, temperature, ATT&CK version and SHA-256 of the report and of the prompts.
 
-**Idioma de los resúmenes:** se generan en inglés, el idioma de la descripción fuente de ATT&CK, para que los chequeos de fidelidad y de límites comparen textos en el mismo idioma (D-45).
+**Language of the summaries:** they are generated in English, the language of the ATT&CK source description, so that the fidelity and boundary checks compare texts in the same language (D-45).
 
-### Comandos
+### Commands
 
-| Comando | Qué hace |
+| Command | What it does |
 |---|---|
-| `aem fetch-data` | Descarga ATT&CK v19.2 y los boletines de CISA; genera los textos, las versiones `stripped` y los mapeos de referencia. |
-| `aem prepare-reports` | Prepara el texto de Akira que usted coloque (y regenera los de CISA con `--force`). |
-| `aem suggest-anon-names` | Propone los nombres de la amenaza que la versión `anon` debería reemplazar (`--scenario akira`), con su conteo y contexto. No modifica `data/anon_names.yaml`; escribe la lista en `data/reports/private/` (ignorada por git). |
-| `aem make-variants` | Genera las versiones `mut` (IoC cambiados) y `anon` (además, nombres de la amenaza cambiados) de cada reporte, y los IoC «conocidos» de la organización. Falla si algún IoC o nombre del original sobrevive. |
-| `aem run` | Corre los 4 pasos sobre un reporte. |
-| `aem preflight` | Comprueba que todo está listo antes de gastar llamadas (OK / FALTA / AVISO) y estima llamadas y tiempo. |
-| `aem eval` | Corre el experimento completo y genera las tablas de los 5 indicadores. Ejecuta antes el preflight y no arranca si hay un FALTA. Use siempre `--run-id <fecha>`. |
-| `aem report` | Resume una corrida real (`--run-id <fecha>`) en `docs/resultados/<fecha>/`: una tabla por indicador, gráficos de los indicadores 1 y 3, datos faltantes y límites (C1–C3, D-67). Se niega con resultados FAKE. |
-| `aem check-repo` | Revisa los archivos versionados y todo el historial de git en busca de `.env`, API keys, texto del reporte de DFIR y archivos `private/`. Obligatorio antes de subir a GitHub. |
-| `aem demo` | Atajo: Gunra en modo demo. |
+| `aem fetch-data` | Downloads ATT&CK v19.2 and the CISA advisories; generates the texts, the `stripped` versions and the reference mappings. |
+| `aem prepare-reports` | Prepares the Akira text you place (and regenerates the CISA ones with `--force`). |
+| `aem suggest-anon-names` | Proposes the threat names that the `anon` version should replace (`--scenario akira`), with their count and context. It does not modify `data/anon_names.yaml`; it writes the list to `data/reports/private/` (ignored by git). |
+| `aem make-variants` | Generates the `mut` (IoCs changed) and `anon` (threat names also changed) versions of each report, and the organization's «known» IoCs. Fails if any IoC or name from the original survives. |
+| `aem run` | Runs the 4 steps on a report. |
+| `aem preflight` | Checks that everything is ready before spending calls (OK / FALTA / AVISO) and estimates calls and time. |
+| `aem eval` | Runs the full experiment and generates the tables of the 5 indicators. Runs the preflight first and does not start if there is a FALTA. Always use `--run-id <date>`. |
+| `aem report` | Summarizes a real run (`--run-id <date>`) in `docs/resultados/<date>/`: one table per indicator, charts for indicators 1 and 3, missing data and limits (C1–C3, D-67). Refuses FAKE results. |
+| `aem check-repo` | Checks the versioned files and the whole git history for `.env`, API keys, DFIR report text and `private/` files. Mandatory before pushing to GitHub. |
+| `aem demo` | Shortcut: Gunra in demo mode. |
 
-## Reproducir los resultados de la tesis
+## Reproducing the thesis results
 
 ```bash
 aem fetch-data
-# Opcional (Akira): coloque el texto en data/reports/akira_dfir_2026.txt (ver docs/report_preparation.md)
+# Optional (Akira): place the text in data/reports/akira_dfir_2026.txt (see docs/report_preparation.md)
 aem prepare-reports
 aem make-variants
 aem preflight
-aem eval --run-id 2026-10-20   # con API key; o `aem eval --demo --run-id …` con la caché publicada
+aem eval --run-id 2026-10-20   # with API key; or `aem eval --demo --run-id …` with the published cache
 aem report --run-id 2026-10-20
 ```
 
-`aem eval` corre **3 escenarios × 3 versiones (`orig`, `mut`, `anon`) × 5 corridas** con los mismos parámetros (`temperature = 0`) y reporta media y desviación estándar. Resultados en `runs/<fecha>/results/` (`results.md`, CSV y JSON; cada tabla lleva modelo, versión, fecha y hash de las plantillas de prompt) y hojas de revisión manual en `eval/review_sheets/`. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). La estimación de llamadas y tiempo está en `docs/PLAN.md` (≈ 125–165 llamadas, 25–45 minutos con `GEMINI_RPM=10`). En los indicadores 1 y 3 la media principal es `_fail0` (las corridas fallidas cuentan como 0); `_valid` es secundaria (D-67). El paso a paso completo está en `docs/RUNBOOK.md`.
+`aem eval` runs **3 scenarios × 3 versions (`orig`, `mut`, `anon`) × 5 runs** with the same parameters (`temperature = 0`) and reports mean and standard deviation. Results in `runs/<date>/results/` (`results.md`, CSV and JSON; each table carries model, version, date and hash of the prompt templates) and manual review sheets in `eval/review_sheets/`. If any response does not come from the real Gemini API (e.g. a simulated LLM in tests), everything goes to `runs/<date>/results_FAKE/` with prefix `FAKE_` and never to `results/` (D-71). The estimate of calls and time is in `docs/PLAN.md` (≈ 125–165 calls, 25–45 minutes with `GEMINI_RPM=10`). In indicators 1 and 3 the primary mean is `_fail0` (failed runs count as 0); `_valid` is secondary (D-67). The full step-by-step guide is in `docs/RUNBOOK.md`.
 
-| Indicador | Qué mide |
+| Indicator | What it measures |
 |---|---|
-| 1 | Precisión y exhaustividad del paso 1 (`extracted_raw` frente al mapeo de referencia), a nivel de sub-técnica exacta y de técnica padre, con las omitidas y erróneas. |
-| 2 | Corrección del cruce de cobertura del paso 2 sobre la lista de referencia frente a las brechas declaradas en `coverage_design` (debe dar 100 %). |
-| 3 | Persistencia: porcentaje de técnicas cuya brecha (modelo) o presencia (enfoque tradicional por IoC) se reconoce en `mut` (IoC modificados) y en `anon` (IoC y nombres de la amenaza modificados), frente al original. |
-| 4 | Fidelidad de los resúmenes: hoja de revisión manual + chequeo automático básico. |
-| 5 | Cumplimiento de los límites: campos o lenguaje evaluativo en cualquier salida de la IA (+ muestra para revisión manual). |
+| 1 | Precision and recall of step 1 (`extracted_raw` against the reference mapping), at exact sub-technique level and parent technique level, with the omitted and erroneous ones. |
+| 2 | Correctness of the step 2 coverage matching on the reference list against the gaps declared in `coverage_design` (must be 100 %). |
+| 3 | Persistence: percentage of techniques whose gap (model) or presence (traditional IoC approach) is recognized in `mut` (modified IoCs) and in `anon` (modified IoCs and threat names), compared with the original. |
+| 4 | Fidelity of the summaries: manual review sheet + basic automatic check. |
+| 5 | Compliance with the boundaries: evaluative fields or language in any AI output (+ sample for manual review). |
 
-No hay indicador para el paso 3 ni para la revisión global: son criterio del analista.
+There is no indicator for step 3 or for the global review: they are the analyst's judgment.
 
-## Estructura del repositorio
+## Repository structure
 
 ```
-├── src/aem/              código del modelo (CLI, 4 pasos, cliente Gemini, preparación de reportes)
-│   └── prompts/          plantillas de prompt versionadas (su SHA-256 se registra)
-├── eval/                 variantes, enfoque tradicional, métricas, experimento; review_sheets/
+├── src/aem/              model code (CLI, 4 steps, Gemini client, report preparation)
+│   └── prompts/          versioned prompt templates (their SHA-256 is recorded)
+├── eval/                 variants, traditional approach, metrics, experiment; review_sheets/
 ├── data/
-│   ├── attack/           checksum de ATT&CK v19.2 (el JSON se descarga con fetch-data)
-│   ├── org/              organización ficticia (borrador) e IoC conocidos generados
-│   ├── reports/          boletines de CISA (texto, stripped, variante mut, diff)
-│   ├── reference_mappings/  técnicas de referencia por escenario
-│   ├── prevalence/       plantilla de prevalencia de Red Canary (la llena Sebas)
+│   ├── attack/           ATT&CK v19.2 checksum (the JSON is downloaded with fetch-data)
+│   ├── org/              fictional organization (draft) and generated known IoCs
+│   ├── reports/          CISA advisories (text, stripped, mut variant, diff)
+│   ├── reference_mappings/  reference techniques per scenario
+│   ├── prevalence/       Red Canary prevalence template (filled in by Sebas)
 │   ├── scenarios.yaml  ssvc_tree.yaml  model_config.yaml  boundary_patterns.yaml
-├── runs/                 respuestas del LLM (caché) y resultados de las corridas
+├── runs/                 LLM responses (cache) and run results
 ├── docs/                 PLAN, DECISIONS, report_preparation, RESUMEN_PARA_TESIS, lab_notes
 └── tests/
 ```
 
-## Datos
+## Data
 
-- **MITRE ATT&CK Enterprise v19.2** (`enterprise-attack-19.2.json`, https://github.com/mitre-attack/attack-stix-data). No se versiona; `aem fetch-data` lo descarga y verifica su SHA-256.
-- **Boletines de CISA** #StopRansomware **AA26-222A** (Gunra, 10/08/2026) y **AA25-203A** (Interlock, 22/07/2025). Son documentos del gobierno de EE. UU. y **se incluyen** en el repositorio (texto convertido y versión sin el mapeo ATT&CK).
-- **The DFIR Report**, «From Bing search to ransomware: BumbleBee and AdaptixC2 deliver Akira» (29/06/2026). **No se incluye**: tiene derechos de autor. El repositorio contiene solo el enlace, las instrucciones para colocar el texto (`docs/report_preparation.md`) y el mapeo de referencia (solo IDs y nombres de técnicas).
-- **Red Canary (2026), *2026 Threat Detection Report***: la plantilla `data/prevalence/red_canary_2026.csv` está vacía hasta que Sebas la llene; mientras tanto, la prevalencia dice `sin dato disponible`.
-- La organización `data/org/fictional_org.yaml` es **ficticia**.
+- **MITRE ATT&CK Enterprise v19.2** (`enterprise-attack-19.2.json`, https://github.com/mitre-attack/attack-stix-data). Not versioned; `aem fetch-data` downloads it and verifies its SHA-256.
+- **CISA advisories** #StopRansomware **AA26-222A** (Gunra, 10/08/2026) and **AA25-203A** (Interlock, 22/07/2025). They are U.S. government documents and **are included** in the repository (converted text and version without the ATT&CK mapping).
+- **The DFIR Report**, «From Bing search to ransomware: BumbleBee and AdaptixC2 deliver Akira» (29/06/2026). **Not included**: it is copyrighted. The repository contains only the link, the instructions to place the text (`docs/report_preparation.md`) and the reference mapping (technique IDs and names only).
+- **Red Canary (2026), *2026 Threat Detection Report***: the template `data/prevalence/red_canary_2026.csv` is empty until Sebas fills it in; meanwhile, prevalence reads `sin dato disponible`.
+- The organization `data/org/fictional_org.yaml` is **fictional**.
 
-Antes de dárselo al LLM, de cada reporte se elimina la sección del mapeo ATT&CK y **todo ID** de técnica o táctica del cuerpo; una prueba falla si queda alguno (`docs/report_preparation.md`).
+Before giving it to the LLM, the ATT&CK mapping section and **every** technique or tactic **ID** in the body are removed from each report; a test fails if any remains (`docs/report_preparation.md`).
 
-## Limitaciones
+## Limitations
 
-- **Prototipo de tesis**, evaluado solo con tres escenarios y una organización ficticia; los resultados no se generalizan.
-- **El paso 3 no se valida de forma independiente**: en la simulación lo realiza el autor con la criticidad y la exposición definidas de antemano en `analyst_context` del YAML (modo `auto`). La revisión global queda sin responder en ese modo.
-- **Las brechas de cobertura de la organización las define el autor** (`coverage_design`); el indicador 2 verifica el código del paso 2, no la calidad del perfil.
-- **Adaptaciones propias, pendientes de validación**: umbrales de cobertura sobre la escala de DeTT&CT, la política de sub-técnicas, la tabla SSVC adaptada a técnicas adversarias, el enfoque tradicional por IoC (simplificado: una coincidencia basta) y las reglas de extracción de IoC. Todas están en `docs/DECISIONS.md` y son configurables.
-- **El LLM no es determinístico** aun con `temperature = 0`; por eso se hacen 5 corridas. Los resultados dependen del modelo y la fecha (se registran ambos).
-- Los resúmenes del paso 4 se generan **una vez por técnica** (caché compartida entre escenarios y corridas); los indicadores 4 y 5 los evalúan una vez por técnica.
-- El chequeo automático de los resúmenes y la lista de patrones evaluativos son aproximaciones; la revisión manual de una muestra es parte del método.
-- En ATT&CK v18+ las fuentes de datos se modelan como componentes de datos de las estrategias de detección; la columna `data_sources` lista esos componentes (D-03, pendiente de confirmar).
-- Los límites de Gemini (`GEMINI_RPM` y las cuotas diarias) no son cifras oficiales del proyecto y pueden cambiar. Las corridas de la tesis usan la capa de pago (D-75). Cada 429 queda registrado con su cuota en `runs/<run-id>/api_events.jsonl` (D-74).
-- **C1 — El enfoque tradicional da 0 % por construcción:** en `mut` y `anon` ningún IoC del original sobrevive (lo verifica el código), así que el enfoque tradicional siempre da 0 %. Es un punto de referencia, **no una medición independiente**.
-- **C2 — Reconocimiento por el nombre:** `mut` conserva los nombres del actor y del malware, así que parte de la persistencia del modelo en `mut` podría deberse a que el LLM reconoce la amenaza por su nombre y no por el comportamiento. La versión `anon`, que reemplaza esos nombres, sirve para controlarlo (D-72).
-- **C3 — Datos de entrenamiento:** el modelo de lenguaje pudo conocer estos reportes (públicos) durante su entrenamiento; ni `mut` ni `anon` eliminan ese efecto.
+- **Thesis prototype**, evaluated only with three scenarios and one fictional organization; the results do not generalize.
+- **Step 3 is not validated independently**: in the simulation it is performed by the author with the criticality and exposure defined beforehand in `analyst_context` of the YAML (`auto` mode). The global review stays unanswered in that mode.
+- **The organization's coverage gaps are defined by the author** (`coverage_design`); indicator 2 verifies the step 2 code, not the quality of the profile.
+- **Own adaptations, pending validation**: coverage thresholds on the DeTT&CT scale, the sub-technique policy, the SSVC table adapted to adversary techniques, the traditional IoC approach (simplified: one match is enough) and the IoC extraction rules. All of them are in `docs/DECISIONS.md` and are configurable.
+- **The LLM is not deterministic** even with `temperature = 0`; that is why 5 runs are made. The results depend on the model and the date (both are recorded).
+- The step 4 summaries are generated **once per technique** (cache shared across scenarios and runs); indicators 4 and 5 evaluate them once per technique.
+- The automatic check of the summaries and the list of evaluative patterns are approximations; manual review of a sample is part of the method.
+- In ATT&CK v18+ data sources are modeled as data components of the detection strategies; the `data_sources` column lists those components (D-03, pending confirmation).
+- Gemini's limits (`GEMINI_RPM` and the daily quotas) are not official figures of the project and may change. The thesis runs use the paid tier (D-75). Every 429 is logged with its quota in `runs/<run-id>/api_events.jsonl` (D-74).
+- **C1 — The traditional approach gives 0 % by construction:** in `mut` and `anon` no IoC from the original survives (the code verifies it), so the traditional approach always gives 0 %. It is a reference point, **not an independent measurement**.
+- **C2 — Recognition by name:** `mut` keeps the names of the actor and the malware, so part of the model's persistence in `mut` could be due to the LLM recognizing the threat by its name and not by the behavior. The `anon` version, which replaces those names, serves to control for it (D-72).
+- **C3 — Training data:** the language model may have known these (public) reports during its training; neither `mut` nor `anon` removes that effect.
 
-Las decisiones marcadas **PENDIENTE DE CONFIRMAR** están en `docs/DECISIONS.md`.
+The decisions marked **PENDIENTE DE CONFIRMAR** (pending confirmation) are in `docs/DECISIONS.md`.
 
-## Licencia
+## License
 
-MIT (ver `LICENSE`). Los datos de terceros conservan sus propias condiciones (ATT&CK: términos de uso de MITRE; boletines de CISA: dominio público de EE. UU.; The DFIR Report: no incluido).
+MIT (see `LICENSE`). Third-party data keep their own terms (ATT&CK: MITRE terms of use; CISA advisories: U.S. public domain; The DFIR Report: not included).
 
-## Cómo citar
+## How to cite
 
 ```bibtex
 @software{murillo_attack_exposure_model_2026,
@@ -226,8 +230,8 @@ MIT (ver `LICENSE`). Los datos de terceros conservan sus propias condiciones (AT
 }
 ```
 
-## Declaración de uso de IA en el desarrollo
+## Declaration of AI use in development
 
-El código de este repositorio fue escrito con asistencia de Claude Code (Anthropic), bajo la dirección de Sebastián Murillo Mora. El diseño del modelo, las decisiones técnicas (ver `docs/DECISIONS.md`), la evaluación y la interpretación de los resultados son del autor.
+The code in this repository was written with the assistance of Claude Code (Anthropic), under the direction of Sebastián Murillo Mora. The design of the model, the technical decisions (see `docs/DECISIONS.md`), the evaluation and the interpretation of the results are the author's.
 
-Revisada por el autor el 2026-10-18.
+Reviewed by the author on 2026-10-18.

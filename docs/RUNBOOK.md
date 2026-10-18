@@ -256,11 +256,13 @@ Termina con **OK** o con la lista exacta de hallazgos (`archivo:línea (en <comm
 
 ## h. URL del repositorio y declaración de uso de IA en el README
 
+Hay dos README con el mismo contenido: `README.md` (inglés, el principal) y `README.es.md` (español). Todo cambio se hace en los dos; `tests/test_readmes.py` comprueba que tengan las mismas secciones, las mismas marcas pendientes (`[PENDING: …]` en inglés, `[PENDIENTE: …]` en español), el mismo BibTeX y la misma URL.
+
 1. Cree el repositorio en GitHub, vacío y sin README. Con `gh`: `gh repo create Mumogg/attack-exposure-model --public` (o `--private`). También puede hacerlo desde github.com.
-2. En `README.md`, reemplace las marcas `[PENDIENTE: confirmar URL]`:
+2. En `README.md` y `README.es.md`, reemplace las marcas `[PENDIENTE: confirmar URL]`:
    - las dos líneas `git clone …` de la instalación;
    - `url` y `note` de la entrada BibTeX de «Cómo citar».
-3. Complete la sección «Declaración de uso de IA en el desarrollo» con el texto que exija la universidad. Un **borrador** que puede adaptar:
+3. Complete la sección «Declaración de uso de IA en el desarrollo» (en inglés, «Declaration of AI use in development») con el texto que exija la universidad. Un **borrador** que puede adaptar:
 
    > Este repositorio se desarrolló con asistencia de Claude Code (Anthropic), que escribió código, pruebas y documentación siguiendo las especificaciones y decisiones del autor, quien revisó y aprobó cada cambio. El modelo evaluado usa Gemini (Google) como componente en los pasos 1 y 4, tal como se describe arriba. Los resultados reportados provienen de la ejecución con la API real de Gemini; ningún resultado fue generado ni editado por el asistente de desarrollo.
 

@@ -221,4 +221,4 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 - Revisar `coverage_design` y las decisiones **PENDIENTE DE CONFIRMAR**.
 - Seguir `docs/RUNBOOK.md`: `aem preflight`, luego `aem eval --run-id <fecha>` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
 - Ejecutar `aem check-repo` antes de subir a GitHub.
-- Confirmar la redacción de la declaración de uso de IA en el README.
+- Confirmar la redacción de la declaración de uso de IA en `README.md` (inglés) y `README.es.md` (español).
