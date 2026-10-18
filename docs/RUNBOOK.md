@@ -65,18 +65,29 @@ La carpeta `runs/prueba/` se puede borrar o versionar; lo que importa conservar 
    ```
 
    Debe decir que los IDs de la sección **coinciden** con `data/reference_mappings/akira.csv`. Si dice «NO coincide», no siga: revise el texto pegado.
-3. **Complete los nombres de Akira para la versión `anon`.** `data/anon_names.yaml` trae para Akira solo los nombres del título: Akira → ActorX, BumbleBee → LoaderX, AdaptixC2 → C2FrameworkX. Lea el texto y agregue, con el mismo formato, cada nombre propio **de la amenaza**:
-   - el actor o grupo y sus alias;
-   - la familia de ransomware;
-   - el malware (loaders, backdoors, RAT, ladrones de información) y los frameworks de C2 propios de la campaña.
-
-   **No agregue** herramientas legítimas o de uso general (PowerShell, RDP, AnyDesk, PsExec, Impacket, RClone, Rubeus, Cobalt Strike…), nombres de técnicas, CVE ni nombres de archivo. Para ver candidatos, este comando lista las palabras con mayúscula más frecuentes del texto:
+3. **Complete los nombres de Akira para la versión `anon`.** `data/anon_names.yaml` trae para Akira solo los nombres del título (Akira → ActorX, BumbleBee → LoaderX, AdaptixC2 → C2FrameworkX). Para completarlo, ejecute el sugeridor:
 
    ```bash
-   python -c "import re,collections; t=open('data/reports/akira_dfir_2026_stripped.txt',encoding='utf-8').read(); print(collections.Counter(re.findall(r'\b[A-Z][A-Za-z0-9]{2,}\b', t)).most_common(80))"
+   aem suggest-anon-names --scenario akira
    ```
 
-   Si una grafía distinta aparece en el texto (p. ej. «Bumblebee» o «Adaptix C2»), no hace falta agregarla: las mayúsculas no importan y el espacio también se busca como guion. Una grafía con otra forma (p. ej. un nombre corto) sí se agrega como fila aparte.
+   - **Qué muestra:** una lista numerada de candidatos con las veces que aparece cada uno, 1–2 fragmentos de contexto y su clasificación («probable amenaza» o «probable herramienta legítima/general») con el motivo. El criterio se imprime al principio.
+   - **Qué escribe:** `data/reports/private/akira_anon_candidates.md`, con la misma lista y al final las filas YAML listas para copiar de los «probable amenaza» que aún no están listados. Esa carpeta está ignorada por git porque el archivo contiene fragmentos del reporte.
+   - **No modifica** `data/anon_names.yaml`.
+
+   Para cada candidato «probable amenaza», decida:
+
+   | Si es… | Qué hacer |
+   |---|---|
+   | el actor o grupo, un alias, la familia de ransomware, o un malware, loader, backdoor, RAT o framework de C2 propio de la campaña | Copie su fila a `data/anon_names.yaml` bajo `akira:` y revise `replacement` (ActorX, LoaderX, BackdoorX, C2FrameworkX…; no repita uno que ya signifique otra cosa) y `role`. |
+   | una palabra común en un título o una cita («Emerging», «Research»), un nombre de persona o un lugar | No lo copie. |
+   | una herramienta legítima o de uso general (PowerShell, RDP, AnyDesk, PsExec, Impacket, RClone, Rubeus, Cobalt Strike…) | No lo copie. |
+
+   Revise también los «probable herramienta legítima/general»: el criterio es simple y puede clasificar mal un nombre poco común. Si un nombre está en la lista y en el texto pero el sugeridor no lo propuso, aparece un **AVISO**.
+
+   Como comprobación, `aem suggest-anon-names` sin `--scenario` hace lo mismo con Gunra e Interlock: todos sus nombres listados deben salir como propuestos («Ya en anon_names.yaml y propuestos: …») y sin AVISO.
+
+   Las mayúsculas no importan, y el espacio de un nombre también se busca como guion. Una grafía con otra forma (p. ej. un nombre corto) sí se agrega como fila aparte.
 4. Genere las versiones `mut` y `anon` de los tres escenarios y los IoC conocidos:
 
    ```bash

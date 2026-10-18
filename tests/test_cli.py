@@ -131,7 +131,7 @@ def test_gitignore_keeps_copyrighted_material_out():
 
     rules = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
     for rule in ("data/reports/akira_dfir_2026*", "runs/llm_cache_private/", "runs/*/private/",
-                 "eval/review_sheets/private/", ".env"):
+                 "eval/review_sheets/private/", "data/reports/private/", ".env"):
         assert rule in rules, rule
 
 

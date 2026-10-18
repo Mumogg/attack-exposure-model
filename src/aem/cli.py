@@ -10,7 +10,7 @@ from typer.core import TyperCommand, TyperGroup
 
 from aem import config
 from aem.config import (
-    ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, LLM_CACHE_DIR, LLM_PRIVATE_CACHE_DIR,
+    ANON_NAMES_FILE, ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, LLM_CACHE_DIR, LLM_PRIVATE_CACHE_DIR,
     ORG_FILE, PREVALENCE_FILE, RUNS_DIR, SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
 )
 from aem.fetch import http_get
@@ -258,6 +258,43 @@ def _print_checks(checks: list) -> None:
         style = _STATUS_STYLE.get(c.status, "")
         console.print(f"[{style}]{c.status:<5}[/{style}] {c.item}" + (f" — {c.detail}" if c.detail else ""),
                       highlight=False)
+
+
+@app.command("suggest-anon-names", cls=SpanishCommand)
+def suggest_anon_names(
+    scenario: str = typer.Option("", "--scenario", help="Escenario (akira, gunra, interlock); vacío = todos."),
+) -> None:
+    """Propone nombres de la amenaza para data/anon_names.yaml (no lo modifica)."""
+    from aem.scenarios import load_scenarios
+    from eval.anon_suggest import CRITERIA, coverage, suggest, write_candidates
+    from eval.make_variants import load_anon_names
+
+    scenarios = load_scenarios(SCENARIOS_FILE)
+    if scenario and scenario not in scenarios:
+        _fail(f"Escenario desconocido: {scenario!r} (opciones: {', '.join(scenarios)})")
+    names = load_anon_names(ANON_NAMES_FILE)
+    console.print("[bold]Criterio[/bold]\n" + CRITERIA.strip(), highlight=False)
+    for sc in [scenarios[scenario]] if scenario else list(scenarios.values()):
+        if not sc.text.exists():
+            console.print(f"[yellow]AVISO[/yellow] {sc.name}: no existe {sc.text}; nada que sugerir.", highlight=False)
+            continue
+        text = sc.text.read_text(encoding="utf-8")
+        cands = suggest(text)
+        console.print(f"\n[bold]{sc.name}[/bold]: {len(cands)} candidatos", highlight=False)
+        for i, c in enumerate(cands, 1):
+            ctx = " · ".join(f"«{x}»" for x in c.contexts)
+            console.print(f"{i}. {c.name} — {c.count}× — {c.label} ({c.reason}) — {ctx}", highlight=False)
+        cov = coverage(text, cands, names.get(sc.name, []))
+        console.print(f"Ya en anon_names.yaml y propuestos: {', '.join(cov['covered']) or 'ninguno'}", highlight=False)
+        for n in cov["missing_in_text"]:
+            console.print(f"[yellow]AVISO[/yellow] «{n}» está en anon_names.yaml y en el texto, pero el sugeridor no "
+                          "lo propuso: revise el criterio o el nombre.", highlight=False)
+        for n in cov["absent"]:
+            console.print(f"[yellow]AVISO[/yellow] «{n}» está en anon_names.yaml pero no aparece en el texto.",
+                          highlight=False)
+        out = write_candidates(sc.text.parent / "private", sc.name, text, cands, names.get(sc.name, []))
+        console.print(f"Archivo (ignorado por git): {out}\nCopie a mano a {ANON_NAMES_FILE.name} solo las filas que "
+                      "apruebe (sección final del archivo) y ejecute `aem make-variants`.", highlight=False)
 
 
 @app.command("preflight", cls=SpanishCommand)

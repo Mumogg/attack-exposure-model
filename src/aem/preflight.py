@@ -21,7 +21,8 @@ from aem.step4_reference import load_prevalence
 
 ATTACK_ID = re.compile(r"\bT\d{4}(?:\.\d{3})?\b|\bTA\d{4}\b")
 # Paths that must never reach git (D-69 and secrets); a dummy name stands for any run id / file.
-MUST_BE_IGNORED = (".env", "runs/llm_cache_private/", "runs/<run-id>/private/", "eval/review_sheets/private/")
+MUST_BE_IGNORED = (".env", "runs/llm_cache_private/", "runs/<run-id>/private/", "eval/review_sheets/private/",
+                   "data/reports/private/")
 
 
 @dataclass(frozen=True)

@@ -23,6 +23,7 @@ data/reports/akira_dfir_2026*
 runs/llm_cache_private/
 runs/*/private/
 eval/review_sheets/private/
+data/reports/private/
 
 # OS / editors
 .DS_Store
