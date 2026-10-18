@@ -148,3 +148,11 @@ def test_fetch_data_reports_changed_page_clearly(tmp_path, monkeypatch, mini_att
     assert res.exit_code == 1
     assert "gunra" in res.output and "ATT&CK" in res.output
     assert res.exception is None or isinstance(res.exception, SystemExit)
+
+
+@pytest.mark.parametrize("args", [["--help"], ["run", "--help"], ["eval", "--help"]])
+def test_help_option_text_is_in_spanish(args):
+    res = runner.invoke(app, args)
+    assert res.exit_code == 0
+    assert "Show this message and exit" not in res.output
+    assert "Muestra esta ayuda y termina." in res.output

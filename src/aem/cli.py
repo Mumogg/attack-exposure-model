@@ -6,6 +6,7 @@ from pathlib import Path
 
 import typer
 from rich.console import Console
+from typer.core import TyperCommand, TyperGroup
 
 from aem import config
 from aem.config import (
@@ -14,7 +15,25 @@ from aem.config import (
 )
 from aem.fetch import http_get
 
+HELP_TEXT = "Muestra esta ayuda y termina."
+
+
+def _spanish_help(cls):
+    """Typer/Click class whose --help option is described in Spanish."""
+    class Spanish(cls):
+        def get_help_option(self, ctx):
+            opt = super().get_help_option(ctx)
+            if opt is not None:
+                opt.help = HELP_TEXT
+            return opt
+    return Spanish
+
+
+SpanishGroup = _spanish_help(TyperGroup)
+SpanishCommand = _spanish_help(TyperCommand)
+
 app = typer.Typer(
+    cls=SpanishGroup,
     help="Prototipo de tesis: evaluación de exposición a técnicas MITRE ATT&CK asistida por IA "
          "(solo para reproducibilidad; no es una herramienta de producción).",
     no_args_is_help=True, add_completion=False,
@@ -139,7 +158,7 @@ def _prepare_reports(attack_path: Path, force: bool, download: bool) -> None:
             console.print(f"{sc.name}: {sc.stripped.name}; mapeo de referencia: {log['reference_check']}")
 
 
-@app.command("fetch-data")
+@app.command("fetch-data", cls=SpanishCommand)
 def fetch_data(
     force: bool = typer.Option(False, "--force", help="Volver a descargar y regenerar los boletines de CISA."),
 ) -> None:
@@ -153,7 +172,7 @@ def fetch_data(
         _fail(str(exc))
 
 
-@app.command("prepare-reports")
+@app.command("prepare-reports", cls=SpanishCommand)
 def prepare_reports(
     attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
     force: bool = typer.Option(False, "--force", help="Regenerar también los textos de CISA ya preparados."),
@@ -165,7 +184,7 @@ def prepare_reports(
         _fail(str(exc))
 
 
-@app.command("make-variants")
+@app.command("make-variants", cls=SpanishCommand)
 def make_variants() -> None:
     """Genera la variante «mut» de cada reporte (IoC modificados, comportamiento intacto) y los IoC conocidos."""
     from aem.scenarios import load_scenarios
@@ -183,7 +202,7 @@ def make_variants() -> None:
     console.print(f"semilla {cfg.variants.seed}; IoC conocidos de la organización: {KNOWN_IOCS_FILE}")
 
 
-@app.command("run")
+@app.command("run", cls=SpanishCommand)
 def run(
     report: Path = typer.Option(..., "--report", help="Reporte de amenaza en texto plano (.txt o .md)."),
     org: Path = typer.Option(ORG_FILE, "--org", help="YAML de la organización (estilo DeTT&CT)."),
@@ -198,7 +217,7 @@ def run(
     _run(report, org, analyst_mode, demo, out, attack, cache_dir)
 
 
-@app.command("demo")
+@app.command("demo", cls=SpanishCommand)
 def demo_cmd(
     out: Path = typer.Option(DEMO_OUT, "--out", help="Carpeta de salida."),
     attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
@@ -208,7 +227,7 @@ def demo_cmd(
     _run(DEMO_REPORT, ORG_FILE, "auto", True, out, attack, cache_dir)
 
 
-@app.command("eval")
+@app.command("eval", cls=SpanishCommand)
 def eval_cmd(
     demo: bool = typer.Option(False, "--demo", help="Usar solo respuestas guardadas en la caché (sin API key)."),
     run_id: str = typer.Option("", "--run-id", help="Nombre de la carpeta en runs/ (por defecto, la fecha de hoy)."),
