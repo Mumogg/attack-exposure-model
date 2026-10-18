@@ -197,9 +197,13 @@ def make_variants() -> None:
     except VariantLeak as exc:
         _fail(str(exc))
     for log in logs:
-        console.print(f"{log['scenario']}: {log['variant']} — {log['unique_replaced']} formas escritas de IoC reemplazadas "
+        console.print(f"{log['scenario']}: {log['variant']} — {log['unique_replaced']} IoC distintos reemplazados "
                       f"({log['occurrences_replaced']} apariciones) {log['replacements_by_type']}; "
                       "verificación: ningún IoC del original queda en mut")
+        if log["plain_candidates_kept"]:
+            console.print(f"  {len(log['plain_candidates_kept'])} tokens sin defang con forma de IoC se dejaron "
+                          f"intactos (revíselos en el diff): "
+                          + ", ".join(f"{c['value']} (línea {c['line']})" for c in log["plain_candidates_kept"]))
     for name in sorted(set(scenarios) - {log["scenario"] for log in logs}):
         console.print(f"[yellow]{name}:[/yellow] sin texto preparado; ejecute `aem prepare-reports` primero.")
     console.print(f"semilla {cfg.variants.seed}; IoC conocidos de la organización: {KNOWN_IOCS_FILE}")

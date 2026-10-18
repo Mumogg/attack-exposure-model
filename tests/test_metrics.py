@@ -100,3 +100,15 @@ def test_boundary_violations_extraction():
     assert v["extra_fields"] == 1
     assert v["evaluative_text"] == 2  # "urgent" and "should" are absent from the report; "critical" is present
     assert v["total"] == 3
+
+
+def test_review_a3_abbreviations_are_not_sentence_ends():
+    from eval.metrics import count_sentences
+    assert count_sentences("Uses e.g. PowerShell. Stops U.S. hosts. Done v1.2 ok.") == 3
+
+
+def test_review_a4_numbers_and_ids_are_compared_as_tokens():
+    src = "In 2023 adversaries used T1059.001 and 1000 hosts."
+    r = summary_auto_check("They used 3 tools and T1059.", src, max_sentences=3)
+    assert "cifra ausente en la fuente: 3" in r["issues"] and "ID ausente en la fuente: T1059" in r["issues"]
+    assert summary_auto_check("They hit 1,000 hosts.", src, max_sentences=3)["ok"]

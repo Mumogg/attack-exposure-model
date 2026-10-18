@@ -78,7 +78,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | ATT&CK | Enterprise **v19.2**, `enterprise-attack-19.2.json`, SHA-256 `dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4` |
 | Python | ≥ 3.11 (desarrollo con 3.14.7) |
 | Bibliotecas | `mitreattack-python` 6.3.1, `pydantic` 2.14.1, `typer` 0.27.3, `rich` 15.0.0, `PyYAML` 6.0.3, `pytest` 9.1.1 |
-| Pruebas | 237 pruebas automatizadas; ninguna llama a la API real |
+| Pruebas | 269 pruebas automatizadas; ninguna llama a la API real |
 
 ### 2.3 Diseño experimental
 
@@ -113,13 +113,13 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 |---|---|
 | Semilla de variantes | 20261017, combinada con el nombre del escenario |
 | IPv4 de reemplazo | rangos de documentación **RFC 5737**: `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` |
-| Dominios de reemplazo | 10 letras aleatorias + TLD **`.invalid`** (RFC 2606); también para el host de las URL y el dominio de los correos |
-| Hashes de reemplazo | hexadecimal aleatorio del mismo largo (MD5 32, SHA-1 40, SHA-256 64) y mismas mayúsculas |
+| Dominios de reemplazo | 10 letras aleatorias + TLD **`.invalid`** (RFC 2606); también para el host de las URL, el dominio de los correos y cada mención sin defang de un dominio detectado; la parte local de los correos → 10 letras aleatorias |
+| Hashes de reemplazo | hexadecimal aleatorio del mismo largo (MD5 32, SHA-1 40, SHA-256 64, SHA-512 128) y mismas mayúsculas, también dentro de URL |
 | ID de qTox y cuentas de reemplazo | caracteres aleatorios del mismo largo · `acct-` + 8 letras |
 | Comportamiento | resto del texto idéntico byte a byte (verificado por prueba); diff y tabla de reemplazos guardados; la generación falla si algún IoC del original (con o sin defang) sigue en `mut`, indicando valor y línea |
-| IoC reconocidos (enfoque tradicional) | MD5, SHA-1, SHA-256, IPv4, URL, correo, dominio, ID de qTox y cuentas listadas en tablas; IPv4/URL/dominio/correo solo si están «defanged» (`[.]`, `hxxp`) |
+| IoC reconocidos (enfoque tradicional) | MD5, SHA-1, SHA-256, SHA-512, IPv4, URL, correo, dominio, ID de qTox y cuentas listadas en tablas (salvo cuentas genéricas como Administrator); IPv4/URL/dominio/correo solo si están «defanged» (`[.]`, `hxxp`) |
 | Auditoría frente a la sección de IoC de cada boletín | Gunra: 34 listados, 34 extraídos · Interlock: 38 listados, 38 extraídos · ningún IoC extraído fuera de la sección |
-| Reemplazos realizados en `mut` | Gunra: 40 formas escritas (43 apariciones): 17 IPv4, 5 dominios, 4 correos, 4 SHA-256, 4 qTox, 1 cuenta, 5 URL de notas · Interlock: 47 (49): 35 SHA-256, 3 SHA-1, 8 URL de notas, 1 correo de contacto · Akira: al colocar el texto |
+| Reemplazos realizados en `mut` | Gunra: 34 IoC distintos (38 apariciones): 17 IPv4, 4 dominios, 4 correos, 4 SHA-256, 4 qTox, 1 cuenta · Interlock: 38 (40): 35 SHA-256, 3 SHA-1 · Akira: al colocar el texto. Los enlaces de referencia de las notas no se tocan (solo el hash dentro de la URL de VirusTotal) |
 | IoC conocidos por la organización | 50 % de los IoC únicos de `orig` (redondeo hacia arriba), semilla 20261017: Gunra 17 de 34, Interlock 19 de 38 |
 | Umbral de reconocimiento | ≥ 1 coincidencia |
 
@@ -187,7 +187,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 2. **El paso 3 no se valida de forma independiente:** en la simulación lo ejecuta el autor con criticidad y exposición definidas de antemano (`analyst_context`, modo `auto`); la revisión global queda sin responder.
 3. **Brechas definidas por el autor:** el indicador 2 verifica la implementación del paso 2, no la calidad del perfil de la organización.
 4. **Adaptaciones propias sin validación externa:** umbrales sobre la escala de DeTT&CT, política de sub-técnicas, árbol SSVC aplicado a técnicas adversarias (SSVC fue diseñado para vulnerabilidades).
-5. **Enfoque tradicional simplificado:** una coincidencia de IoC basta para «reconocer» todas las técnicas; los IoC conocidos son una fracción fija de los del propio reporte. En `mut` no hay coincidencias por construcción, así que su 0 % es esperado y lo que el indicador 3 compara es la persistencia del modelo frente a esa referencia.
+5. **Enfoque tradicional simplificado:** una coincidencia de IoC basta para «reconocer» todas las técnicas; los IoC conocidos son una fracción fija de los del propio reporte. En `mut` no hay coincidencias por construcción, así que su 0 % es esperado y lo que el indicador 3 compara es la persistencia del modelo frente a esa referencia. La fila tradicional (orig 100 %, mut 0 %) es un punto de referencia analítico fijado por construcción, no un resultado empírico (`docs/REVISION_EVAL.md` C1).
 6. **No determinismo del LLM** aun con temperatura 0; se mitiga con 5 corridas y se reporta la dispersión. Los resultados dependen del modelo y la fecha (se registran).
 7. **Mapeo de referencia como verdad:** las tablas de CISA y la sección de The DFIR Report son el criterio de corrección; una técnica descrita en el texto pero ausente de esas tablas cuenta como «errónea».
 8. **Resúmenes una vez por técnica:** los indicadores 4 y 5 los evalúan una vez, no cinco; el chequeo automático de fidelidad es aproximado y la revisión manual es la medida principal.
@@ -197,6 +197,8 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 12. **Reproducibilidad de Akira:** su caché no se publica (derechos de autor); quien clone el repositorio reproduce Gunra e Interlock en modo demo, no Akira.
 13. **Capa gratuita de Gemini:** los límites no son oficiales y pueden cambiar.
 14. **Reportes de CISA en línea:** el sitio puede cambiar; el repositorio conserva el texto convertido usado en la tesis.
+15. **Información asimétrica en `mut`:** la variante conserva los nombres del actor y del malware, las herramientas y los CVE. El LLM podría reconocer la amenaza por su nombre y recordar técnicas de su entrenamiento (los boletines son públicos), de modo que parte de su persistencia podría no deberse a la extracción del comportamiento (`docs/REVISION_EVAL.md` C2).
+16. **Revisión independiente del código de evaluación:** hallazgos corregidos y cuestiones abiertas en `docs/REVISION_EVAL.md`.
 
 ---
 
@@ -205,5 +207,5 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 - Colocar el texto de Akira (`docs/report_preparation.md`) y ejecutar `aem prepare-reports` y `aem make-variants`.
 - Llenar `data/prevalence/red_canary_2026.csv`.
 - Revisar `coverage_design` y las decisiones **PENDIENTE DE CONFIRMAR**.
-- Ejecutar `aem eval` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
+- Seguir `docs/RUNBOOK.md`. Ejecutar `aem eval` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
 - Confirmar la redacción de la declaración de uso de IA en el README.

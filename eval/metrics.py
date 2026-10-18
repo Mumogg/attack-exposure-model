@@ -94,24 +94,30 @@ def traditional_persistence(recognized_orig: bool, recognized_mut: bool) -> dict
 
 # --- indicator 4 ------------------------------------------------------------------------
 
-_SENTENCE_END = re.compile(r"[.!?](?:\s|$)")
+# A terminator ends a sentence only before an upper-case letter or the end of the text, and not after
+# a common abbreviation (review A3).
+_SENTENCE_END = re.compile(r"(?<!\be\.g)(?<!\bi\.e)(?<!\betc)(?<!\bvs)(?<!\bU\.S)[.!?]+(?=\s+[A-Z\"'(]|\s*$)")
 _ATTACK_LIKE_ID = re.compile(r"\b(?:T\d{4}(?:\.\d{3})?|TA\d{4}|M\d{4}|G\d{4}|S\d{4}|C\d{4}|DS\d{4}|DC\d{4})\b")
 _NUMBER = re.compile(r"\b\d+(?:[.,]\d+)?\b")
 
 
 def count_sentences(text: str) -> int:
-    return len(_SENTENCE_END.findall(text.strip() + " "))
+    return len(_SENTENCE_END.findall(text.strip()))
+
+
+def _number_tokens(text: str) -> set[str]:
+    """Numbers as tokens, thousands separators removed ("1,000" == "1000")."""
+    return {re.sub(r",(?=\d{3}\b)", "", n) for n in _NUMBER.findall(text)}
 
 
 def summary_auto_check(summary: str, source: str, max_sentences: int) -> dict:
     """Basic automatic fidelity check; the manual review sheet is the real measure."""
     issues = []
-    for tok in sorted(set(_ATTACK_LIKE_ID.findall(summary))):
-        if tok not in source:
-            issues.append(f"ID ausente en la fuente: {tok}")
-    for num in sorted(set(_NUMBER.findall(summary))):
-        if num not in source:
-            issues.append(f"cifra ausente en la fuente: {num}")
+    source_ids = set(_ATTACK_LIKE_ID.findall(source))  # tokens, not substrings (review A4)
+    for tok in sorted(set(_ATTACK_LIKE_ID.findall(summary)) - source_ids):
+        issues.append(f"ID ausente en la fuente: {tok}")
+    for num in sorted(_number_tokens(summary) - _number_tokens(source)):
+        issues.append(f"cifra ausente en la fuente: {num}")
     n = count_sentences(summary)
     if n > max_sentences:
         issues.append(f"{n} oraciones (máximo {max_sentences})")

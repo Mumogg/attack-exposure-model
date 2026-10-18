@@ -112,10 +112,10 @@ def test_default_requires_defanged_network_iocs():
                      ("md5", "d41d8cd98f00b204e9800998ecf8427e")}
 
 
-def test_variant_email_keeps_local_part_and_changes_domain():
+def test_variant_email_changes_local_part_and_domain():
     new, mapping = make_variant("contact a1@proton[.]me now", DEFAULT, seed=1, salt="e")
     m = next(x for x in mapping if x["type"] == "email")
-    assert m["replacement"].startswith("a1@") and m["replacement"].endswith("[.]invalid")
+    assert not m["replacement"].startswith("a1@") and m["replacement"].endswith("[.]invalid")
 
 
 def test_build_variants_writes_variant_diff_log_and_known_iocs(tmp_path):
@@ -228,3 +228,57 @@ def test_mapping_counts_every_occurrence():
     text = "| Domain |\n| datapub[.]news |\nmirror at datapub.news and datapub[.]news\n"
     _, mapping = make_variant(text, DEFAULT, seed=1, salt="o")
     assert sum(m["occurrences"] for m in mapping) == 3
+
+
+# --- independent review (docs/REVISION_EVAL.md) ---------------------------------------------------
+
+
+def test_review_a1_plain_tokens_that_are_not_iocs_stay_in_mut():
+    """A1: file names, services and version numbers written plainly are behavior, not IoCs."""
+    from eval.make_variants import variant_ioc_config
+    text = "Actors ran backdoor.pl and exfiltrated to mega.io. Version 5.1.2.3 installed. C2 45.61.136[.]10\n"
+    new, _ = make_variant(text, variant_ioc_config(load_model_config()), seed=1, salt="a1")
+    assert "backdoor.pl" in new and "mega.io" in new and "5.1.2.3" in new
+    assert "45.61.136" not in new
+
+
+def test_review_a1_hash_in_plain_reference_url_is_still_replaced():
+    from eval.make_variants import check_variant, variant_ioc_config
+    h = "91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0"
+    text = f"| cryptor.exe | {h} |\n\n11 VirusTotal, https://www.virustotal.com/gui/file/{h}/detection\n"
+    new, _ = make_variant(text, variant_ioc_config(load_model_config()), seed=1, salt="a1b")
+    assert h not in new and "https://www.virustotal.com/gui/file/" in new
+    assert check_variant(text, new, DEFAULT) == []
+
+
+def test_review_a2_generic_accounts_are_not_iocs():
+    text = "| Username |\n| Administrator |\n| forticloud-sync |\nused the built-in Administrator account"
+    vals = {i.value for i in extract_iocs(text, DEFAULT) if i.type == "account"}
+    assert vals == {"forticloud-sync"}
+
+
+def test_review_a5_sha512_is_an_ioc_and_is_replaced():
+    from eval.make_variants import check_variant
+    h = "ab" * 64
+    assert [(i.type, i.value) for i in extract_iocs(f"hash {h}\n", DEFAULT)] == [("sha512", h)]
+    new, _ = make_variant(f"hash {h}\n", DEFAULT, seed=1, salt="a5")
+    assert h not in new and check_variant(f"hash {h}\n", new, DEFAULT) == []
+
+
+def test_review_a5_check_flags_any_long_hex_run():
+    from eval.make_variants import check_variant
+    h = "cd" * 48  # 96 hex: no known hash type, still an indicator if it survives
+    assert check_variant(f"x {h}", f"x {h}", DEFAULT) != []
+
+
+def test_review_a6_email_local_part_is_replaced():
+    new, _ = make_variant("contact ilovemycubscout@gmail[.]com now", DEFAULT, seed=1, salt="a6")
+    assert "ilovemycubscout" not in new and "@" in new and "[.]invalid" in new
+
+
+def test_review_a7_mapping_is_keyed_by_type_and_value():
+    text = "| Domain |\n| Datapub[.]news |\nmirror at datapub.news\n"
+    _, mapping = make_variant(text, DEFAULT, seed=1, salt="a7")
+    doms = [m for m in mapping if m["type"] == "domain"]
+    assert len(doms) == 1 and doms[0]["occurrences"] == 2
+    assert sorted(doms[0]["spellings"]) == ["Datapub[.]news", "datapub.news"]

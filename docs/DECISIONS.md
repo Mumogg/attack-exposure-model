@@ -99,7 +99,7 @@ Las tablas de CISA incluyen a veces un ID de táctica (p. ej. `TA0009` Collectio
 Nota: si Sebas coloca el texto de Akira y ejecuta `aem make-variants`, el archivo generado incluirá IoC de ese reporte (valores de indicadores, no texto del reporte). Sebas decide si se versiona.
 
 ### D-63. Extracción de IoC y dominios de referencia — **PENDIENTE DE CONFIRMAR**
-Tipos reconocidos (`eval/baseline_ioc.py`): MD5, SHA-1, SHA-256 (hexadecimal de 32/40/64 caracteres aislado), IPv4, URL, correo electrónico y dominio, más los tipos de D-70 (ID de qTox y cuentas). Reglas:
+Tipos reconocidos (`eval/baseline_ioc.py`): MD5, SHA-1, SHA-256, SHA-512 (hexadecimal de 32/40/64/128 caracteres aislado), IPv4, URL, correo electrónico y dominio, más los tipos de D-70 (ID de qTox y cuentas). Reglas:
 - `ioc.require_defang: true` (por defecto): IPv4, URL, dominios y correos solo cuentan si están escritos «defanged» (`[.]`, `[:]`, `hxxp`), que es como CISA y The DFIR Report publican los IoC. Así los enlaces de referencia de la sección «Notes» (Trend Micro, Talos, cisecurity.org…) no se toman por IoC. Los hashes no requieren esa marca.
 - Con `require_defang: false`, un dominio sin `[.]` ni esquema solo cuenta si su TLD está en `ioc.domain_tlds`, para no confundir nombres de archivo (`main.exe`, `secretsdump.py`) con dominios.
 - Los dominios institucionales (`cisa.gov`, `fbi.gov`, `mitre.org`…, lista `ioc.excluded_domains`) y sus subdominios se excluyen.
@@ -118,17 +118,18 @@ Una violación es (a) un campo extra no previsto por el esquema en la salida del
 Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado según D-63 se reemplaza; todo lo demás queda idéntico byte a byte (test que revierte el mapeo y recupera el original).
 - Hashes → hexadecimal aleatorio del mismo largo y las mismas mayúsculas/minúsculas.
 - IPv4 → direcciones de los rangos de documentación RFC 5737 (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), sin repetir.
-- Dominios (también el host de una URL y el dominio de un correo) → nombre aleatorio de 10 letras con TLD `.invalid` (RFC 2606). Se conserva la ruta de la URL y la parte local del correo.
+- Dominios (también el host de una URL y el dominio de un correo) → nombre aleatorio de 10 letras con TLD `.invalid` (RFC 2606). Se conserva la ruta de la URL (salvo los hashes que contenga); la parte local del correo también se reemplaza (ver abajo).
 - Se conserva el estilo «defanged» en la misma posición (`45.61.136[.]10` → `198.51.100[.]23`).
 - Un mismo IoC recibe siempre el mismo reemplazo dentro del reporte.
 - Semilla: `variants.seed` = 20261017, combinada con el nombre del escenario. Por cada escenario se guardan `<reporte>_mut_stripped.txt`, `<reporte>_mut.diff` y `<reporte>_mut_log.json` (semilla, tabla de reemplazos con número de apariciones).
-- (2026-10-17) Alcance ampliado para que ningún IoC del original sobreviva:
-  - `variants.require_defang: false`: la variante reemplaza también lo escrito sin defang. Consecuencia: los enlaces de las notas y el correo de contacto del MS-ISAC también cambian de host en `mut` (no son IoC, pero no se pueden distinguir de uno de forma mecánica). El enfoque tradicional sigue usando las reglas estrictas de D-63, así que esto no lo afecta.
-  - Cada IoC detectado se reemplaza también donde vuelve a aparecer escrito sin defang (p. ej. `datapub[.]news` en la tabla y `datapub.news` en una oración).
-  - Los hashes dentro de una URL (p. ej. la ruta de VirusTotal) se reemplazan con el mismo hash nuevo.
+- (2026-10-17, ajustado tras la revisión independiente, `docs/REVISION_EVAL.md` A1, A5–A7) Alcance para que ningún IoC del original sobreviva:
+  - Los IoC se detectan con las mismas reglas que el enfoque tradicional (D-63, `variants.require_defang: true`). Además se reemplaza **cada mención** de un IoC detectado aunque esté escrita sin defang (p. ej. `datapub[.]news` en la tabla y `datapub.news` en una oración; también el host de una URL IoC).
+  - Los tokens que solo parecen IoC sin defang (nombres de archivo como `backdoor.pl`, servicios como `mega.io`, versiones `5.1.2.3`, enlaces de referencia) **no** se tocan, porque son comportamiento o citas. Se listan en el log (`plain_candidates_kept`) y en la consola para revisarlos en el diff. En Gunra son 4 enlaces de las notas; en Interlock, 8 enlaces y `soc@cisecurity.org`.
+  - Los hashes dentro de cualquier URL, incluidas las de referencia (la ruta de VirusTotal en Gunra), se reemplazan por el mismo hash nuevo.
+  - En un correo se reemplazan la parte local y el dominio (antes se conservaba la parte local).
   - Qtox → caracteres aleatorios del mismo largo; cuentas → `acct-` + 8 letras.
-  - `check_variant` busca en `mut` cada IoC del original (reglas estrictas y sin defang, más todo token con forma de hash), en forma original, refanged y sin distinguir mayúsculas; si encuentra alguno, `aem make-variants` falla indicando el valor y la línea (`VariantLeak`). Hay un test sobre cada escenario preparado.
-  - Resultado: Gunra 40 formas escritas reemplazadas (43 apariciones), Interlock 47 (49).
+  - `check_variant` busca en `mut` cada IoC del original, el host de cada URL IoC y toda secuencia de ≥ 32 hexadecimales, en forma original o refanged y sin distinguir mayúsculas. Si queda alguno, `aem make-variants` falla indicando el valor y la línea (`VariantLeak`). Hay un test sobre cada escenario preparado.
+  - El log agrupa por (tipo, valor) con todas sus grafías y el número de apariciones. Resultado: Gunra 34 IoC distintos reemplazados (38 apariciones), Interlock 38 (40), es decir, todos los de la sección de IoC de cada boletín.
 
 ### D-67. Cálculo de los indicadores 1 y generales — **PENDIENTE DE CONFIRMAR**
 - Las métricas usan `extracted_raw` tal como lo devolvió el LLM. Un ID repetido cuenta una vez; un ID inexistente, revocado o mal formado cuenta como propuesta errónea.
@@ -141,12 +142,13 @@ Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado s
 - Las tablas quedan en `runs/<corrida>/results/` (o `results_FAKE/`, D-71) (CSV con BOM, `results.md`, `results.json`) y las salidas de cada corrida en `runs/<corrida>/<escenario>/<versión>/r<k>/`.
 
 ### D-68. Indicador 4 — chequeo automático — **PENDIENTE DE CONFIRMAR**
-Hoja de revisión manual: `eval/review_sheets/<corrida>_indicator4_summaries.csv`, una fila por técnica resumida, con la descripción fuente (limpia, D-40), el resumen, el estado y columnas vacías `ok (si/no)` y `observación`. El chequeo automático marca un resumen como no conforme si contiene (a) un identificador de ATT&CK (`T`, `TA`, `M`, `G`, `S`, `C`, `DS`, `DC` + 4 dígitos) o (b) una cifra que no aparece en la descripción fuente, o (c) más oraciones que `summary.max_sentences`. Es una aproximación; la medida de fidelidad es la revisión manual de Sebas.
+Hoja de revisión manual: `eval/review_sheets/<corrida>_indicator4_summaries.csv`, una fila por técnica resumida, con la descripción fuente (limpia, D-40), el resumen, el estado y columnas vacías `ok (si/no)` y `observación`. El chequeo automático marca un resumen como no conforme si contiene (a) un identificador de ATT&CK (`T`, `TA`, `M`, `G`, `S`, `C`, `DS`, `DC` + 4 dígitos) o (b) una cifra que no aparece en la descripción fuente, o (c) más oraciones que `summary.max_sentences`. IDs y cifras se comparan como tokens, no como subcadenas (`3` no se da por presente porque la fuente diga `2023`; `1,000` = `1000`), y las abreviaturas `e.g.`, `i.e.`, `etc.`, `vs.`, `U.S.` no cuentan como fin de oración (revisión A3, A4). Es una aproximación; la medida de fidelidad es la revisión manual de Sebas.
 
 ### D-70. Tipos de IoC adicionales: qTox y cuentas — **PENDIENTE DE CONFIRMAR**
 Para que el enfoque tradicional sea una comparación justa, reconoce todo lo que los propios boletines listan como IoC. La auditoría de D-63 mostró que en Gunra se perdían 5 de 34 por tipo no reconocido. Se agregan, configurables en `ioc.extra_types` (ambos activos por defecto; `[]` vuelve al comportamiento anterior):
 - `qtox`: ID de qTox, 76 caracteres alfanuméricos aislados con al menos `ioc.qtox_min_hex` (70) hexadecimales. La tolerancia existe porque CISA publicó uno con una errata (`…923AS199…`); se compara en minúsculas.
 - `account`: valores de las columnas de tablas cuyo encabezado está en `ioc.account_columns` (`Username`, `User Account`, `Account Name`) y cada mención de ese valor en el texto (palabra completa, sin distinguir mayúsculas).
+Se excluyen las cuentas genéricas o integradas (`ioc.generic_accounts`: administrator, admin, root, guest, system, krbtgt, defaultaccount, user), porque describen comportamiento (T1078.001/.003) y no al actor (revisión A2).
 Con esto Gunra pasa de 29 a 34 IoC (los 34 de la sección) y la organización «conoce» 17 (antes 15). Interlock no cambia (38; conocidos 19).
 
 ### D-71. Resultados con un LLM simulado: siempre «FAKE»

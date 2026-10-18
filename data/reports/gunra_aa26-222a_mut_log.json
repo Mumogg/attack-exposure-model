@@ -6,256 +6,378 @@
   "variant": "gunra_aa26-222a_mut_stripped.txt",
   "replacements_by_type": {
     "account": 1,
-    "domain": 5,
+    "domain": 4,
     "email": 4,
     "ipv4": 17,
     "qtox": 4,
-    "sha256": 4,
-    "url": 5
+    "sha256": 4
   },
-  "unique_replaced": 40,
-  "occurrences_replaced": 43,
+  "unique_replaced": 34,
+  "occurrences_replaced": 38,
   "leak_check": "ok",
+  "plain_candidates_kept": [
+    {
+      "type": "url",
+      "value": "https://intel.breakglass.tech/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying",
+      "line": 340
+    },
+    {
+      "type": "url",
+      "value": "https://www.cyfirma.com/research/gunra-ransomware-a-brief-analysis/",
+      "line": 340
+    },
+    {
+      "type": "url",
+      "value": "https://www.trendmicro.com/en_us/research/25/g/gunra-ransomware-linux-variant.html",
+      "line": 340
+    },
+    {
+      "type": "url",
+      "value": "https://www.cloudsek.com/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker",
+      "line": 342
+    }
+  ],
   "mapping": [
     {
       "type": "domain",
+      "value": "datapub.news",
       "original": "datapub.news",
       "replacement": "ykxthqpddj.invalid",
-      "occurrences": 1
+      "spellings": [
+        "datapub.news",
+        "Datapub[.]news"
+      ],
+      "occurrences": 2
     },
     {
       "type": "ipv4",
+      "value": "23.239.119.2",
       "original": "23.239.119[.]2",
       "replacement": "203.0.113[.]224",
+      "spellings": [
+        "23.239.119[.]2"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "23.239.119.3",
       "original": "23.239.119[.]3",
       "replacement": "198.51.100[.]236",
+      "spellings": [
+        "23.239.119[.]3"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "23.239.119.4",
       "original": "23.239.119[.]4",
       "replacement": "198.51.100[.]90",
+      "spellings": [
+        "23.239.119[.]4"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "23.239.119.5",
       "original": "23.239.119[.]5",
       "replacement": "192.0.2[.]224",
+      "spellings": [
+        "23.239.119[.]5"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "23.239.119.6",
       "original": "23.239.119[.]6",
       "replacement": "203.0.113[.]10",
+      "spellings": [
+        "23.239.119[.]6"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "86.54.28.216",
       "original": "86.54.28[.]216",
       "replacement": "198.51.100[.]189",
+      "spellings": [
+        "86.54.28[.]216"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "103.125.234.14",
       "original": "103.125.234[.]14",
       "replacement": "203.0.113[.]198",
+      "spellings": [
+        "103.125.234[.]14"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "70.36.99.82",
       "original": "70.36.99[.]82",
       "replacement": "198.51.100[.]147",
+      "spellings": [
+        "70.36.99[.]82"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "211.21.210.181",
       "original": "211.21.210[.]181",
       "replacement": "198.51.100[.]126",
+      "spellings": [
+        "211.21.210[.]181"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "123.184.143.105",
       "original": "123.184.143[.]105",
       "replacement": "198.51.100[.]43",
+      "spellings": [
+        "123.184.143[.]105"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "182.204.21.240",
       "original": "182.204.21[.]240",
       "replacement": "198.51.100[.]211",
+      "spellings": [
+        "182.204.21[.]240"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "182.204.16.112",
       "original": "182.204.16[.]112",
       "replacement": "192.0.2[.]19",
+      "spellings": [
+        "182.204.16[.]112"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "123.244.187.144",
       "original": "123.244.187[.]144",
       "replacement": "192.0.2[.]113",
+      "spellings": [
+        "123.244.187[.]144"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "182.204.39.118",
       "original": "182.204.39[.]118",
       "replacement": "192.0.2[.]183",
+      "spellings": [
+        "182.204.39[.]118"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "67.43.53.10",
       "original": "67.43.53[.]10",
       "replacement": "198.51.100[.]28",
+      "spellings": [
+        "67.43.53[.]10"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "123.246.37.108",
       "original": "123.246.37[.]108",
       "replacement": "198.51.100[.]157",
+      "spellings": [
+        "123.246.37[.]108"
+      ],
       "occurrences": 1
     },
     {
       "type": "ipv4",
+      "value": "91.201.66.146",
       "original": "91.201.66[.]146",
       "replacement": "198.51.100[.]164",
+      "spellings": [
+        "91.201.66[.]146"
+      ],
       "occurrences": 1
     },
     {
       "type": "domain",
-      "original": "Datapub[.]news",
-      "replacement": "ykxthqpddj[.]invalid",
-      "occurrences": 1
-    },
-    {
-      "type": "domain",
+      "value": "gunrabxbig445sjqa535uaymzerj6fp4nwc6ngc2xughf2pedjdhk4ad.onion",
       "original": "gunrabxbig445sjqa535uaymzerj6fp4nwc6ngc2xughf2pedjdhk4ad[.]onion",
       "replacement": "asauoaolco[.]invalid",
+      "spellings": [
+        "gunrabxbig445sjqa535uaymzerj6fp4nwc6ngc2xughf2pedjdhk4ad[.]onion"
+      ],
       "occurrences": 1
     },
     {
       "type": "domain",
+      "value": "lgiil72vkmdtbc3qv4tyq6wedyjxqr2qd4ze7xl2cxgerdnymxj7soqd.onion",
       "original": "lgiil72vkmdtbc3qv4tyq6wedyjxqr2qd4ze7xl2cxgerdnymxj7soqd[.]onion",
       "replacement": "tvfttxgjjd[.]invalid",
+      "spellings": [
+        "lgiil72vkmdtbc3qv4tyq6wedyjxqr2qd4ze7xl2cxgerdnymxj7soqd[.]onion"
+      ],
       "occurrences": 1
     },
     {
       "type": "domain",
+      "value": "nsnhzysbntsqdwpys6mhml33muccsvterxewh5rkbmcab7bg2ttevjqd.onion",
       "original": "nsnhzysbntsqdwpys6mhml33muccsvterxewh5rkbmcab7bg2ttevjqd[.]onion",
       "replacement": "nycierqrnf[.]invalid",
+      "spellings": [
+        "nsnhzysbntsqdwpys6mhml33muccsvterxewh5rkbmcab7bg2ttevjqd[.]onion"
+      ],
       "occurrences": 1
     },
     {
       "type": "email",
+      "value": "a00f105546345756@proton.me",
       "original": "a00f105546345756@proton[.]me",
-      "replacement": "a00f105546345756@ajivhlaier[.]invalid",
+      "replacement": "ajivhlaier@rsgzznbybk[.]invalid",
+      "spellings": [
+        "a00f105546345756@proton[.]me"
+      ],
       "occurrences": 1
     },
     {
       "type": "email",
+      "value": "4569f6322bc3b22e9@proton.me",
       "original": "4569f6322bc3b22e9@proton[.]me",
-      "replacement": "4569f6322bc3b22e9@ajivhlaier[.]invalid",
+      "replacement": "vjlcrxjtwr@rsgzznbybk[.]invalid",
+      "spellings": [
+        "4569f6322bc3b22e9@proton[.]me"
+      ],
       "occurrences": 1
     },
     {
       "type": "email",
+      "value": "ilovemycubscout@gmail.com",
       "original": "ilovemycubscout@gmail[.]com",
-      "replacement": "ilovemycubscout@rsgzznbybk[.]invalid",
+      "replacement": "tkdotbgrek@wtsdibikua[.]invalid",
+      "spellings": [
+        "ilovemycubscout@gmail[.]com"
+      ],
       "occurrences": 1
     },
     {
       "type": "email",
+      "value": "6449a3c1e612168526@proton.me",
       "original": "6449a3c1e612168526@proton[.]me",
-      "replacement": "6449a3c1e612168526@ajivhlaier[.]invalid",
+      "replacement": "lpngyyiyak@rsgzznbybk[.]invalid",
+      "spellings": [
+        "6449a3c1e612168526@proton[.]me"
+      ],
       "occurrences": 1
     },
     {
       "type": "qtox",
+      "value": "2507312ec10bb44ed9daa04e3c5c27e8c13154649b1a02e73acfae1681ee0208d05133a8fb22",
       "original": "2507312EC10BB44ED9DAA04E3C5C27E8C13154649B1A02E73ACFAE1681EE0208D05133A8FB22",
-      "replacement": "9B29A3E164A3818A0BFD680A6F78B757D96A5BE4BA46DF2F6C52821FEF73FBB5515DF1DD9A60",
+      "replacement": "6F78B757D96A5BE4BA46DF2F6C52821FEF73FBB5515DF1DD9A607884970881A112FC90E58D04",
+      "spellings": [
+        "2507312EC10BB44ED9DAA04E3C5C27E8C13154649B1A02E73ACFAE1681EE0208D05133A8FB22"
+      ],
       "occurrences": 1
     },
     {
       "type": "qtox",
+      "value": "0fe87ced0c611ae97e049c64288557f49e8271e91399e849328b078da789a573031783235bef",
       "original": "0FE87CED0C611AE97E049C64288557F49E8271E91399E849328B078DA789A573031783235BEF",
-      "replacement": "7884970881A112FC90E58D0449FF757AB29F033A710EDBF5D33DF45FD7191616B22DFA5EA0ED",
+      "replacement": "49FF757AB29F033A710EDBF5D33DF45FD7191616B22DFA5EA0EDE29F72A45D266956BA96BC3B",
+      "spellings": [
+        "0FE87CED0C611AE97E049C64288557F49E8271E91399E849328B078DA789A573031783235BEF"
+      ],
       "occurrences": 1
     },
     {
       "type": "qtox",
+      "value": "47829af1c943d4c296c910706923as199bda4995b076ed9a9016f7def161d445df00f13e6900",
       "original": "47829AF1C943D4C296C910706923AS199BDA4995B076ED9A9016F7DEF161D445DF00F13E6900",
-      "replacement": "E29F72A45D266956BA96BC3B8908C7DEECB6C59E51CBF820A224947DB908BEC0185CA14104C4",
+      "replacement": "8908C7DEECB6C59E51CBF820A224947DB908BEC0185CA14104C410AA1E88C76D98478B9AF021",
+      "spellings": [
+        "47829AF1C943D4C296C910706923AS199BDA4995B076ED9A9016F7DEF161D445DF00F13E6900"
+      ],
       "occurrences": 1
     },
     {
       "type": "qtox",
+      "value": "9500b1a73716bcf40745086f7184a33ea0141b7d3f852431c8fdd2e1e8faf9277e9fdc117b47",
       "original": "9500B1A73716BCF40745086F7184A33EA0141B7D3F852431C8FDD2E1E8FAF9277E9FDC117B47",
-      "replacement": "10AA1E88C76D98478B9AF02115EDF70D91AAB47E955385679E17FC3ACA3697A15908B4F661B8",
+      "replacement": "15EDF70D91AAB47E955385679E17FC3ACA3697A15908B4F661B84D93CB1FDCB8511D89C45D81",
+      "spellings": [
+        "9500B1A73716BCF40745086F7184A33EA0141B7D3F852431C8FDD2E1E8FAF9277E9FDC117B47"
+      ],
       "occurrences": 1
     },
     {
       "type": "sha256",
+      "value": "2dc70a12d158d437e45a55b1d52f3d61c6082a1e1667573302ba3b62813e2751",
       "original": "2dc70a12d158d437e45a55b1d52f3d61c6082a1e1667573302ba3b62813e2751",
-      "replacement": "4d93cb1fdcb8511d89c45d81506a2a2c5f8b08bd37d4637794286c90e42bd610",
+      "replacement": "506a2a2c5f8b08bd37d4637794286c90e42bd610406729a65e80cd5b2a744a0d",
+      "spellings": [
+        "2dc70a12d158d437e45a55b1d52f3d61c6082a1e1667573302ba3b62813e2751"
+      ],
       "occurrences": 1
     },
     {
       "type": "sha256",
+      "value": "834efe9b392c6c000877ea5613a079445affc16fe8af5997d68c55cafc95e5d1",
       "original": "834efe9b392c6c000877ea5613a079445affc16fe8af5997d68c55cafc95e5d1",
-      "replacement": "406729a65e80cd5b2a744a0dd9c33264c753bb5a0298e87596304e5a05180ee6",
+      "replacement": "d9c33264c753bb5a0298e87596304e5a05180ee643119829361ae899386969f9",
+      "spellings": [
+        "834efe9b392c6c000877ea5613a079445affc16fe8af5997d68c55cafc95e5d1"
+      ],
       "occurrences": 1
     },
     {
       "type": "sha256",
+      "value": "91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0",
       "original": "91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0",
-      "replacement": "43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b",
+      "replacement": "d798e71beb4c71f0c584c7188912a3f2f383511b54692c2561e6913837fc5041",
+      "spellings": [
+        "91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0"
+      ],
       "occurrences": 3
     },
     {
       "type": "sha256",
+      "value": "a82e496b7b5279cb6b93393ec167dd3f50aff1557366784b25f9e51cb23689d9",
       "original": "a82e496b7b5279cb6b93393ec167dd3f50aff1557366784b25f9e51cb23689d9",
-      "replacement": "54692c2561e6913837fc5041a774a0e325fac1593ee5c23bfdf280f5a09338e6",
+      "replacement": "a774a0e325fac1593ee5c23bfdf280f5a09338e694e4ac146da7ace52a744149",
+      "spellings": [
+        "a82e496b7b5279cb6b93393ec167dd3f50aff1557366784b25f9e51cb23689d9"
+      ],
       "occurrences": 1
     },
     {
       "type": "account",
+      "value": "forticloud-sync",
       "original": "forticloud-sync",
-      "replacement": "acct-wjeoekmb",
+      "replacement": "acct-vgapzwos",
+      "spellings": [
+        "forticloud-sync"
+      ],
       "occurrences": 2
-    },
-    {
-      "type": "url",
-      "original": "https://intel.breakglass.tech/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying",
-      "replacement": "https://yestgnkzhw.invalid/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying",
-      "occurrences": 1
-    },
-    {
-      "type": "url",
-      "original": "https://www.trendmicro.com/en_us/research/25/g/gunra-ransomware-linux-variant.html",
-      "replacement": "https://kmozfxtckh.invalid/en_us/research/25/g/gunra-ransomware-linux-variant.html",
-      "occurrences": 1
-    },
-    {
-      "type": "url",
-      "original": "https://www.cyfirma.com/research/gunra-ransomware-a-brief-analysis/",
-      "replacement": "https://tteetbezjv.invalid/research/gunra-ransomware-a-brief-analysis/",
-      "occurrences": 1
-    },
-    {
-      "type": "url",
-      "original": "https://www.cloudsek.com/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker",
-      "replacement": "https://gapzwosfif.invalid/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker",
-      "occurrences": 1
-    },
-    {
-      "type": "url",
-      "original": "https://www.virustotal.com/gui/file/91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0/details",
-      "replacement": "https://lwhtphseym.invalid/gui/file/43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b/details",
-      "occurrences": 1
     }
   ]
 }

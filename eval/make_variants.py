@@ -1,9 +1,10 @@
 """`mut` variant of a report: same behavior, different indicators (indicator 3).
 
 Hashes → random hex of the same length and case; IPv4 → RFC 5737 documentation
-ranges; domains (also URL hosts) → random `.invalid` names; hashes inside URL
-paths too; qTox IDs → random characters of the same length; accounts →
-`acct-` + random letters. Everything else is left byte-for-byte intact. The
+ranges; domains (also URL hosts and every plain mention of a detected one) →
+random `.invalid` names; e-mail local parts → random letters; hashes inside any
+URL too; qTox IDs → random characters of the same length; accounts → `acct-` +
+random letters. Everything else is left byte-for-byte intact. The
 seed is fixed and recorded with a diff. `check_variant` verifies that no IoC
 of the original survives in the variant (D-66, D-70).
 """
@@ -22,7 +23,7 @@ import yaml
 
 from aem.config import IocConfig, ModelConfig
 from aem.output import write_json
-from eval.baseline_ioc import _HASH, DOT, Ioc, extract_iocs, refang, scan, select_known_iocs, url_host
+from eval.baseline_ioc import _HASH, _HASH_TYPES, DOT, Ioc, extract_iocs, refang, scan, select_known_iocs, url_host
 
 DOC_NETWORKS = tuple(ipaddress.ip_network(n) for n in ("192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24"))
 
@@ -55,6 +56,7 @@ class _Mapper:
         self.domains: dict[str, str] = {}
         self.hashes: dict[str, str] = {}
         self.accounts: dict[str, str] = {}
+        self.locals: dict[str, str] = {}
 
     def ip(self, raw: str) -> str:
         key = refang(raw)
@@ -79,6 +81,15 @@ class _Mapper:
         new = self.hashes[key]
         return new.upper() if raw.isupper() else new
 
+    def local(self, raw: str) -> str:
+        """Local part of an e-mail address (review A6)."""
+        key = raw.lower()
+        while key not in self.locals:
+            name = "".join(self.rng.choice(string.ascii_lowercase) for _ in range(10))
+            if name not in self.locals.values():
+                self.locals[key] = name
+        return self.locals[key]
+
     def account(self, raw: str) -> str:
         key = raw.lower()
         while key not in self.accounts:
@@ -95,34 +106,56 @@ class _Mapper:
             return self.domain(raw)
 
 
-def _with_mentions(text: str, cfg: IocConfig) -> list[Ioc]:
-    """IoCs found by `scan` plus every other mention of the same value, defanged or not.
+_HEX_RUN = re.compile(r"(?<![0-9a-fA-F])[0-9a-fA-F]{32,}(?![0-9a-fA-F])")
 
-    E.g. a domain listed defanged in a table and written plainly in a sentence (D-66).
+
+def _with_mentions(text: str, cfg: IocConfig) -> list[tuple[Ioc, bool]]:
+    """`scan` results plus every other mention of a detected value (also URL hosts), defanged or not.
+
+    E.g. a domain listed defanged in a table and written plainly in a sentence (D-66). Tokens that
+    are only IoC-like when written plainly (file names, services, versions) are not mentions (review A1).
     """
     found = scan(text, cfg)
     taken = [(i.start, i.end) for i, _ in found]
     iocs = [i for i, excluded in found if not excluded]
-    for kind, value in sorted({(i.type, i.value) for i in iocs if i.type in ("domain", "ipv4", "email")}):
+    values = {(i.type, i.value) for i in iocs if i.type in ("domain", "ipv4", "email")}
+    for i in iocs:
+        if i.type == "url":
+            hs, he = url_host(i.raw)
+            host = refang(i.raw[hs:he]).lower()
+            values.add(("ipv4" if re.fullmatch(r"[\d.]+", host) else "domain", host))
+    for kind, value in sorted(values):
         pattern = DOT.join(re.escape(part) for part in value.split("."))
         for m in re.finditer(rf"(?<![\w.@-]){pattern}(?![\w-]|\.[a-z0-9])", text, re.IGNORECASE):
             if all(m.end() <= a or m.start() >= b for a, b in taken):
                 taken.append(m.span())
-                iocs.append(Ioc(kind, value, m.group(0), *m.span()))
-    return sorted(iocs, key=lambda i: i.start)
+                found.append((Ioc(kind, value, m.group(0), *m.span()), False))
+    return sorted(found, key=lambda x: x[0].start)
 
 
 def make_variant(text: str, cfg: IocConfig, seed: int, salt: str) -> tuple[str, list[dict]]:
     mapper = _Mapper(seed, salt)
     out: list[str] = []
-    mapping: dict[str, dict] = {}
+    mapping: dict[tuple[str, str], dict] = {}
     pos = 0
-    for ioc in _with_mentions(text, cfg):
+
+    def path_hashes(path: str) -> str:  # hashes inside any URL, also reference links (review A1)
+        return _HASH.sub(lambda h: _remember(mapping, _HASH_TYPES[len(h.group(0))], h.group(0).lower(), h.group(0),
+                                             mapper.hash(h.group(0))), path)
+
+    for ioc, excluded in _with_mentions(text, cfg):
         if ioc.type == "url":
             hs, he = url_host(ioc.raw)
-            path = _HASH.sub(lambda h: _remember(mapping, "hash_in_url", h.group(0), mapper.hash(h.group(0))),
-                             ioc.raw[he:])
-            new = ioc.raw[:hs] + mapper.host(ioc.raw[hs:he]) + path
+            if excluded:
+                new = ioc.raw[:he] + path_hashes(ioc.raw[he:])
+                if new == ioc.raw:
+                    continue
+                out += [text[pos:ioc.start], new]
+                pos = ioc.end
+                continue
+            new = ioc.raw[:hs] + mapper.host(ioc.raw[hs:he]) + path_hashes(ioc.raw[he:])
+        elif excluded:
+            continue
         elif ioc.type == "ipv4":
             new = mapper.ip(ioc.raw)
         elif ioc.type == "domain":
@@ -131,41 +164,70 @@ def make_variant(text: str, cfg: IocConfig, seed: int, salt: str) -> tuple[str, 
             new = mapper.account(ioc.raw)
         elif ioc.type == "email":
             local, domain = ioc.raw.split("@", 1)
-            new = f"{local}@{mapper.domain(domain)}"
+            new = f"{mapper.local(local)}@{mapper.domain(domain)}"
         else:
             new = mapper.hash(ioc.raw)
         out += [text[pos:ioc.start], new]
         pos = ioc.end
-        _remember(mapping, ioc.type, ioc.raw, new)
+        _remember(mapping, ioc.type, ioc.value, ioc.raw, new)
     out.append(text[pos:])
     return "".join(out), list(mapping.values())
 
 
-def _remember(mapping: dict, kind: str, raw: str, new: str) -> str:
-    mapping.setdefault(raw, {"type": kind, "original": raw, "replacement": new, "occurrences": 0})["occurrences"] += 1
+def _remember(mapping: dict, kind: str, value: str, raw: str, new: str) -> str:
+    """One entry per (type, normalized value), with every spelling seen (review A7)."""
+    entry = mapping.setdefault((kind, value), {"type": kind, "value": value, "original": raw, "replacement": new,
+                                               "spellings": [], "occurrences": 0})
+    if raw not in entry["spellings"]:
+        entry["spellings"].append(raw)
+    entry["occurrences"] += 1
     return new
+
+
+def _refanged(text: str) -> str:
+    return re.sub(r"hxxp", "http", text.replace("[.]", ".").replace("[:]", ":"), flags=re.IGNORECASE)
+
+
+def _find(values: dict[str, str], variant: str) -> list[dict]:
+    haystack = _refanged(variant)
+    hits = []
+    for value, kind in values.items():
+        m = re.search(rf"(?<![\w-]){re.escape(value)}(?![\w-])", haystack, re.IGNORECASE)
+        if m:
+            hits.append({"type": kind, "value": value, "line": haystack.count("\n", 0, m.start()) + 1})
+    return sorted(hits, key=lambda x: (x["line"], x["value"]))
+
+
+def _ioc_values(original: str, cfg: IocConfig) -> dict[str, str]:
+    """Every IoC value of the original (D-63 rules) plus URL hosts and any run of >= 32 hex characters."""
+    wanted: dict[str, str] = {}
+    for ioc in extract_iocs(original, cfg):
+        wanted.setdefault(ioc.value.lower(), ioc.type)
+        if ioc.type == "url":
+            hs, he = url_host(ioc.raw)
+            wanted.setdefault(refang(ioc.raw[hs:he]).lower(), "url_host")
+    for m in _HEX_RUN.finditer(original):
+        wanted.setdefault(m.group(0).lower(), _HASH_TYPES.get(len(m.group(0)), "hex"))
+    return wanted
 
 
 def check_variant(original: str, variant: str, cfg: IocConfig) -> list[dict]:
     """IoCs of the original still present in the variant, with the variant line where each appears.
 
-    Searches the original with the strict rules and without requiring defang, plus every hash-like
-    token (also inside URLs); each is looked for in the variant refanged and case-insensitively.
+    Each value is searched in the variant defanged or not and case-insensitively.
     """
+    return _find(_ioc_values(original, cfg), variant)
+
+
+def plain_candidates(original: str, variant: str, cfg: IocConfig) -> list[dict]:
+    """IoC-like tokens written only without defang that remain in the variant, for a manual look at the diff.
+
+    They are not replaced: most are file names, services or reference links (review A1).
+    """
+    known = _ioc_values(original, cfg)
     loose = cfg.model_copy(update={"require_defang": False})
-    wanted: dict[str, str] = {}
-    for rules in (cfg, loose):
-        for ioc in extract_iocs(original, rules):
-            wanted.setdefault(ioc.value.lower(), ioc.type)
-    for m in _HASH.finditer(refang(original)):
-        wanted.setdefault(m.group(0).lower(), "hash")
-    haystack = re.sub(r"hxxp", "http", variant.replace("[.]", ".").replace("[:]", ":"), flags=re.IGNORECASE)
-    leaks = []
-    for value, kind in wanted.items():
-        m = re.search(rf"(?<![\w-]){re.escape(value)}(?![\w-])", haystack, re.IGNORECASE)
-        if m:
-            leaks.append({"type": kind, "value": value, "line": haystack.count("\n", 0, m.start()) + 1})
-    return sorted(leaks, key=lambda x: (x["line"], x["value"]))
+    extra = {i.value.lower(): i.type for i in extract_iocs(original, loose) if i.value.lower() not in known}
+    return _find(extra, variant)
 
 
 def unified_diff(original: str, variant: str, name: str) -> str:
@@ -186,13 +248,15 @@ def build_variants(scenarios: dict, model_cfg: ModelConfig, known_iocs_path: Pat
         if leaks:
             detail = "; ".join(f"{x['type']} {x['value']} (línea {x['line']})" for x in leaks)
             raise VariantLeak(f"La variante mut de {sc.name} aún contiene IoC del original: {detail}")
+        candidates = plain_candidates(original, variant, model_cfg.ioc)
         sc.variant.write_text(variant, encoding="utf-8")
         sc.variant_diff.write_text(unified_diff(original, variant, sc.stripped.name), encoding="utf-8")
         counts = {t: sum(m["type"] == t for m in mapping) for t in sorted({m["type"] for m in mapping})}
         occurrences = sum(m["occurrences"] for m in mapping)
         log = {"scenario": sc.name, "seed": seed, "salt": sc.name, "source": sc.stripped.name,
                "variant": sc.variant.name, "replacements_by_type": counts,
-               "unique_replaced": len(mapping), "occurrences_replaced": occurrences, "leak_check": "ok", "mapping": mapping}
+               "unique_replaced": len(mapping), "occurrences_replaced": occurrences, "leak_check": "ok",
+               "plain_candidates_kept": candidates, "mapping": mapping}
         write_json(sc.variant_log, log)
         logs.append(log)
         known += select_known_iocs(extract_iocs(original, model_cfg.ioc), model_cfg.baseline, scenario=sc.name)

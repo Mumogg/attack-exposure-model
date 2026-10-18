@@ -19,18 +19,18 @@ from aem.models import KnownIoc
 
 DOT = r"(?:\.|\[\.\])"
 _URL = re.compile(r"\b(?:https?|hxxps?)(?::|\[:\])//(?:\[\.\]|\[:\]|[^\s<>\"'()\[\]|])+", re.IGNORECASE)
-_HASH = re.compile(r"(?<![0-9A-Za-z])(?:[0-9a-fA-F]{64}|[0-9a-fA-F]{40}|[0-9a-fA-F]{32})(?![0-9A-Za-z])")
+_HASH = re.compile(r"(?<![0-9A-Za-z])(?:[0-9a-fA-F]{128}|[0-9a-fA-F]{64}|[0-9a-fA-F]{40}|[0-9a-fA-F]{32})(?![0-9A-Za-z])")
 _IPV4 = re.compile(rf"(?<![\d.])(?:\d{{1,3}}{DOT}){{3}}\d{{1,3}}(?!\d|\.\d)")
 _LABELS = rf"(?:[a-z0-9](?:[a-z0-9-]{{0,61}}[a-z0-9])?{DOT})+[a-z]{{2,24}}"
 _EMAIL = re.compile(rf"(?<![\w.+-])[\w.+-]+@{_LABELS}(?![\w-]|\.[a-z0-9])", re.IGNORECASE)
 _DOMAIN = re.compile(rf"(?<![\w.-]){_LABELS}(?![\w-]|\.[a-z0-9])", re.IGNORECASE)
 _QTOX = re.compile(r"(?<![0-9A-Za-z])[0-9A-Za-z]{76}(?![0-9A-Za-z])")
-_HASH_TYPES = {32: "md5", 40: "sha1", 64: "sha256"}
+_HASH_TYPES = {32: "md5", 40: "sha1", 64: "sha256", 128: "sha512"}
 
 
 @dataclass(frozen=True)
 class Ioc:
-    type: str  # md5 | sha1 | sha256 | ipv4 | domain | url | email | qtox | account
+    type: str  # md5 | sha1 | sha256 | sha512 | ipv4 | domain | url | email | qtox | account
     value: str  # normalized (refanged, lower-case where case does not matter)
     raw: str
     start: int
@@ -143,7 +143,10 @@ def scan(text: str, cfg: IocConfig) -> list[tuple[Ioc, bool]]:
                 taken.append(m.span())
                 found.append((Ioc("qtox", m.group(0).lower(), m.group(0), *m.span()), False))
     if "account" in cfg.extra_types:
+        generic = {a.lower() for a in cfg.generic_accounts}
         for name in table_accounts(text, cfg.account_columns):
+            if name.lower() in generic:
+                continue  # built-in accounts describe behavior (valid accounts), not the actor (review A2)
             for m in re.finditer(rf"(?<![\w-]){re.escape(name)}(?![\w-])", text, re.IGNORECASE):
                 if free(m.start(), m.end()):
                     taken.append(m.span())

@@ -29,6 +29,8 @@ ioc:                   # (D-63)
   extra_types: [qtox, account]
   account_columns: [Username, User Account, Account Name]
   qtox_min_hex: 70
+  # cuentas genéricas o integradas: describen comportamiento (T1078.001/.003), no son IoC
+  generic_accounts: [administrator, admin, root, guest, system, krbtgt, defaultaccount, user]
   # Un dominio sin "[.]" ni esquema http(s) solo cuenta como IoC si su TLD está aquí.
   domain_tlds: [com, net, org, io, info, biz, xyz, top, online, site, cloud, cc, onion, me, co, us, ru, su, cn, tk,
                 live, app, dev, link, pw, ws, to, pro, club, shop, store, icu, buzz, fun, space, website, tech,
@@ -39,7 +41,7 @@ ioc:                   # (D-63)
 
 variants:              # (D-66)
   seed: 20261017
-  require_defang: false  # la variante mut reemplaza también IoC escritos sin defang (p. ej. dentro de URL de notas)
+  require_defang: true   # mismos IoC que el enfoque tradicional; sus menciones sin defang y los hashes en URL se reemplazan igual
 
 experiment:
   replicates: 5              # corridas por escenario x versión

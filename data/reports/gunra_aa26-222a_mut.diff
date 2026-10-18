@@ -65,10 +65,10 @@
 -| 4569f6322bc3b22e9@proton[.]me | Ransom negotiation |
 -| ilovemycubscout@gmail[.]com | Ransom negotiation |
 -| 6449a3c1e612168526@proton[.]me | Ransom negotiation |
-+| a00f105546345756@ajivhlaier[.]invalid | Ransom negotiation |
-+| 4569f6322bc3b22e9@ajivhlaier[.]invalid | Ransom negotiation |
-+| ilovemycubscout@rsgzznbybk[.]invalid | Ransom negotiation |
-+| 6449a3c1e612168526@ajivhlaier[.]invalid | Ransom negotiation |
++| ajivhlaier@rsgzznbybk[.]invalid | Ransom negotiation |
++| vjlcrxjtwr@rsgzznbybk[.]invalid | Ransom negotiation |
++| tkdotbgrek@wtsdibikua[.]invalid | Ransom negotiation |
++| lpngyyiyak@rsgzznbybk[.]invalid | Ransom negotiation |
  
  The following qTox IDs are associated with Gunra actors:
  
@@ -79,13 +79,13 @@
 -- 47829AF1C943D4C296C910706923AS199BDA4995B076ED9A9016F7DEF161D445DF00F13E6900
 -
 -- 9500B1A73716BCF40745086F7184A33EA0141B7D3F852431C8FDD2E1E8FAF9277E9FDC117B47
-+- 9B29A3E164A3818A0BFD680A6F78B757D96A5BE4BA46DF2F6C52821FEF73FBB5515DF1DD9A60
++- 6F78B757D96A5BE4BA46DF2F6C52821FEF73FBB5515DF1DD9A607884970881A112FC90E58D04
 +
-+- 7884970881A112FC90E58D0449FF757AB29F033A710EDBF5D33DF45FD7191616B22DFA5EA0ED
++- 49FF757AB29F033A710EDBF5D33DF45FD7191616B22DFA5EA0EDE29F72A45D266956BA96BC3B
 +
-+- E29F72A45D266956BA96BC3B8908C7DEECB6C59E51CBF820A224947DB908BEC0185CA14104C4
++- 8908C7DEECB6C59E51CBF820A224947DB908BEC0185CA14104C410AA1E88C76D98478B9AF021
 +
-+- 10AA1E88C76D98478B9AF02115EDF70D91AAB47E955385679E17FC3ACA3697A15908B4F661B8
++- 15EDF70D91AAB47E955385679E17FC3ACA3697A15908B4F661B84D93CB1FDCB8511D89C45D81
  
  Table 4 lists malicious files associated with Gunra ransomware.
  
@@ -96,10 +96,10 @@
 -| main.exe | 834efe9b392c6c000877ea5613a079445affc16fe8af5997d68c55cafc95e5d1 | Tool to exfil OneDrive and SharePoint |
 -| cryptor.exe | 91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0 | Malicious executable |
 -| msmp.exe | a82e496b7b5279cb6b93393ec167dd3f50aff1557366784b25f9e51cb23689d9 | Malicious executable |
-+| main.exe | 4d93cb1fdcb8511d89c45d81506a2a2c5f8b08bd37d4637794286c90e42bd610 | Tool to exfil OneDrive and SharePoint |
-+| main.exe | 406729a65e80cd5b2a744a0dd9c33264c753bb5a0298e87596304e5a05180ee6 | Tool to exfil OneDrive and SharePoint |
-+| cryptor.exe | 43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b | Malicious executable |
-+| msmp.exe | 54692c2561e6913837fc5041a774a0e325fac1593ee5c23bfdf280f5a09338e6 | Malicious executable |
++| main.exe | 506a2a2c5f8b08bd37d4637794286c90e42bd610406729a65e80cd5b2a744a0d | Tool to exfil OneDrive and SharePoint |
++| main.exe | d9c33264c753bb5a0298e87596304e5a05180ee643119829361ae899386969f9 | Tool to exfil OneDrive and SharePoint |
++| cryptor.exe | d798e71beb4c71f0c584c7188912a3f2f383511b54692c2561e6913837fc5041 | Malicious executable |
++| msmp.exe | a774a0e325fac1593ee5c23bfdf280f5a09338e694e4ac146da7ace52a744149 | Malicious executable |
  
  Table 5 lists malicious accounts created by Gunra actors to gain initial access to victim Fortinet devices.
  
@@ -107,29 +107,16 @@
  
  | Username | Details |
 -| forticloud-sync | CVE-2024-55591 and CVE-2025-24472 allow threat actors to exploit scheduled tasks on vulnerable FortiOS firewall devices to create a new, malicious persistent user forticloud-sync with super user privileges and a hard-coded password. |
-+| acct-wjeoekmb | CVE-2024-55591 and CVE-2025-24472 allow threat actors to exploit scheduled tasks on vulnerable FortiOS firewall devices to create a new, malicious persistent user acct-wjeoekmb with super user privileges and a hard-coded password. |
++| acct-vgapzwos | CVE-2024-55591 and CVE-2025-24472 allow threat actors to exploit scheduled tasks on vulnerable FortiOS firewall devices to create a new, malicious persistent user acct-vgapzwos with super user privileges and a hard-coded password. |
  
  ## Incident Response
- 
-@@ -337,9 +337,9 @@
- 
- 1 For information on historical Conti ransomware activity, see CISA and FBI’s Conti Ransomware advisory.
- 
--2 Breakglass Intelligence, “Gunra Ransomware’s Linux Variant Has a Fatal Flaw: time()-Seeded rand() Makes Encrypted Files Recoverable Without Paying,” Breakglass Intelligence, March 12, 2026, https://intel.breakglass.tech/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying; Jeffrey Francis Bonaobra, Melvin Singwa, Emmanuel Panopio “Gunra Ransomware Group Unveils Efficient Linux Variant,” Trend Micro, July 29, 2025, https://www.trendmicro.com/en_us/research/25/g/gunra-ransomware-linux-variant.html; and CYFIRMA, “Gunra Ransomware – A Brief Analysis,” CYFIRMA, May 3, 2025, https://www.cyfirma.com/research/gunra-ransomware-a-brief-analysis/.
--
--3 CloudSEK, “Inside Gunra RaaS: From Affiliate Recruitment on the Dark Web to Full Technical Dissection of their Locker,” CloudSEK, February 11, 2026, https://www.cloudsek.com/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker.
-+2 Breakglass Intelligence, “Gunra Ransomware’s Linux Variant Has a Fatal Flaw: time()-Seeded rand() Makes Encrypted Files Recoverable Without Paying,” Breakglass Intelligence, March 12, 2026, https://yestgnkzhw.invalid/post/gunra-ransomware-s-linux-variant-has-a-fatal-flaw-time-seeded-rand-makes-encrypted-files-recoverable-without-paying; Jeffrey Francis Bonaobra, Melvin Singwa, Emmanuel Panopio “Gunra Ransomware Group Unveils Efficient Linux Variant,” Trend Micro, July 29, 2025, https://kmozfxtckh.invalid/en_us/research/25/g/gunra-ransomware-linux-variant.html; and CYFIRMA, “Gunra Ransomware – A Brief Analysis,” CYFIRMA, May 3, 2025, https://tteetbezjv.invalid/research/gunra-ransomware-a-brief-analysis/.
-+
-+3 CloudSEK, “Inside Gunra RaaS: From Affiliate Recruitment on the Dark Web to Full Technical Dissection of their Locker,” CloudSEK, February 11, 2026, https://gapzwosfif.invalid/blog/inside-gunra-raas-from-affiliate-recruitment-on-the-dark-web-to-full-technical-dissection-of-their-locker.
- 
- 4 CYFIRMA, “Gunra Ransomware – A Brief Analysis”; and Breakglass Intelligence, “Gunra Ransomware’s Linux Variant Has a Fatal Flaw.”
  
 @@ -355,7 +355,7 @@
  
  10 Bonaobra, “Gunra Ransomware Group Unveils Efficient Linux Variant.”
  
 -11 VirusTotal, “VirusTotal - File - 91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0,” VirusTotal, https://www.virustotal.com/gui/file/91f8fc7a3290611e28a35a403fd815554d9d856006cc2ee91ccdb64057ae53b0/details.
-+11 VirusTotal, “VirusTotal - File - 43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b,” VirusTotal, https://lwhtphseym.invalid/gui/file/43119829361ae899386969f9d798e71beb4c71f0c584c7188912a3f2f383511b/details.
++11 VirusTotal, “VirusTotal - File - d798e71beb4c71f0c584c7188912a3f2f383511b54692c2561e6913837fc5041,” VirusTotal, https://www.virustotal.com/gui/file/d798e71beb4c71f0c584c7188912a3f2f383511b54692c2561e6913837fc5041/details.
  
  12 CloudSEK, “Inside Gunra RaaS.”
  
