@@ -195,6 +195,25 @@ aem report --run-id 2026-10-20
 - Si actualizó el repositorio desde una versión sin este comando, reinstale una vez para obtener `matplotlib`: `pip install -e .`
 - `docs/resultados/` se versiona: contiene solo cifras, sin texto de los reportes.
 
+### Página HTML: `aem report --html`
+
+```bash
+aem report --html --run-id 2026-10-18-main            # pública: runs/<run-id>/results/report.html
+aem report --html --private --run-id 2026-10-18-main  # además: runs/<run-id>/private/report_full.html
+```
+
+- **Un solo archivo autocontenido:** CSS y JS en línea, sin CDN. Funciona sin conexión; los únicos enlaces van a `attack.mitre.org`. Está en inglés, con un botón para pasar a español; sin JavaScript se ve en inglés.
+- **Qué lee:** `results/results.json`, las salidas por corrida (`*_exposure.csv`; las citas, de `run_record.json`), los mapeos de referencia, las hojas de revisión y `results/sensitivity/`. No llama a la API ni recalcula ninguna cifra. La revisión manual solo da cifras cuando la hoja está completa; si no, «sin dato disponible».
+- **Secciones:**
+  1. encabezado (y aviso «RESULTADO PARCIAL», si corresponde);
+  2. los cinco indicadores, con gráficos (media ± DE, tramas distintas por versión) y tablas;
+  3. modelo frente al enfoque tradicional, con las notas C1 y D-62;
+  4. acciones, cobertura y mapa por táctica;
+  5. tabla de técnicas, filtrable por escenario, versión, táctica y acción, con enlace a ATT&CK y la marca «en la referencia»;
+  6. sensibilidad, limitaciones y declaración de uso de IA.
+- **Akira en la página pública:** solo IDs y nombres de ATT&CK, tácticas, cobertura, acciones y agregados; nunca citas. Antes de escribir la página pública, el comando la compara con la copia local del reporte de DFIR (ventanas de 8 palabras seguidas y valores de IoC). Si encuentra algo, no escribe nada. La versión `--private` lleva las citas de Akira y queda en `runs/<run-id>/private/`, que git ignora: no la comparta.
+- `report.html` es un archivo nuevo de la carpeta de resultados. Revíselo en el navegador antes de versionarlo.
+
 ### Análisis de sensibilidad: `aem sensitivity` (complemento, D-77)
 
 ```bash

@@ -497,10 +497,41 @@ def sensitivity_cmd(
 @app.command("report", cls=SpanishCommand)
 def report_cmd(
     run_id: str = typer.Option(..., "--run-id", help="Carpeta de runs/ con resultados reales (results/, no results_FAKE/)."),
+    html: bool = typer.Option(False, "--html", help="Generar runs/<id>/results/report.html (autocontenido, sin "
+                                                    "conexión) en lugar de docs/resultados/<id>/resumen.md."),
+    private: bool = typer.Option(False, "--private", help="Con --html: generar también runs/<id>/private/"
+                                                          "report_full.html (ignorado por git, con las citas de Akira)."),
 ) -> None:
     """Resume una corrida real para la tesis: tablas por indicador, gráficos y límites, en docs/resultados/<id>/."""
     from eval.report import ReportError, build_report
 
+    if private and not html:
+        _fail("--private solo se usa junto con --html.")
+    if html:
+        from aem.repo_check import ioc_values
+        from aem.scenarios import load_scenarios
+        from eval.baseline_ioc import extract_iocs
+        from eval.report_html import build_html
+
+        dfir = DATA_DIR / "reports" / "akira_dfir_2026.txt"
+        text = dfir.read_text(encoding="utf-8") if dfir.exists() else None
+        iocs = ioc_values(extract_iocs(text, load_model_config().ioc)) if text else []
+        if text is None:
+            console.print(f"[yellow]AVISO[/yellow] no existe {dfir.name}: no se comprobó la página pública contra "
+                          "el texto del reporte de DFIR.", highlight=False)
+        run_dir = RUNS_DIR / run_id
+        scenarios = load_scenarios(SCENARIOS_FILE)
+        try:
+            out = build_html(run_dir, run_dir / "results" / "report.html", REVIEW_SHEETS_DIR, scenarios,
+                             dfir_text=text, iocs=iocs)
+            console.print(f"[green]Listo.[/green] {out}")
+            if private:
+                full = build_html(run_dir, run_dir / "private" / "report_full.html", REVIEW_SHEETS_DIR, scenarios,
+                                  private=True)
+                console.print(f"  privado (no se versiona): {full}")
+        except ReportError as exc:
+            _fail(str(exc))
+        return
     try:
         paths = build_report(RUNS_DIR / run_id, RESULTS_DOCS_DIR / run_id, REVIEW_SHEETS_DIR)
     except ReportError as exc:
@@ -508,6 +539,7 @@ def report_cmd(
     console.print(f"[green]Listo.[/green] {paths['markdown']}")
     for chart in paths["charts"]:
         console.print(f"  gráfico: {chart}")
+
 
 if __name__ == "__main__":
     app()

@@ -37,6 +37,23 @@ def distinctive_phrases(text: str, count: int = 30, min_line: int = 120, length:
     return [p for p in phrases if len(p) >= 60]
 
 
+_WORD = re.compile(r"[^\W_]+")
+
+
+def _words(text: str) -> list[str]:
+    return [w.casefold() for w in _WORD.findall(text)]
+
+
+def copied_windows(text: str, source: str, n: int = 8) -> list[str]:
+    """Runs of `n` consecutive words of `source` (case, punctuation and spacing ignored) that also appear in
+    `text`. Used to check a generated file against the local copy of the DFIR report."""
+    src = _words(source)
+    windows = {tuple(src[i:i + n]) for i in range(len(src) - n + 1)}
+    words = _words(text)
+    found = {tuple(words[i:i + n]) for i in range(len(words) - n + 1)} & windows
+    return sorted(" ".join(w) for w in found)
+
+
 def ioc_values(iocs, min_length: int = 7) -> list[str]:
     """Distinct IoC values, normalized and as written; very short ones are skipped to avoid false hits."""
     values = {v for i in iocs for v in (i.value, i.raw)}

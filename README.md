@@ -141,6 +141,8 @@ Output files in `--out`:
 | `aem preflight` | Checks that everything is ready before spending calls (OK / FALTA / AVISO) and estimates calls and time. |
 | `aem eval` | Runs the full experiment and generates the tables of the 5 indicators. Runs the preflight first and does not start if there is a FALTA. Always use `--run-id <date>`. |
 | `aem report` | Summarizes a real run (`--run-id <date>`) in `docs/resultados/<date>/`: one table per indicator, charts for indicators 1 and 3, missing data and limits (C1–C3, D-67). Refuses FAKE results. |
+| `aem report --html` | One self-contained page (inline CSS and JS, works offline) in `runs/<date>/results/report.html`: the five indicators with charts and tables, model vs traditional approach, actions, coverage and an ATT&CK tactic map, a filterable technique table, sensitivity, limitations and the AI declaration. English, with a button for Spanish. Evidence quotes only for the public (CISA) reports. `--private` also writes `runs/<date>/private/report_full.html` (git-ignored, with the Akira quotes). Before writing, the public page is checked against the local DFIR copy (8-word windows and IoC values). |
+| `aem review-check` | Validates the manual review sheets of indicators 4 and 5 (`--run-id <date>`): si/no only, observation on the negative verdict, no generated column edited; reports «revisión incompleta: N de M filas» and never a percentage until every sheet is complete. |
 | `aem check-repo` | Checks the versioned files and the whole git history for `.env`, API keys, DFIR report text and `private/` files. Mandatory before pushing to GitHub. |
 | `aem demo` | Shortcut: Gunra in demo mode. |
 
@@ -154,6 +156,7 @@ aem make-variants
 aem preflight
 aem eval --run-id 2026-10-20   # with API key; or `aem eval --demo --run-id …` with the published cache
 aem report --run-id 2026-10-20
+aem report --html --run-id 2026-10-20   # self-contained page; add --private for the full local copy
 ```
 
 `aem eval` runs **3 scenarios × 3 versions (`orig`, `mut`, `anon`) × 5 runs** with the same parameters (`temperature = 0`) and reports mean and standard deviation. Results in `runs/<date>/results/` (`results.md`, CSV and JSON; each table carries model, version, date and hash of the prompt templates) and manual review sheets in `eval/review_sheets/`. If any response does not come from the real Gemini API (e.g. a simulated LLM in tests), everything goes to `runs/<date>/results_FAKE/` with prefix `FAKE_` and never to `results/` (D-71). The estimate of calls and time is in `docs/PLAN.md` (≈ 125–165 calls, 25–45 minutes with `GEMINI_RPM=10`). In indicators 1 and 3 the primary mean is `_fail0` (failed runs count as 0); `_valid` is secondary (D-67). The full step-by-step guide is in `docs/RUNBOOK.md`.
