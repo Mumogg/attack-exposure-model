@@ -107,15 +107,6 @@ Tipos reconocidos (`eval/baseline_ioc.py`): MD5, SHA-1, SHA-256 (hexadecimal de 
 - Una URL ocupa su tramo completo: un hash dentro de una URL de referencia no cuenta por separado.
 - Resultado con los boletines (2026-10-17): Gunra 29 IoC únicos (17 IPv4, 4 dominios, 4 correos, 4 SHA-256); Interlock 38 (35 SHA-256, 3 SHA-1).
 
-### D-66. Variante `mut` (`eval/make_variants.py`) — **PENDIENTE DE CONFIRMAR**
-Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado según D-63 se reemplaza; todo lo demás queda idéntico byte a byte (test que revierte el mapeo y recupera el original).
-- Hashes → hexadecimal aleatorio del mismo largo y las mismas mayúsculas/minúsculas.
-- IPv4 → direcciones de los rangos de documentación RFC 5737 (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), sin repetir.
-- Dominios (también el host de una URL y el dominio de un correo) → nombre aleatorio de 10 letras con TLD `.invalid` (RFC 2606). Se conserva la ruta de la URL y la parte local del correo.
-- Se conserva el estilo «defanged» en la misma posición (`45.61.136[.]10` → `198.51.100[.]23`).
-- Un mismo IoC recibe siempre el mismo reemplazo dentro del reporte.
-- Semilla: `variants.seed` = 20261017, combinada con el nombre del escenario. Por cada escenario se guardan `<reporte>_mut_stripped.txt`, `<reporte>_mut.diff` y `<reporte>_mut_log.json` (semilla y tabla de reemplazos).
-
 ### D-64. Indicador 3 del modelo
 Denominador: técnicas de la referencia (válidas en v19.2) cuya cobertura según el paso 2 sobre el YAML es `parcial` o `sin cobertura`. Numerador: las que aparecen con ID exacto en `extracted_raw`. Se reporta el porcentaje en `orig` y en `mut` (media y desviación estándar de las 5 corridas) y la razón de medias mut/orig. Para el enfoque tradicional el denominador son todas las técnicas de referencia y el resultado es 100 % o 0 % (determinístico, D-62).
 
@@ -130,12 +121,6 @@ Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado s
 - Se conserva el estilo «defanged» en la misma posición (`45.61.136[.]10` → `198.51.100[.]23`).
 - Un mismo IoC recibe siempre el mismo reemplazo dentro del reporte.
 - Semilla: `variants.seed` = 20261017, combinada con el nombre del escenario. Por cada escenario se guardan `<reporte>_mut_stripped.txt`, `<reporte>_mut.diff` y `<reporte>_mut_log.json` (semilla y tabla de reemplazos).
-
-### D-64. Indicador 3 del modelo
-Denominador: técnicas de la referencia (válidas en v19.2) cuya cobertura en el YAML es `parcial` o `sin cobertura`. Numerador: las que aparecen con ID exacto en `extracted_raw`. Se reporta el porcentaje en `orig`, en `mut` y la razón mut/orig.
-
-### D-65. Indicador 5
-Una violación es (a) un campo extra no previsto por el esquema en la salida del LLM, o (b) un patrón evaluativo en el texto generado que no aparece en el texto fuente correspondiente (el reporte, para las citas; la descripción, para los resúmenes).
 
 ### D-67. Cálculo de los indicadores 1 y generales — **PENDIENTE DE CONFIRMAR**
 - Las métricas usan `extracted_raw` tal como lo devolvió el LLM. Un ID repetido cuenta una vez; un ID inexistente, revocado o mal formado cuenta como propuesta errónea.
@@ -156,4 +141,3 @@ La caché del LLM guarda el prompt completo, que incluye el texto del reporte, y
 - `aem run` detecta el reporte de Akira y avisa que no se suba la carpeta de salida;
 - en `aem eval --demo` sin caché privada (cualquier persona que clone el repositorio), Akira se omite con el aviso «sin caché privada» y el resto se reproduce;
 - las tablas de resultados (`runs/<corrida>/results/`) solo contienen IDs, cifras y nombres de ATT&CK, y sí se versionan.
-
