@@ -94,6 +94,7 @@ def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, atta
         _fail(f"No existe el reporte {report}. Para los escenarios de la tesis ejecute `aem fetch-data`.")
     try:
         ctx = _build_context(org, attack, cache_dir, demo)
+        ctx.client.event_log = Path(out) / "api_events.jsonl"  # failed API attempts (429…), key redacted
         private = _is_copyrighted(report)
         if private:
             console.print("[yellow]Reporte con derechos de autor:[/yellow] la caché va a runs/llm_cache_private/ "
@@ -114,7 +115,15 @@ def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, atta
                   f"(árbol SSVC adaptado): " + ", ".join(f"{a}={n}" for a, n in counts.items()))
     for label, p in paths.items():
         console.print(f"  {label}: {p}")
+    _print_api_events(ctx.client)
     console.print("La salida no afirma que la organización haya sido comprometida.")
+
+
+def _print_api_events(client) -> None:
+    n = client.event_counts()
+    if n["errors_total"]:
+        console.print(f"Errores de la API: {n['errors_total']} (HTTP 429: {n['http_429']}, reintentos: "
+                      f"{n['retries']}); detalle en {client.event_log}", highlight=False)
 
 
 def _fetch_attack() -> Path:
@@ -376,9 +385,12 @@ def eval_cmd(
         console.print(f"[bold yellow]ESCENARIOS OMITIDOS: {format_omitted(omitted)}[/bold yellow]", highlight=False)
     try:
         ctx = _build_context(org, attack, cache_dir, demo)
+        ctx.client.event_log = run_dir / "api_events.jsonl"  # every failed API attempt, appended on resume
         n = replicates or ctx.model_cfg.experiment.replicates
         result = run_experiment(ctx, scenarios, run_dir, REVIEW_SHEETS_DIR, n, console=console)
     except (LLMError, FileNotFoundError, ValueError) as exc:
+        if "ctx" in locals():
+            _print_api_events(ctx.client)
         _fail(f"{exc}\nLas respuestas ya obtenidas quedan en la caché: al repetir el comando se reutilizan.")
     for item in result["skipped"]:
         console.print(f"[yellow]Sin texto, no evaluado:[/yellow] {item}")
@@ -387,6 +399,7 @@ def eval_cmd(
                       "quedaron en results_FAKE/ con prefijo FAKE_ y no sirven como resultados de la tesis.")
     failed = [r for r in result["runs"] if r["status"] != "ok"]
     console.print(f"[green]Listo.[/green] {len(result['runs'])} corridas ({len(failed)} sin salida utilizable).")
+    _print_api_events(ctx.client)
     if result["partial"]:
         console.print(f"[bold yellow]ESCENARIOS OMITIDOS: {format_omitted(result['omitted'])}[/bold yellow]",
                       highlight=False)

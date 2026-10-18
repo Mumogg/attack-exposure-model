@@ -439,6 +439,8 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
             "demo": ctx.client.demo, "skipped": skipped,
             # D-73: a run with scenarios or versions left out is partial, and says which ones
             "partial": bool(omitted or skipped), "escenarios_omitidos": omitted,
+            # failed API attempts in this invocation (detail: runs/<id>/api_events.jsonl)
+            "api_events": ctx.client.event_counts(),
             "runs": [{k: r[k] for k in ("scenario", "version", "replicate", "status", "error")} for r in runs]}
     paths = write_results(run_dir, sheets_dir, computed, meta)
     _append_history(run_dir, meta)

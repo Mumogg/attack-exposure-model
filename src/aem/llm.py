@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -48,15 +49,55 @@ class ApiError(LLMError):
     """The API call itself failed (after retries for 429/5xx)."""
 
 
+class DailyQuotaExhausted(ApiError):
+    """HTTP 429 whose quota is per day: retrying cannot help today, so the run stops (cache stays intact)."""
+
+
 class InvalidResponse(LLMError):
     """The API answered, but the output is not usable (e.g. not JSON or outside the schema)."""
 
 
 class TransportError(Exception):
-    def __init__(self, code: int | None, message: str):
+    def __init__(self, code: int | None, message: str, details: dict | None = None):
         super().__init__(f"HTTP {code}: {message}")
         self.code = code
         self.message = message
+        self.details = details  # parsed JSON error body, when the API sent one
+
+
+API_KEY_PATTERN = re.compile(r"AIza[0-9A-Za-z_\-]{20,}")
+
+
+def redact(text: str, api_key: str | None = None) -> str:
+    """Error bodies must never carry the key into a log."""
+    if api_key:
+        text = text.replace(api_key, "[CLAVE OCULTA]")
+    return API_KEY_PATTERN.sub("[CLAVE OCULTA]", text)
+
+
+def _seconds(value) -> float | None:
+    """`retryDelay` comes as a protobuf Duration string, e.g. "31s" or "1.5s"."""
+    m = re.fullmatch(r"\s*(\d+(?:\.\d+)?)s\s*", str(value)) if value is not None else None
+    return float(m.group(1)) if m else None
+
+
+def quota_info(details) -> dict:
+    """quota metric / id / value, retryDelay and whether the exhausted quota is per day, from a Gemini error body."""
+    err = details.get("error", details) if isinstance(details, dict) else {}
+    violations, retry_delay = [], None
+    for d in err.get("details") or []:
+        if not isinstance(d, dict):
+            continue
+        for v in d.get("violations") or []:
+            if isinstance(v, dict) and ("quotaId" in v or "quotaMetric" in v):
+                violations.append({k: v.get(k) for k in ("quotaMetric", "quotaId", "quotaValue", "quotaDimensions")
+                                   if k in v})
+        if "retryDelay" in d:
+            retry_delay = _seconds(d["retryDelay"])
+    daily = any("perday" in str(v.get("quotaId", "")).lower() or "per_day" in str(v.get("quotaMetric", "")).lower()
+                for v in violations)
+    return {"status": err.get("status"), "message": err.get("message"), "violations": violations,
+            "retry_delay_s": retry_delay, "daily": daily}
 
 
 class Transport(Protocol):
@@ -79,7 +120,8 @@ class GenaiTransport:
         try:
             return fn(*args, **kwargs)
         except errors.APIError as exc:
-            raise TransportError(exc.code, str(exc)) from exc
+            details = exc.details if isinstance(exc.details, dict) else None
+            raise TransportError(exc.code, str(exc), details) from exc
 
     def get_model(self, model: str) -> None:
         self._wrap(self._client.models.get, model=model)
@@ -153,6 +195,8 @@ class GeminiClient:
         self._last_call: float | None = None
         self._model_checked = False
         self.call_log: list[dict] = []  # meta of every answer served (cache hits included), for provenance
+        self.api_events: list[dict] = []  # every failed API attempt (429, 5xx…), key redacted
+        self.event_log: Path | None = None  # if set, each event is also appended there as one JSON line
 
     def provenance(self, start: int = 0) -> dict:
         """Where the answers since call number `start` came from; `real` only if every one is from the API."""
@@ -221,7 +265,7 @@ class GeminiClient:
 
         transport = self._transport()
         self._check_model(transport)
-        text, version = self._call_with_retries(transport, prompt, schema)
+        text, version = self._call_with_retries(transport, prompt, schema, purpose)
         meta = {
             "purpose": purpose, "model": self.model, "model_version": version,
             "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -238,14 +282,47 @@ class GeminiClient:
         cache.put(key, entry)
         return LLMResult(data=data, raw_text=text, meta=dict(meta, from_cache=False))
 
-    def _call_with_retries(self, transport: Transport, prompt: str, schema: dict) -> tuple[str, str]:
+    def event_counts(self) -> dict:
+        return {"http_429": sum(e["code"] == 429 for e in self.api_events),
+                "retries": sum(e["action"].startswith("reintento") for e in self.api_events),
+                "errors_total": len(self.api_events)}
+
+    def _record_event(self, event: dict) -> None:
+        # the whole event goes through redact(): any field of the error body could echo the key
+        event = json.loads(redact(json.dumps(event, ensure_ascii=False), self.settings.gemini_api_key))
+        self.api_events.append(event)
+        if self.event_log is not None:
+            self.event_log.parent.mkdir(parents=True, exist_ok=True)
+            with self.event_log.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+    def _call_with_retries(self, transport: Transport, prompt: str, schema: dict,
+                           purpose: str = "") -> tuple[str, str]:
         attempt = 0
         while True:
             self._throttle()
             try:
                 return transport.generate(self.model, prompt, schema, TEMPERATURE)
             except TransportError as exc:
+                key = self.settings.gemini_api_key
+                info = quota_info(exc.details)
+                event = {"timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"), "purpose": purpose,
+                         "model": self.model, "attempt": attempt + 1, "code": exc.code, **info,
+                         "error": str(exc), "body": exc.details}
+                if exc.code == 429 and info["daily"]:
+                    event["action"] = "detenido: cuota diaria agotada"
+                    self._record_event(event)
+                    quotas = ", ".join(str(v.get("quotaId")) for v in info["violations"])
+                    raise DailyQuotaExhausted(
+                        f"Cuota DIARIA de la API de Gemini agotada ({quotas}). No se reintenta: espere a que se "
+                        "renueve la cuota y repita el mismo comando; lo ya obtenido sigue en la caché.") from exc
                 if exc.code not in RETRYABLE or attempt >= self.settings.gemini_max_retries:
-                    raise ApiError(f"Error de la API de Gemini tras {attempt + 1} intento(s): {exc}") from exc
-                self._sleep(BACKOFF_BASE_SECONDS * 2**attempt)
+                    event["action"] = "error final"
+                    self._record_event(event)
+                    raise ApiError(f"Error de la API de Gemini tras {attempt + 1} intento(s): "
+                                   f"{redact(str(exc), key)}") from exc
+                wait = max(BACKOFF_BASE_SECONDS * 2**attempt, info["retry_delay_s"] or 0)
+                event["action"] = f"reintento tras {wait:g} s"
+                self._record_event(event)
+                self._sleep(wait)
                 attempt += 1

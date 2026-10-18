@@ -25,6 +25,9 @@ runs/*/private/
 eval/review_sheets/private/
 data/reports/private/
 
+# Smoke-test outputs (`aem run` trials): not thesis results
+runs/prueba/
+
 # OS / editors
 .DS_Store
 Thumbs.db

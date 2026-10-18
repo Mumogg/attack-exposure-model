@@ -204,3 +204,97 @@ def test_cache_entry_without_source_is_not_real(tmp_path):
 def test_no_calls_is_not_real(tmp_path):
     c, _ = client(tmp_path, FakeTransport())
     assert c.provenance()["real"] is False
+
+
+# --- 429 detail, retryDelay and daily quota ----------------------------------------------------
+# Synthetic error bodies in the shape the Gemini API uses (google.rpc QuotaFailure + RetryInfo).
+
+FAKE_KEY = "AIza" + "X" * 35
+
+
+def _quota_body(quota_id, metric, retry_delay=None, leak_key=False):
+    details = [{"@type": "type.googleapis.com/google.rpc.QuotaFailure",
+                "violations": [{"quotaMetric": metric, "quotaId": quota_id, "quotaValue": "10",
+                                "quotaDimensions": {"model": "gemini-3.8-flash", "location": "global"}}]}]
+    if retry_delay:
+        details.append({"@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": retry_delay})
+    msg = "You exceeded your current quota." + (f" key={FAKE_KEY}" if leak_key else "")
+    return {"error": {"code": 429, "message": msg, "status": "RESOURCE_EXHAUSTED", "details": details}}
+
+
+PER_MINUTE = ("GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+              "generativelanguage.googleapis.com/generate_content_free_tier_requests")
+PER_DAY = ("GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+           "generativelanguage.googleapis.com/generate_content_free_tier_requests_per_day")
+
+
+def test_429_detail_is_logged_and_retry_delay_respected(tmp_path):
+    body = _quota_body(*PER_MINUTE, retry_delay="31s", leak_key=True)
+    t = FakeTransport([TransportError(429, f"429 RESOURCE_EXHAUSTED. {body}", body), {"x": 1}])
+    c, clock = client(tmp_path, t, key=FAKE_KEY, rpm=600)
+    c.event_log = tmp_path / "run" / "api_events.jsonl"
+    assert c.generate_json("hola", SCHEMA, purpose="test").data == {"x": 1}
+    assert 31 in clock.sleeps and 2 not in clock.sleeps  # retryDelay (31 s) beats the 2 s backoff
+    [event] = c.api_events
+    assert event["code"] == 429 and event["status"] == "RESOURCE_EXHAUSTED" and event["retry_delay_s"] == 31
+    assert event["violations"][0]["quotaId"] == PER_MINUTE[0]
+    assert event["violations"][0]["quotaMetric"] == PER_MINUTE[1]
+    assert event["daily"] is False and event["action"] == "reintento tras 31 s" and event["purpose"] == "test"
+    logged = (tmp_path / "run" / "api_events.jsonl").read_text(encoding="utf-8")
+    assert FAKE_KEY not in logged and "[CLAVE OCULTA]" in logged and PER_MINUTE[0] in logged
+    assert json.loads(logged.splitlines()[0])["retry_delay_s"] == 31
+    assert c.event_counts() == {"http_429": 1, "retries": 1, "errors_total": 1}
+
+
+def test_backoff_wins_when_longer_than_retry_delay(tmp_path):
+    body = _quota_body(*PER_MINUTE, retry_delay="0.5s")
+    t = FakeTransport([TransportError(429, "q", body), {"x": 1}])
+    c, clock = client(tmp_path, t, rpm=600)
+    c.generate_json("hola", SCHEMA, purpose="test")
+    assert 2 in clock.sleeps and c.api_events[0]["retry_delay_s"] == 0.5
+
+
+def test_daily_quota_stops_without_retrying_and_keeps_cache(tmp_path):
+    from aem.llm import ApiError, DailyQuotaExhausted
+
+    ok = FakeTransport([{"x": 1}])
+    c, _ = client(tmp_path, ok)
+    c.generate_json("first", SCHEMA, purpose="test")
+    cached = sorted(p.name for p in (tmp_path / "cache").rglob("*.json"))
+
+    body = _quota_body(*PER_DAY, retry_delay="40s")
+    t = FakeTransport([TransportError(429, "q", body), {"x": 2}])
+    c, clock = client(tmp_path, t, rpm=600)
+    c.event_log = tmp_path / "api_events.jsonl"
+    with pytest.raises(DailyQuotaExhausted, match="DIARIA") as err:
+        c.generate_json("second", SCHEMA, purpose="test")
+    assert isinstance(err.value, ApiError) and PER_DAY[0] in str(err.value)
+    assert len(t.calls) == 1 and not [s for s in clock.sleeps if s >= 2]  # no retry, no backoff
+    assert c.api_events[0]["daily"] is True and c.api_events[0]["action"].startswith("detenido")
+    assert c.event_counts() == {"http_429": 1, "retries": 0, "errors_total": 1}
+    assert sorted(p.name for p in (tmp_path / "cache").rglob("*.json")) == cached  # cache untouched
+    assert (tmp_path / "api_events.jsonl").exists()
+
+
+def test_429_without_body_still_logged(tmp_path):
+    t = FakeTransport([TransportError(429, "quota"), {"x": 1}])
+    c, _ = client(tmp_path, t, rpm=600)
+    c.generate_json("hola", SCHEMA, purpose="test")
+    e = c.api_events[0]
+    assert e["code"] == 429 and e["body"] is None and e["violations"] == [] and e["retry_delay_s"] is None
+
+
+def test_genai_transport_keeps_the_error_body():
+    from google.genai import errors
+
+    from aem.llm import GenaiTransport
+
+    body = _quota_body(*PER_MINUTE, retry_delay="7s")
+    tr = GenaiTransport.__new__(GenaiTransport)  # no client, no network
+
+    def boom(**kw):
+        raise errors.ClientError(429, body)
+
+    with pytest.raises(TransportError) as err:
+        tr._wrap(boom)
+    assert err.value.code == 429 and err.value.details == body
