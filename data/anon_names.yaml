@@ -28,9 +28,12 @@ interlock:
   - {name: DarkGate, replacement: MalwareY, role: malware mencionado junto a ClickFix}
 
 akira:
-  # Lista tomada SOLO del título (el texto no está en el repositorio). Sebas debe revisar el texto completo y
-  # agregar aquí los demás nombres propios de la amenaza (ver docs/RUNBOOK.md, paso c).
+  # Revisada por Sebas sobre el texto completo con `aem suggest-anon-names` (2026-10-18, D-76). El texto no
+  # está en el repositorio. Las variantes pegadas a «_», «-», «.» o dígitos («BumbleBee-related», nombres de
+  # reglas YARA) ya las cubre el nombre base; solo las que siguen con una letra necesitan fila propia.
   - {name: Akira, replacement: ActorX, role: actor y familia de ransomware}
+  - {name: BumbleBee Loader, replacement: LoaderX, role: loader (nombre con «Loader»)}
+  - {name: BumblebeeC2, replacement: LoaderXC2, role: loader (en un nombre de regla)}
   - {name: BumbleBee, replacement: LoaderX, role: loader}
   - {name: AdaptixC2, replacement: C2FrameworkX, role: framework de C2 usado por el actor}
   - {name: Adaptix C2, replacement: C2FrameworkX, role: framework de C2 (grafía con espacio)}

@@ -3,7 +3,8 @@
 Looks at every commit reachable from any ref plus the index (staged files) for:
 - a committed `.env`, files inside a `private/` folder (D-69) and the DFIR report files;
 - API-key patterns (the matched value is never printed);
-- text of the DFIR report, found through distinctive phrases taken from the local copy.
+- text of the DFIR report, found through distinctive phrases taken from the local copy;
+- IoC values of the DFIR report (refanged and as written), also taken from the local copy (D-76).
 """
 
 from __future__ import annotations
@@ -34,6 +35,12 @@ def distinctive_phrases(text: str, count: int = 30, min_line: int = 120, length:
         middle = len(line) // 2
         phrases.append(line[max(0, middle - length // 2): middle + length // 2].strip())
     return [p for p in phrases if len(p) >= 60]
+
+
+def ioc_values(iocs, min_length: int = 7) -> list[str]:
+    """Distinct IoC values, normalized and as written; very short ones are skipped to avoid false hits."""
+    values = {v for i in iocs for v in (i.value, i.raw)}
+    return sorted(v for v in values if len(v) >= min_length)
 
 
 def _git(repo: Path, *args: str) -> subprocess.CompletedProcess:
@@ -84,7 +91,7 @@ def _group(kind: str, hits: list[tuple[str, str, str]]) -> list[dict]:
     return out
 
 
-def check_repo(repo: Path, phrases: list[str]) -> dict:
+def check_repo(repo: Path, phrases: list[str], iocs: list[str] = ()) -> dict:
     repo = Path(repo)
     if _git(repo, "rev-parse", "--git-dir").returncode != 0:
         raise ValueError(f"{repo} no es un repositorio git")
@@ -113,4 +120,6 @@ def check_repo(repo: Path, phrases: list[str]) -> dict:
         findings += _group(kind, _grep(repo, revs, "-E", [pattern]))
     if phrases:
         findings += _group("texto del reporte de DFIR", _grep(repo, revs, "-F", phrases))
-    return {"findings": findings, "commits": len(revs), "phrases": len(phrases)}
+    if iocs:
+        findings += _group("IoC del reporte de DFIR", _grep(repo, revs, "-iF", list(iocs)))
+    return {"findings": findings, "commits": len(revs), "phrases": len(phrases), "iocs": len(iocs)}

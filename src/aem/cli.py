@@ -10,8 +10,8 @@ from typer.core import TyperCommand, TyperGroup
 
 from aem import config
 from aem.config import (
-    ANON_NAMES_FILE, ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, LLM_CACHE_DIR, LLM_PRIVATE_CACHE_DIR,
-    ORG_FILE, PREVALENCE_FILE, RUNS_DIR, SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
+    ANON_NAMES_FILE, ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, KNOWN_IOCS_PRIVATE_FILE,
+    LLM_CACHE_DIR, LLM_PRIVATE_CACHE_DIR, ORG_FILE, PREVALENCE_FILE, RUNS_DIR, SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
 )
 from aem.fetch import http_get
 
@@ -203,7 +203,7 @@ def make_variants() -> None:
     cfg = load_model_config()
     scenarios = load_scenarios(SCENARIOS_FILE)
     try:
-        logs = build_variants(scenarios, cfg, KNOWN_IOCS_FILE)
+        logs = build_variants(scenarios, cfg, KNOWN_IOCS_FILE, private_known_iocs_path=KNOWN_IOCS_PRIVATE_FILE)
     except VariantLeak as exc:
         _fail(str(exc))
     for log in logs:
@@ -221,6 +221,9 @@ def make_variants() -> None:
     for name in sorted(set(scenarios) - {log["scenario"] for log in logs}):
         console.print(f"[yellow]{name}:[/yellow] sin texto preparado; ejecute `aem prepare-reports` primero.")
     console.print(f"semilla {cfg.variants.seed}; IoC conocidos de la organización: {KNOWN_IOCS_FILE}")
+    if any(scenarios[log["scenario"]].copyrighted for log in logs):
+        console.print(f"IoC conocidos de escenarios con derechos de autor (ignorado por git, D-76): "
+                      f"{KNOWN_IOCS_PRIVATE_FILE}", highlight=False)
 
 
 @app.command("run", cls=SpanishCommand)
@@ -332,20 +335,23 @@ def check_repo_cmd(
 ) -> None:
     """Busca .env, API keys, texto del reporte de DFIR y archivos private/ en los archivos versionados y en todo
     el historial de git. Termina con código 1 si encuentra algo."""
-    from aem.repo_check import check_repo, distinctive_phrases
+    from aem.repo_check import check_repo, distinctive_phrases, ioc_values
+    from eval.baseline_ioc import extract_iocs
 
-    phrases = []
+    phrases, iocs = [], []
     if Path(dfir_text).exists():
-        phrases = distinctive_phrases(Path(dfir_text).read_text(encoding="utf-8"))
+        text = Path(dfir_text).read_text(encoding="utf-8")
+        phrases = distinctive_phrases(text)
+        iocs = ioc_values(extract_iocs(text, load_model_config().ioc))
     else:
         console.print(f"[yellow]AVISO[/yellow] no existe {dfir_text}: no se buscó texto del reporte de DFIR "
                       "(solo .env, API keys y carpetas private/).", highlight=False)
     try:
-        result = check_repo(repo, phrases)
+        result = check_repo(repo, phrases, iocs)
     except ValueError as exc:
         _fail(str(exc))
-    console.print(f"Revisados {result['commits']} commits y el índice; {result['phrases']} frases del reporte "
-                  "de DFIR.", highlight=False)
+    console.print(f"Revisados {result['commits']} commits y el índice; {result['phrases']} frases y "
+                  f"{result['iocs']} valores de IoC del reporte de DFIR.", highlight=False)
     if result["findings"]:
         for f in result["findings"]:
             console.print(f"[bold red]ENCONTRADO[/bold red] {f['kind']}: {f['where']}", highlight=False)

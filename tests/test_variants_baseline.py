@@ -142,6 +142,28 @@ def test_build_variants_writes_variant_diff_log_and_known_iocs(tmp_path):
     assert data["policy"]["known_ioc_fraction"] == 0.5
 
 
+def test_build_variants_keeps_copyrighted_iocs_out_of_the_versioned_file(tmp_path):
+    import yaml
+    from aem.config import SCENARIOS_FILE
+    from aem.scenarios import load_scenarios
+    from eval.make_variants import build_variants
+
+    scenarios = {k: v.relocated(tmp_path) for k, v in load_scenarios(SCENARIOS_FILE).items()}
+    g, a = scenarios["gunra"], scenarios["akira"]
+    assert a.copyrighted and not g.copyrighted
+    g.stripped.parent.mkdir(parents=True)
+    g.stripped.write_text("Gunra actors used 45.61.136[.]10 to deliver main.exe.\n", encoding="utf-8")
+    a.stripped.write_text("Akira actors used 203.0.113[.]5 to deliver run.exe.\n", encoding="utf-8")
+    known, private = tmp_path / "known.yaml", tmp_path / "private" / "known_private.yaml"
+    with pytest.raises(ValueError, match="D-76"):
+        build_variants(scenarios, load_model_config(), known)
+    build_variants(scenarios, load_model_config(), known, private_known_iocs_path=private)
+    public = yaml.safe_load(known.read_text(encoding="utf-8"))["known_iocs"]
+    assert {k["scenario"] for k in public} == {"gunra"} and "203.0.113.5" not in known.read_text(encoding="utf-8")
+    assert [(k["scenario"], k["value"]) for k in yaml.safe_load(private.read_text(encoding="utf-8"))["known_iocs"]] \
+        == [("akira", "203.0.113.5")]
+
+
 # --- D-70: IoC types listed by the bulletins themselves (fair baseline) -------------------------
 
 QTOX = "2507312EC10BB44ED9DAA04E3C5C27E8C13154649B1A02E73ACFAE1681EE0208D05133A8FB22"

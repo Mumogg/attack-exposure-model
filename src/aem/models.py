@@ -75,6 +75,7 @@ class OrgProfile(Strict):
     analyst_context: AnalystContext
     known_iocs: list[KnownIoc] = Field(default_factory=list)
     known_iocs_file: str | None = None
+    known_iocs_private_file: str | None = None  # git-ignored (D-76)
     coverage_design: list[CoverageDesign] = Field(default_factory=list)
 
     @model_validator(mode="after")

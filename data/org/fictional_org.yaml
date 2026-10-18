@@ -163,6 +163,8 @@ analyst_context:
 # Se generan con semilla mediante `aem make-variants` en el archivo indicado (D-62).
 known_iocs: []
 known_iocs_file: known_iocs_generated.yaml
+# Los IoC de escenarios con derechos de autor (Akira) van a un archivo ignorado por git (D-76).
+known_iocs_private_file: ../reports/private/known_iocs_private.yaml
 
 # Brecha que el autor PRETENDE para cada técnica de referencia (verdad de terreno del indicador 2).
 # Debe coincidir con lo que el paso 2 deriva de `detections`; si no coincide, hay un error.

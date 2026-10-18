@@ -24,6 +24,8 @@ MODEL_CONFIG_FILE = DATA_DIR / "model_config.yaml"
 SSVC_TREE_FILE = DATA_DIR / "ssvc_tree.yaml"
 ORG_FILE = DATA_DIR / "org" / "fictional_org.yaml"
 KNOWN_IOCS_FILE = DATA_DIR / "org" / "known_iocs_generated.yaml"
+# git-ignored: known IoCs of copyrighted scenarios (Akira), never in the versioned file (D-76)
+KNOWN_IOCS_PRIVATE_FILE = DATA_DIR / "reports" / "private" / "known_iocs_private.yaml"
 PREVALENCE_FILE = DATA_DIR / "prevalence" / "red_canary_2026.csv"
 ANON_NAMES_FILE = DATA_DIR / "anon_names.yaml"  # threat names replaced in the `anon` version (D-72)
 SCENARIOS_FILE = DATA_DIR / "scenarios.yaml"

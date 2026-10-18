@@ -113,7 +113,7 @@ La carpeta `runs/prueba/` se puede borrar o versionar; lo que importa conservar 
    git status --short            # no debe aparecer ningún data/reports/akira_dfir_2026*
    ```
 
-   `aem make-variants` reescribe `data/org/known_iocs_generated.yaml` y los `*_mut*`/`*_anon*` de CISA, que **sí** se versionan.
+   `aem make-variants` reescribe `data/org/known_iocs_generated.yaml` (solo Gunra e Interlock) y los `*_mut*`/`*_anon*` de CISA, que **sí** se versionan. Los IoC conocidos de Akira van a `data/reports/private/known_iocs_private.yaml`, que **no** se versiona (D-76).
 
 ## d. CSV de prevalencia (Red Canary 2026)
 
@@ -226,6 +226,7 @@ python -c "import csv,sys; r=list(csv.DictReader(open(sys.argv[1],encoding='utf-
 | `eval/review_sheets/*.csv` llenas | `runs/*/private/` (salidas de Akira con citas) |
 | `data/prevalence/red_canary_2026.csv`, `data/org/known_iocs_generated.yaml`, `data/reports/*_mut*` y `*_anon*` de CISA, `data/anon_names.yaml` (solo nombres, no texto) | `eval/review_sheets/private/` (muestra de Akira) |
 | | `data/reports/akira_dfir_2026*` (texto, `stripped`, variante y diff) |
+| | `data/reports/private/` (candidatos de nombres e IoC conocidos de Akira, D-76) |
 
 Todo lo de la columna derecha ya está en `.gitignore`. Antes de cada commit, verifique:
 

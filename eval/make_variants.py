@@ -285,10 +285,11 @@ def unified_diff(original: str, variant: str, name: str) -> str:
 
 
 def build_variants(scenarios: dict, model_cfg: ModelConfig, known_iocs_path: Path,
-                   anon_names_path: Path = ANON_NAMES_FILE) -> list[dict]:
-    """`mut` and `anon` versions of every prepared scenario + the organization's generated known IoCs (D-62)."""
+                   anon_names_path: Path = ANON_NAMES_FILE, private_known_iocs_path: Path | None = None) -> list[dict]:
+    """`mut` and `anon` versions of every prepared scenario + the organization's generated known IoCs (D-62).
+    Known IoCs of copyrighted scenarios go only to `private_known_iocs_path` (git-ignored, D-76)."""
     all_names = load_anon_names(anon_names_path)
-    logs, known = [], []
+    logs, known, known_private = [], [], []
     seed = model_cfg.variants.seed
     for sc in scenarios.values():
         if not sc.stripped.exists():
@@ -328,13 +329,21 @@ def build_variants(scenarios: dict, model_cfg: ModelConfig, known_iocs_path: Pat
         log["anon"] = {"file": sc.anon.name, "names_replaced": sum(e["occurrences"] for e in name_log),
                        "names_absent": [e["name"] for e in name_log if not e["occurrences"]]}
         logs.append(log)
-        known += select_known_iocs(extract_iocs(original, model_cfg.ioc), model_cfg.baseline, scenario=sc.name)
+        selected = select_known_iocs(extract_iocs(original, model_cfg.ioc), model_cfg.baseline, scenario=sc.name)
+        (known_private if sc.copyrighted else known).extend(selected)
+    if known_private and private_known_iocs_path is None:
+        raise ValueError("Hay IoC de un escenario con derechos de autor y no se indicó el archivo privado (D-76).")
     b = model_cfg.baseline
-    doc = {
-        "note": "Generado por `aem make-variants`; no editar a mano (docs/DECISIONS.md D-62).",
-        "policy": {"known_ioc_fraction": b.known_ioc_fraction, "min_matches": b.min_matches, "seed": b.seed,
-                   "source": "versión orig (stripped) de cada escenario"},
-        "known_iocs": [k.model_dump() for k in known],
-    }
+    policy = {"known_ioc_fraction": b.known_ioc_fraction, "min_matches": b.min_matches, "seed": b.seed,
+              "source": "versión orig (stripped) de cada escenario"}
+    doc = {"note": "Generado por `aem make-variants`; no editar a mano (docs/DECISIONS.md D-62).",
+           "policy": policy, "known_iocs": [k.model_dump() for k in known]}
     Path(known_iocs_path).write_text(yaml.safe_dump(doc, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    if known_private:
+        private = Path(private_known_iocs_path)
+        private.parent.mkdir(parents=True, exist_ok=True)
+        doc = {"note": "Generado por `aem make-variants`; IoC de escenarios con derechos de autor. NO versionar "
+                       "(docs/DECISIONS.md D-76).",
+               "policy": policy, "known_iocs": [k.model_dump() for k in known_private]}
+        private.write_text(yaml.safe_dump(doc, allow_unicode=True, sort_keys=False), encoding="utf-8")
     return logs

@@ -54,3 +54,29 @@ Columnas: `technique_id, technique_name, tactic, valid_in_v19_2, v19_2_status, v
 5. Si después del listado de técnicas hay más texto que deba conservarse, agregue su encabezado a `end_headings` en `data/scenarios.yaml`.
 
 Todos los archivos `data/reports/akira_dfir_2026*` están en `.gitignore` (texto, versión `stripped`, variante y su diff).
+
+## 6. Texto de Akira colocado (2026-10-18)
+
+El texto se extrajo del HTML del artículo, tomando solo su contenedor: quedan fuera el menú, la barra lateral, los botones para compartir, los comentarios, los artículos relacionados y el pie del sitio. Se guardó en texto plano UTF-8, con el encabezado `MITRE ATT&CK` en una línea propia. Antes de `aem prepare-reports` se quitaron a mano los bloques de la tabla, porque no describen la intrusión sino al editor o al sitio. Las posiciones son aproximadas y corresponden al texto como estaba antes de cada corte. No se copia su contenido.
+
+| Bloque quitado | Dónde | Tamaño aprox. | Motivo |
+|---|---|---|---|
+| Etiqueta de categoría del sitio | Línea 1, antes del título | 1 línea, 1 palabra | Navegación del sitio, no texto del artículo |
+| Frase que invita a suscribirse a los informes del editor (la quitó Sebas) | Al inicio del artículo, hacia la línea 26 | 1 línea, 17 palabras | Promoción del editor |
+| Última frase del párrafo final de «Key Takeaways»: anuncia un caso de DFIR Labs basado en esta intrusión | Línea 12 | 1 frase, 15 palabras | Promoción del editor. Las dos frases anteriores del párrafo se conservan |
+| Sección «The DFIR Report Offerings»: encabezado y su párrafo | Líneas 26–28, entre «Case Summary» e «Initial Access» | 3 líneas | Oferta comercial y contacto del editor |
+| Sección «Analysts»: encabezado y su párrafo | Líneas 30–32, justo antes de «Initial Access» | 3 líneas | Créditos de autores y revisores: nombres de personas, no de la amenaza |
+
+Las dos secciones del editor ocupan 8 líneas, contando las líneas en blanco, y suman 52 palabras. Después de los cortes, el texto tiene 789 líneas y 6855 palabras, y el encabezado `MITRE ATT&CK` está en la línea 748. `aem prepare-reports` sigue indicando «coincide» con `data/reference_mappings/akira.csv`. El editor queda mencionado una sola vez, como autor de una regla de detección en la sección «Detections» (ver D-76).
+
+**Defang de tres IPv4 (2026-10-18, D-76, opción A de Sebas).** El texto escribía tres IPv4 públicas sin defang, y ninguna aparecía con defang en otro lugar. Por la regla de D-63 no contaban como IoC, así que quedaban intactas en `mut` y `anon`. A cada una se le cambiaron sus tres puntos por `[.]` y no se tocó nada más (18 bytes en total):
+
+| Posición (texto ya cortado) | Sección | Forma |
+|---|---|---|
+| Línea 58 | «Initial Access» | Elemento de lista |
+| Línea 638 | «Indicators» | Bloque de IoC |
+| Línea 642 | «Indicators» | Bloque de IoC |
+
+El texto sigue con 789 líneas y 6855 palabras. Ahora `mut` reemplaza 43 IoC distintos en lugar de 40, y ninguna de las tres IP aparece en `mut` ni en `anon`.
+
+**Limitación de la copia local: direcciones `usuario@IP` ocultas por el sitio.** La protección de correo del sitio reemplaza en el HTML, antes de que corra JavaScript, todo lo que tiene forma de dirección de correo. Así, en 2 comandos ssh, la parte `usuario@IP` quedó como un marcador genérico de «correo protegido», y la extracción no la recupera. Son 3 apariciones, en el texto ya cortado: hacia las líneas 381 y 383 de «Lateral Movement» (el comando y su explicación línea por línea) y hacia la línea 520 de «Command and Control» (el comando del incidente de Swisscom). En los dos casos se pierden el usuario y casi toda la IP de destino; solo queda visible su último octeto. En el primer caso, la sección «Exfiltration» nombra con defang un servidor con el mismo último octeto, y ese sí cuenta como IoC. En el segundo, la IP completa no se puede recuperar de la copia local: si no aparece en otro lugar, no es IoC ni para el enfoque tradicional ni para `mut`. No se reconstruyó a mano para no agregar datos que no están en la copia local.

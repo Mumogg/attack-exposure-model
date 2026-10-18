@@ -66,6 +66,19 @@ def test_dfir_text_is_found_by_distinctive_phrases(repo):
     assert "notes/copy.md:2" in findings[0]["where"]
 
 
+def test_dfir_ioc_values_are_found_in_any_case(repo):
+    from eval.baseline_ioc import extract_iocs
+    from aem.config import load_model_config
+    from aem.repo_check import ioc_values
+    iocs = ioc_values(extract_iocs("C2 at 203.0.113[.]77 and hash " + "AB" * 32 + ".\n", load_model_config().ioc))
+    assert "203.0.113.77" in iocs and "203.0.113[.]77" in iocs
+    assert check_repo(repo, phrases=[], iocs=iocs)["findings"] == []
+    commit(repo, "data/known.yaml", "value: 203.0.113.77\nhash: " + "ab" * 32 + "\n")
+    findings = check_repo(repo, phrases=[], iocs=iocs)["findings"]
+    assert {f["kind"] for f in findings} == {"IoC del reporte de DFIR"}
+    assert {f["where"].split(" ")[0] for f in findings} == {"data/known.yaml:1", "data/known.yaml:2"}
+
+
 def test_staged_but_uncommitted_files_are_checked(repo):
     (repo / "staged.txt").write_text(f"{FAKE_KEY}\n", encoding="utf-8")
     git(repo, "add", "staged.txt")
