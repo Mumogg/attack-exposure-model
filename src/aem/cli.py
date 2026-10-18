@@ -43,6 +43,7 @@ console = Console()
 DEMO_REPORT = DATA_DIR / "reports" / "gunra_aa26-222a_stripped.txt"
 DEMO_OUT = RUNS_DIR / "demo" / "gunra"
 REVIEW_SHEETS_DIR = config.REPO_ROOT / "eval" / "review_sheets"
+RESULTS_DOCS_DIR = config.REPO_ROOT / "docs" / "resultados"
 
 
 def _load_env() -> None:
@@ -385,6 +386,22 @@ def eval_cmd(
     for label in ("markdown", "indicator4_sheet", "indicator5_sheet"):
         console.print(f"  {label}: {result['paths'][label]}")
 
+
+
+@app.command("report", cls=SpanishCommand)
+def report_cmd(
+    run_id: str = typer.Option(..., "--run-id", help="Carpeta de runs/ con resultados reales (results/, no results_FAKE/)."),
+) -> None:
+    """Resume una corrida real para la tesis: tablas por indicador, gráficos y límites, en docs/resultados/<id>/."""
+    from eval.report import ReportError, build_report
+
+    try:
+        paths = build_report(RUNS_DIR / run_id, RESULTS_DOCS_DIR / run_id)
+    except ReportError as exc:
+        _fail(str(exc))
+    console.print(f"[green]Listo.[/green] {paths['markdown']}")
+    for chart in paths["charts"]:
+        console.print(f"  gráfico: {chart}")
 
 if __name__ == "__main__":
     app()

@@ -178,6 +178,23 @@ Muestra una línea por comprobación con **OK**, **FALTA** o **AVISO**: API key 
 
   Las tablas deben coincidir con las de la corrida real, salvo `run_date` si la repite otro día.
 
+### Resumen para la tesis: `aem report`
+
+Cuando `runs/2026-10-20/results/` exista (sin errores ni `results_FAKE/`), genere el resumen:
+
+```bash
+aem report --run-id 2026-10-20
+```
+
+- **Qué lee:** solo `runs/2026-10-20/results/results.json`. Si la corrida solo tiene `results_FAKE/`, o el archivo está marcado como FAKE, se niega y lo dice.
+- **Qué escribe** en `docs/resultados/2026-10-20/`:
+  - `resumen.md`: modelo (ID y versión), fecha, hash de las plantillas de prompt y una tabla por indicador. En cada tabla, `_fail0` va primero, luego `_valid`, la DE y las corridas totales, válidas y fallidas. Los números se copian tal como están en `results.json`.
+  - una sección «Datos faltantes»: celdas «sin dato disponible», escenarios no evaluados y cuántas filas de las salidas por corrida no tienen `data_sources` o `prevalence`;
+  - una sección «Lo que estos números permiten y no permiten afirmar», con C1–C3 y las advertencias de D-67;
+  - `indicador1_precision.png`, `indicador1_exhaustividad.png` e `indicador3_persistencia.png`: barras con la media `_fail0` y la DE como barra de error, `orig`/`mut`/`anon` por escenario, distinguidas por trama y tono de gris.
+- Si actualizó el repositorio desde una versión sin este comando, reinstale una vez para obtener `matplotlib`: `pip install -e .`
+- `docs/resultados/` se versiona: contiene solo cifras, sin texto de los reportes.
+
 ## f. Hojas de revisión manual
 
 Están en `eval/review_sheets/`; la parte de Akira, en `eval/review_sheets/private/`. Ábralas con LibreOffice o Excel, llene **solo** las columnas vacías, no cambie los nombres de columna y guarde como CSV UTF-8.
@@ -205,7 +222,7 @@ python -c "import csv,sys; r=list(csv.DictReader(open(sys.argv[1],encoding='utf-
 | Se versiona (sí) | No se versiona (nunca) |
 |---|---|
 | `runs/llm_cache/` (caché pública, necesaria para `--demo`) | `.env` (su API key) |
-| `runs/<run-id>/results/` y las salidas de Gunra e Interlock en `runs/<run-id>/` | `runs/llm_cache_private/` (prompts con el texto de Akira) |
+| `runs/<run-id>/results/` y las salidas de Gunra e Interlock en `runs/<run-id>/`; `docs/resultados/<run-id>/` (`aem report`) | `runs/llm_cache_private/` (prompts con el texto de Akira) |
 | `eval/review_sheets/*.csv` llenas | `runs/*/private/` (salidas de Akira con citas) |
 | `data/prevalence/red_canary_2026.csv`, `data/org/known_iocs_generated.yaml`, `data/reports/*_mut*` y `*_anon*` de CISA, `data/anon_names.yaml` (solo nombres, no texto) | `eval/review_sheets/private/` (muestra de Akira) |
 | | `data/reports/akira_dfir_2026*` (texto, `stripped`, variante y diff) |
@@ -257,7 +274,7 @@ Termina con **OK** o con la lista exacta de hallazgos (`archivo:línea (en <comm
 
 ## i. Actualizar `docs/RESUMEN_PARA_TESIS.md` con los resultados reales
 
-1. Tome las cifras de `runs/<run-id>/results/results.md`, no de la consola.
+1. Tome las cifras de `docs/resultados/<run-id>/resumen.md` (`aem report`) o de `runs/<run-id>/results/results.md`, no de la consola.
 2. En el resumen, agregue o actualice:
    - **Datos de la corrida:** `run-id`, fecha, `model` y `model_version`, y los hashes de `prompt_templates_sha256`.
    - **Corridas:** por escenario y versión, las totales, válidas y fallidas, con el motivo de cada falla.
