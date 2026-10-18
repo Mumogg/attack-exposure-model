@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1568.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:19:29+00:00",
+  "temperature": 0,
+  "prompt_sha256": "32742880d39ddd98be2ea5baefb7508d5c0fd1219cbf5a6a651ec30bb3eeb0e8",
+  "replicate": 0,
+  "cache_key": "c49f04a4838bb806f4aeb15fc63b230a14adc969f3f70857e8ec1b3f4fb1c9a8",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination domain for command and control traffic rather than relying on a list of static IP addresses or domains. This has the advantage of making it much harder for defenders to block, track, or take over the command and control channel, as there potentially could be thousands of domains that malware can check for instructions.\n\nDGAs can take the form of apparently random or “gibberish” strings (ex: istgmxdejdnxuyla.ru) when they construct domain names by generating each letter. Alternatively, some DGAs employ whole words as the unit by concatenating words together instead of letters (ex: cityjulydish.net). Many DGAs are time-based, generating a different domain for each time period (hourly, daily, monthly, etc). Others incorporate a seed value as well to make predicting future domains more difficult for defenders.\n\nAdversaries may use DGAs for the purpose of Fallback Channels. When contact is lost with the primary command and control server malware may employ a DGA as a means to reestablishing command and control.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use Domain Generation Algorithms (DGAs) to dynamically identify destination domains for command and control traffic, which makes blocking, tracking, or taking over the channel harder for defenders. These algorithms can generate domains using random character strings or concatenated whole words, often relying on time intervals or seed values to hinder prediction. Adversaries may also employ DGAs as fallback channels to re-establish contact if communication with the primary command and control server is lost.\"}"
+}

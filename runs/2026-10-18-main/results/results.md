@@ -1,14 +1,10 @@
 # Resultados de la evaluación — corrida `2026-10-18-main`
 
-**RESULTADO PARCIAL: faltan escenarios** — ESCENARIOS OMITIDOS: akira (sin texto local)
-
 - Modelo: `gemini-3.8-flash` · temperatura 0 · ATT&CK 19.2 · 5 corridas por escenario × versión · modo demo: no
 - Media y desviación estándar muestral (n−1). «sin dato disponible»: no hay corridas o el valor no está definido.
 - Cada media se informa dos veces (D-67): `_fail0` cuenta cada corrida fallida (`failed_runs`) como 0 y `_valid` usa solo las corridas válidas. Indicadores 1 y 3 (modelo): media principal: `_fail0`; `_valid` es secundaria. Indicador 5: ambas con el mismo peso; contar una falla como 0 violaciones favorece al modelo.
 - Origen: gemini-api · versión del modelo: gemini-3.8-flash · fecha: 2026-10-18 · hash SHA-256 de las plantillas de prompt: extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b
 - No hay indicador para el paso 3 ni para la revisión global (criterio del analista).
-
-Escenarios/versiones sin texto (no evaluados): akira: orig, akira: mut, akira: anon
 
 ## Corridas por escenario y versión (válidas, fallidas y motivo de cada falla)
 
@@ -22,6 +18,9 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | interlock | orig | 5 | 5 | 0 | 0 | ninguna |
 | interlock | mut | 5 | 5 | 0 | 0 | ninguna |
 | interlock | anon | 5 | 5 | 0 | 0 | ninguna |
+| akira | orig | 5 | 5 | 0 | 0 | ninguna |
+| akira | mut | 5 | 5 | 0 | 0 | ninguna |
+| akira | anon | 5 | 5 | 0 | 0 | ninguna |
 
 ## Indicador 1 — Precisión y exhaustividad del paso 1 (%, sobre extracted_raw; media principal: `_fail0`)
 
@@ -41,12 +40,12 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | interlock | mut | parent | 5 | 5 | 0 | 92.21 | 5.53 | 92.21 | 5.53 | 60.87 | 5.32 | 60.87 | 5.32 |
 | interlock | anon | exact | 5 | 5 | 0 | 90.73 | 7.32 | 90.73 | 7.32 | 57.6 | 4.56 | 57.6 | 4.56 |
 | interlock | anon | parent | 5 | 5 | 0 | 90.73 | 7.32 | 90.73 | 7.32 | 62.61 | 4.96 | 62.61 | 4.96 |
-| akira | orig | exact | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | orig | parent | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | mut | exact | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | mut | parent | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | anon | exact | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | anon | parent | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
+| akira | orig | exact | 5 | 5 | 0 | 73.33 | 1.03 | 73.33 | 1.03 | 52.11 | 2.88 | 52.11 | 2.88 |
+| akira | orig | parent | 5 | 5 | 0 | 85.65 | 3.2 | 85.65 | 3.2 | 64.85 | 1.66 | 64.85 | 1.66 |
+| akira | mut | exact | 5 | 5 | 0 | 70.82 | 1.48 | 70.82 | 1.48 | 50.0 | 6.71 | 50.0 | 6.71 |
+| akira | mut | parent | 5 | 5 | 0 | 83.38 | 1.7 | 83.38 | 1.7 | 64.24 | 7.84 | 64.24 | 7.84 |
+| akira | anon | exact | 5 | 5 | 0 | 75.79 | 5.4 | 75.79 | 5.4 | 52.11 | 6.0 | 52.11 | 6.0 |
+| akira | anon | parent | 5 | 5 | 0 | 87.0 | 2.92 | 87.0 | 2.92 | 64.85 | 7.3 | 64.85 | 7.3 |
 
 ## Indicador 2 — Corrección del cruce de cobertura (paso 2, sobre la referencia)
 
@@ -68,8 +67,8 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | gunra | tradicional | 36 | no aplica (sin LLM) | 100.0 | determinístico | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | 0.0 | 0.0 | orig 17, mut 0, anon 0 |
 | interlock | modelo | 18 | orig 0, mut 0, anon 0 | 52.22 | 3.04 | 52.22 | 3.04 | 56.67 | 4.65 | 56.67 | 4.65 | 56.67 | 7.24 | 56.67 | 7.24 | 1.0851 | 1.0851 | 1.0851 | 1.0851 |  |
 | interlock | tradicional | 25 | no aplica (sin LLM) | 100.0 | determinístico | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | 0.0 | 0.0 | orig 19, mut 0, anon 0 |
-| akira | modelo | 25 | orig 0, mut 0, anon 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |  |
-| akira | tradicional | 38 | no aplica (sin LLM) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
+| akira | modelo | 25 | orig 0, mut 0, anon 0 | 38.4 | 3.58 | 38.4 | 3.58 | 36.0 | 6.32 | 36.0 | 6.32 | 40.0 | 5.66 | 40.0 | 5.66 | 0.9375 | 0.9375 | 1.0417 | 1.0417 |  |
+| akira | tradicional | 38 | no aplica (sin LLM) | 100.0 | determinístico | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | 0.0 | 0.0 | orig 22, mut 0, anon 0 |
 
 ## Indicador 4 — Fidelidad de los resúmenes (chequeo automático; la revisión manual está en la hoja)
 
@@ -77,7 +76,7 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 
 | techniques_summarized | llm_failures | auto_check_ok | auto_check_ok_pct | manual_review |
 |---|---|---|---|---|
-| 49 | 0 | 49 | 100.0 | pendiente (hoja de revisión) |
+| 71 | 0 | 71 | 100.0 | pendiente (hoja de revisión) |
 
 ## Indicador 5 — Cumplimiento de los límites (violaciones; `_fail0` y `_valid` con el mismo peso. Aviso: contar una corrida fallida como 0 violaciones favorece al modelo)
 
@@ -91,10 +90,10 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | interlock | orig | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
 | interlock | mut | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
 | interlock | anon | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
-| akira | orig | paso 1 (extracción) | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | mut | paso 1 (extracción) | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| akira | anon | paso 1 (extracción) | 0 | 0 | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible |
-| todos | - | paso 4 (resúmenes, uno por técnica) | 49 | 49 | ver indicador 4 (llm_failures) | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 |
+| akira | orig | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
+| akira | mut | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
+| akira | anon | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
+| todos | - | paso 4 (resúmenes, uno por técnica) | 71 | 71 | ver indicador 4 (llm_failures) | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 |
 
 ## Anexo — Indicador 1: técnicas omitidas y erróneas (en cuántas corridas)
 
@@ -335,5 +334,164 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | interlock | anon | parent | errónea | T1090 | 1/5 |
 | interlock | anon | parent | errónea | T1135 | 1/5 |
 | interlock | anon | parent | errónea | T1484 | 4/5 |
+| akira | orig | exact | omitida | T1018 | 3/5 |
+| akira | orig | exact | omitida | T1021.003 | 5/5 |
+| akira | orig | exact | omitida | T1027.010 | 4/5 |
+| akira | orig | exact | omitida | T1033 | 2/5 |
+| akira | orig | exact | omitida | T1036 | 5/5 |
+| akira | orig | exact | omitida | T1039 | 5/5 |
+| akira | orig | exact | omitida | T1041 | 5/5 |
+| akira | orig | exact | omitida | T1046 | 1/5 |
+| akira | orig | exact | omitida | T1048.001 | 5/5 |
+| akira | orig | exact | omitida | T1059.003 | 1/5 |
+| akira | orig | exact | omitida | T1069.001 | 4/5 |
+| akira | orig | exact | omitida | T1071.001 | 5/5 |
+| akira | orig | exact | omitida | T1083 | 5/5 |
+| akira | orig | exact | omitida | T1087.001 | 5/5 |
+| akira | orig | exact | omitida | T1087.002 | 3/5 |
+| akira | orig | exact | omitida | T1090 | 5/5 |
+| akira | orig | exact | omitida | T1136 | 5/5 |
+| akira | orig | exact | omitida | T1189 | 5/5 |
+| akira | orig | exact | omitida | T1204.002 | 3/5 |
+| akira | orig | exact | omitida | T1555 | 5/5 |
+| akira | orig | exact | omitida | T1569.002 | 5/5 |
+| akira | orig | exact | omitida | T1574.001 | 5/5 |
+| akira | orig | exact | errónea | T1027 | 2/5 |
+| akira | orig | exact | errónea | T1036.003 | 3/5 |
+| akira | orig | exact | errónea | T1036.005 | 2/5 |
+| akira | orig | exact | errónea | T1048 | 1/5 |
+| akira | orig | exact | errónea | T1098 | 3/5 |
+| akira | orig | exact | errónea | T1136.002 | 5/5 |
+| akira | orig | exact | errónea | T1489 | 5/5 |
+| akira | orig | exact | errónea | T1562.001 | 4/5 |
+| akira | orig | exact | errónea | T1572 | 5/5 |
+| akira | orig | exact | errónea | T1574.002 | 5/5 |
+| akira | orig | exact | errónea | T1654 | 1/5 |
+| akira | orig | parent | omitida | T1018 | 3/5 |
+| akira | orig | parent | omitida | T1027 | 2/5 |
+| akira | orig | parent | omitida | T1033 | 2/5 |
+| akira | orig | parent | omitida | T1039 | 5/5 |
+| akira | orig | parent | omitida | T1041 | 5/5 |
+| akira | orig | parent | omitida | T1046 | 1/5 |
+| akira | orig | parent | omitida | T1048 | 4/5 |
+| akira | orig | parent | omitida | T1071 | 5/5 |
+| akira | orig | parent | omitida | T1083 | 5/5 |
+| akira | orig | parent | omitida | T1087 | 3/5 |
+| akira | orig | parent | omitida | T1090 | 5/5 |
+| akira | orig | parent | omitida | T1189 | 5/5 |
+| akira | orig | parent | omitida | T1204 | 3/5 |
+| akira | orig | parent | omitida | T1555 | 5/5 |
+| akira | orig | parent | omitida | T1569 | 5/5 |
+| akira | orig | parent | errónea | T1098 | 3/5 |
+| akira | orig | parent | errónea | T1489 | 5/5 |
+| akira | orig | parent | errónea | T1562 | 4/5 |
+| akira | orig | parent | errónea | T1572 | 5/5 |
+| akira | orig | parent | errónea | T1654 | 1/5 |
+| akira | mut | exact | omitida | T1018 | 3/5 |
+| akira | mut | exact | omitida | T1021.003 | 5/5 |
+| akira | mut | exact | omitida | T1027.010 | 5/5 |
+| akira | mut | exact | omitida | T1033 | 3/5 |
+| akira | mut | exact | omitida | T1036 | 5/5 |
+| akira | mut | exact | omitida | T1039 | 5/5 |
+| akira | mut | exact | omitida | T1041 | 5/5 |
+| akira | mut | exact | omitida | T1048.001 | 5/5 |
+| akira | mut | exact | omitida | T1059.003 | 3/5 |
+| akira | mut | exact | omitida | T1069.001 | 5/5 |
+| akira | mut | exact | omitida | T1069.002 | 2/5 |
+| akira | mut | exact | omitida | T1071.001 | 5/5 |
+| akira | mut | exact | omitida | T1083 | 4/5 |
+| akira | mut | exact | omitida | T1087.001 | 5/5 |
+| akira | mut | exact | omitida | T1087.002 | 2/5 |
+| akira | mut | exact | omitida | T1090 | 5/5 |
+| akira | mut | exact | omitida | T1136 | 5/5 |
+| akira | mut | exact | omitida | T1189 | 5/5 |
+| akira | mut | exact | omitida | T1204.002 | 3/5 |
+| akira | mut | exact | omitida | T1555 | 5/5 |
+| akira | mut | exact | omitida | T1569.002 | 5/5 |
+| akira | mut | exact | omitida | T1574.001 | 5/5 |
+| akira | mut | exact | errónea | T1027 | 3/5 |
+| akira | mut | exact | errónea | T1036.003 | 3/5 |
+| akira | mut | exact | errónea | T1048 | 2/5 |
+| akira | mut | exact | errónea | T1098 | 4/5 |
+| akira | mut | exact | errónea | T1136.002 | 5/5 |
+| akira | mut | exact | errónea | T1489 | 5/5 |
+| akira | mut | exact | errónea | T1562.001 | 4/5 |
+| akira | mut | exact | errónea | T1572 | 5/5 |
+| akira | mut | exact | errónea | T1574.002 | 5/5 |
+| akira | mut | exact | errónea | T1614.001 | 3/5 |
+| akira | mut | parent | omitida | T1018 | 3/5 |
+| akira | mut | parent | omitida | T1027 | 2/5 |
+| akira | mut | parent | omitida | T1033 | 3/5 |
+| akira | mut | parent | omitida | T1036 | 2/5 |
+| akira | mut | parent | omitida | T1039 | 5/5 |
+| akira | mut | parent | omitida | T1041 | 5/5 |
+| akira | mut | parent | omitida | T1048 | 3/5 |
+| akira | mut | parent | omitida | T1069 | 2/5 |
+| akira | mut | parent | omitida | T1071 | 5/5 |
+| akira | mut | parent | omitida | T1083 | 4/5 |
+| akira | mut | parent | omitida | T1087 | 2/5 |
+| akira | mut | parent | omitida | T1090 | 5/5 |
+| akira | mut | parent | omitida | T1189 | 5/5 |
+| akira | mut | parent | omitida | T1204 | 3/5 |
+| akira | mut | parent | omitida | T1555 | 5/5 |
+| akira | mut | parent | omitida | T1569 | 5/5 |
+| akira | mut | parent | errónea | T1098 | 4/5 |
+| akira | mut | parent | errónea | T1489 | 5/5 |
+| akira | mut | parent | errónea | T1562 | 4/5 |
+| akira | mut | parent | errónea | T1572 | 5/5 |
+| akira | mut | parent | errónea | T1614 | 3/5 |
+| akira | anon | exact | omitida | T1018 | 2/5 |
+| akira | anon | exact | omitida | T1021.003 | 5/5 |
+| akira | anon | exact | omitida | T1027.010 | 4/5 |
+| akira | anon | exact | omitida | T1033 | 2/5 |
+| akira | anon | exact | omitida | T1036 | 5/5 |
+| akira | anon | exact | omitida | T1039 | 5/5 |
+| akira | anon | exact | omitida | T1041 | 5/5 |
+| akira | anon | exact | omitida | T1048.001 | 5/5 |
+| akira | anon | exact | omitida | T1059.001 | 1/5 |
+| akira | anon | exact | omitida | T1059.003 | 3/5 |
+| akira | anon | exact | omitida | T1069.001 | 5/5 |
+| akira | anon | exact | omitida | T1071.001 | 5/5 |
+| akira | anon | exact | omitida | T1083 | 5/5 |
+| akira | anon | exact | omitida | T1087.001 | 4/5 |
+| akira | anon | exact | omitida | T1087.002 | 2/5 |
+| akira | anon | exact | omitida | T1090 | 5/5 |
+| akira | anon | exact | omitida | T1136 | 5/5 |
+| akira | anon | exact | omitida | T1189 | 5/5 |
+| akira | anon | exact | omitida | T1204.002 | 3/5 |
+| akira | anon | exact | omitida | T1555 | 4/5 |
+| akira | anon | exact | omitida | T1568.002 | 1/5 |
+| akira | anon | exact | omitida | T1569.002 | 5/5 |
+| akira | anon | exact | omitida | T1574.001 | 5/5 |
+| akira | anon | exact | errónea | T1027 | 2/5 |
+| akira | anon | exact | errónea | T1036.003 | 3/5 |
+| akira | anon | exact | errónea | T1048.002 | 1/5 |
+| akira | anon | exact | errónea | T1098 | 3/5 |
+| akira | anon | exact | errónea | T1136.002 | 5/5 |
+| akira | anon | exact | errónea | T1489 | 5/5 |
+| akira | anon | exact | errónea | T1562.001 | 3/5 |
+| akira | anon | exact | errónea | T1572 | 5/5 |
+| akira | anon | exact | errónea | T1574.002 | 5/5 |
+| akira | anon | parent | omitida | T1018 | 2/5 |
+| akira | anon | parent | omitida | T1027 | 2/5 |
+| akira | anon | parent | omitida | T1033 | 2/5 |
+| akira | anon | parent | omitida | T1036 | 2/5 |
+| akira | anon | parent | omitida | T1039 | 5/5 |
+| akira | anon | parent | omitida | T1041 | 5/5 |
+| akira | anon | parent | omitida | T1048 | 4/5 |
+| akira | anon | parent | omitida | T1059 | 1/5 |
+| akira | anon | parent | omitida | T1071 | 5/5 |
+| akira | anon | parent | omitida | T1083 | 5/5 |
+| akira | anon | parent | omitida | T1087 | 2/5 |
+| akira | anon | parent | omitida | T1090 | 5/5 |
+| akira | anon | parent | omitida | T1189 | 5/5 |
+| akira | anon | parent | omitida | T1204 | 3/5 |
+| akira | anon | parent | omitida | T1555 | 4/5 |
+| akira | anon | parent | omitida | T1568 | 1/5 |
+| akira | anon | parent | omitida | T1569 | 5/5 |
+| akira | anon | parent | errónea | T1098 | 3/5 |
+| akira | anon | parent | errónea | T1489 | 5/5 |
+| akira | anon | parent | errónea | T1562 | 3/5 |
+| akira | anon | parent | errónea | T1572 | 5/5 |
 
 Hojas de revisión manual: `2026-10-18-main_indicator4_summaries.csv`, `2026-10-18-main_indicator5_sample.csv` (carpeta `eval/review_sheets/`).

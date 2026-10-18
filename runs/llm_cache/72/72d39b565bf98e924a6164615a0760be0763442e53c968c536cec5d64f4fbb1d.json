@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1136.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:19:01+00:00",
+  "temperature": 0,
+  "prompt_sha256": "a7c64cec4d05cae10efcaa8fe96a195295d96671ae254cca088c753ec3f44cea",
+  "replicate": 0,
+  "cache_key": "72d39b565bf98e924a6164615a0760be0763442e53c968c536cec5d64f4fbb1d",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may create a domain account to maintain access to victim systems. Domain accounts are those managed by Active Directory Domain Services where access and permissions are configured across systems and services that are part of that domain. Domain accounts can cover user, administrator, and service accounts. With a sufficient level of access, the <code>net user /add /domain</code> command can be used to create a domain account.\n\nSuch accounts may be used to establish secondary credentialed access that do not require persistent remote access tools to be deployed on the system.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may create user, administrator, or service domain accounts managed by Active Directory Domain Services to maintain access to victim systems. With sufficient access, the net user /add /domain command can be used to create a domain account across the domain's systems and services. These accounts may establish secondary credentialed access without needing persistent remote access tools deployed on the system.\"}"
+}

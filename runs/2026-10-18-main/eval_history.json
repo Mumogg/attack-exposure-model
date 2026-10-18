@@ -1,66 +1,98 @@
 [
- {
-  "started": "2026-10-18T17:45:05+00:00",
-  "finished": "2026-10-18T17:47:12+00:00",
-  "status": "interrumpida",
-  "error": "DailyQuotaExhausted: Cuota DIARIA de la API de Gemini agotada (GenerateRequestsPerDayPerProjectPerModel-FreeTier). No se reintenta: espere a que se renueve la cuota y repita el mismo comando; lo ya obtenido sigue en la caché.",
-  "fake": false,
-  "demo": false,
-  "partial": true,
-  "escenarios_omitidos": [
-   {
-    "scenario": "akira",
-    "reason": "sin texto local"
-   }
-  ],
-  "skipped": [
-   "akira: orig",
-   "akira: mut",
-   "akira: anon"
-  ],
-  "runs_completed": 3,
-  "api_events": {
-   "http_429": 5,
-   "retries": 0,
-   "errors_total": 5
+  {
+    "started": "2026-10-18T17:45:05+00:00",
+    "finished": "2026-10-18T17:47:12+00:00",
+    "status": "interrumpida",
+    "error": "DailyQuotaExhausted: Cuota DIARIA de la API de Gemini agotada (GenerateRequestsPerDayPerProjectPerModel-FreeTier). No se reintenta: espere a que se renueve la cuota y repita el mismo comando; lo ya obtenido sigue en la caché.",
+    "fake": false,
+    "demo": false,
+    "partial": true,
+    "escenarios_omitidos": [
+      {
+        "scenario": "akira",
+        "reason": "sin texto local"
+      }
+    ],
+    "skipped": [
+      "akira: orig",
+      "akira: mut",
+      "akira: anon"
+    ],
+    "runs_completed": 3,
+    "api_events": {
+      "http_429": 5,
+      "retries": 0,
+      "errors_total": 5
+    },
+    "reconstruida": true,
+    "reconstruida_desde": "Entrada agregada el 2026-10-18 tras la corrección de D-73: esta ejecución se detuvo antes de que el historial registrara las interrupciones. started/finished: horas UTC del lanzador (antes y después del comando, no las internas de aem eval). runs_completed: la consola llegó a «gunra · orig · corrida 4/5» (r0-r2 terminadas). api_events: las 5 primeras líneas de api_events.jsonl (17:45:42-17:47:12, cuota diaria). Las salidas de r0-r2 de ese intento fueron reemplazadas al reanudar."
   },
-  "reconstruida": true,
-  "reconstruida_desde": "Entrada agregada el 2026-10-18 tras la corrección de D-73: esta ejecución se detuvo antes de que el historial registrara las interrupciones. started/finished: horas UTC del lanzador (antes y después del comando, no las internas de aem eval). runs_completed: la consola llegó a «gunra · orig · corrida 4/5» (r0-r2 terminadas). api_events: las 5 primeras líneas de api_events.jsonl (17:45:42-17:47:12, cuota diaria). Las salidas de r0-r2 de ese intento fueron reemplazadas al reanudar."
- },
- {
-  "started": "2026-10-18T17:59:07+00:00",
-  "finished": "2026-10-18T18:14:55+00:00",
-  "fake": false,
-  "demo": false,
-  "partial": true,
-  "escenarios_omitidos": [
-   {
-    "scenario": "akira",
-    "reason": "sin texto local"
-   }
-  ],
-  "skipped": [
-   "akira: orig",
-   "akira: mut",
-   "akira: anon"
-  ]
- },
- {
-  "started": "2026-10-18T18:15:16+00:00",
-  "finished": "2026-10-18T18:15:20+00:00",
-  "fake": false,
-  "demo": false,
-  "partial": true,
-  "escenarios_omitidos": [
-   {
-    "scenario": "akira",
-    "reason": "sin texto local"
-   }
-  ],
-  "skipped": [
-   "akira: orig",
-   "akira: mut",
-   "akira: anon"
-  ]
- }
+  {
+    "started": "2026-10-18T17:59:07+00:00",
+    "finished": "2026-10-18T18:14:55+00:00",
+    "fake": false,
+    "demo": false,
+    "partial": true,
+    "escenarios_omitidos": [
+      {
+        "scenario": "akira",
+        "reason": "sin texto local"
+      }
+    ],
+    "skipped": [
+      "akira: orig",
+      "akira: mut",
+      "akira: anon"
+    ]
+  },
+  {
+    "started": "2026-10-18T18:15:16+00:00",
+    "finished": "2026-10-18T18:15:20+00:00",
+    "fake": false,
+    "demo": false,
+    "partial": true,
+    "escenarios_omitidos": [
+      {
+        "scenario": "akira",
+        "reason": "sin texto local"
+      }
+    ],
+    "skipped": [
+      "akira: orig",
+      "akira: mut",
+      "akira: anon"
+    ]
+  },
+  {
+    "started": "2026-10-18T19:17:39+00:00",
+    "finished": "2026-10-18T19:29:00+00:00",
+    "status": "completa",
+    "fake": false,
+    "demo": false,
+    "partial": false,
+    "escenarios_omitidos": [],
+    "skipped": [],
+    "runs_completed": 45,
+    "api_events": {
+      "http_429": 0,
+      "retries": 0,
+      "errors_total": 0
+    }
+  },
+  {
+    "started": "2026-10-18T19:29:35+00:00",
+    "finished": "2026-10-18T19:29:39+00:00",
+    "status": "completa",
+    "fake": false,
+    "demo": false,
+    "partial": false,
+    "escenarios_omitidos": [],
+    "skipped": [],
+    "runs_completed": 45,
+    "api_events": {
+      "http_429": 0,
+      "retries": 0,
+      "errors_total": 0
+    }
+  }
 ]

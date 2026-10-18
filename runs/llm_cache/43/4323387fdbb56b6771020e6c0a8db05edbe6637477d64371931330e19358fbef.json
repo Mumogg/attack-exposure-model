@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1087.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:20:23+00:00",
+  "temperature": 0,
+  "prompt_sha256": "550880d811321ed8aa0ddf23d73139dee04dcbddb6d6f79828c76ef262de71ff",
+  "replicate": 0,
+  "cache_key": "4323387fdbb56b6771020e6c0a8db05edbe6637477d64371931330e19358fbef",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to get a listing of domain accounts. This information can help adversaries determine which domain accounts exist to aid in follow-on behavior such as targeting specific accounts which possess particular privileges.\n\nCommands such as <code>net user /domain</code> and <code>net group /domain</code> of the Net utility, <code>dscacheutil -q group</code> on macOS, and <code>ldapsearch</code> on Linux can list domain users and groups. PowerShell cmdlets including <code>Get-ADUser</code> and <code>Get-ADGroupMember</code> may enumerate members of Active Directory groups.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may attempt to get a listing of domain accounts to determine which accounts exist and aid follow-on behavior, such as targeting accounts with particular privileges. Commands such as net user /domain, net group /domain, dscacheutil -q group on macOS, and ldapsearch on Linux can list domain users and groups. PowerShell cmdlets including Get-ADUser and Get-ADGroupMember may also enumerate members of Active Directory groups.\"}"
+}

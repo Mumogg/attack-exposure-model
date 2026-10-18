@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1055]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:18:37+00:00",
+  "temperature": 0,
+  "prompt_sha256": "48ed67f0016a228a05107020923aaf48f7f95f2b803e1a6ec59c6be4c28da7ae",
+  "replicate": 0,
+  "cache_key": "f08cb81f68fba6588628ad7fad3e04229691da33c7797b1ac25bebafd4fdf310",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may inject code into processes in order to evade process-based defenses as well as possibly elevate privileges. Process injection is a method of executing arbitrary code in the address space of a separate live process. Running code in the context of another process may allow access to the process's memory, system/network resources, and possibly elevated privileges. Execution via process injection may also evade detection from security products since the execution is masked under a legitimate process. \n\nThere are many different ways to inject code into a process, many of which abuse legitimate functionalities. These implementations exist for every major OS but are typically platform specific. \n\nMore sophisticated samples may perform multiple process injections to segment modules and further evade detection, utilizing named pipes or other inter-process communication (IPC) mechanisms as a communication channel.\n>>>\n",
+ "response_text": "{\"summary\": \"Process injection is a method where adversaries execute arbitrary code in the address space of a separate live process to evade process-based defenses and possibly elevate privileges. Running code in another process's context masks execution under a legitimate process to evade detection and may grant access to memory and resources. Platform-specific implementations exist across all major operating systems, with sophisticated samples performing multiple injections communicating via inter-process communication mechanisms.\"}"
+}

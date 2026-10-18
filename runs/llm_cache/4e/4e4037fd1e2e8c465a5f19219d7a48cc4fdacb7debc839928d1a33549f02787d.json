@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1555]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:27:28+00:00",
+  "temperature": 0,
+  "prompt_sha256": "0057003320b575b1f0ef8232589a99b9465d84a181585269c3d5ee12cb845e54",
+  "replicate": 0,
+  "cache_key": "4e4037fd1e2e8c465a5f19219d7a48cc4fdacb7debc839928d1a33549f02787d",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may search for common password storage locations to obtain user credentials. Passwords are stored in several places on a system, depending on the operating system or application holding the credentials. There are also specific applications and services that store passwords to make them easier for users to manage and maintain, such as password managers and cloud secrets vaults. Once credentials are obtained, they can be used to perform lateral movement and access restricted information.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may search for common password storage locations across operating systems, password managers, and cloud secrets vaults to obtain user credentials. Once obtained, these credentials can be used to perform lateral movement and access restricted information.\"}"
+}

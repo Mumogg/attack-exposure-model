@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1027]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:20:15+00:00",
+  "temperature": 0,
+  "prompt_sha256": "10affb56e6061a88cf5a12d009ed17ce67c6f67a551d87cd06b9d97a14f0e49d",
+  "replicate": 0,
+  "cache_key": "0c774084bf088df54e55cbc0232bb914f74a90a581be95e202bf87e99ca17536",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to make an executable or file difficult to discover or analyze by encrypting, encoding, or otherwise obfuscating its contents on the system or in transit. This is common behavior that can be used across different platforms and the network to evade defenses. \n\nPayloads may be compressed, archived, or encrypted in order to avoid detection. These payloads may be used during Initial Access or later to mitigate detection. Sometimes a user's action may be required to open and Deobfuscate/Decode Files or Information for User Execution. The user may also be required to input a password to open a password protected compressed/encrypted file that was provided by the adversary. Adversaries may also use compressed or archived scripts, such as JavaScript. \n\nPortions of files can also be encoded to hide the plain-text strings that would otherwise help defenders with discovery. Payloads may also be split into separate, seemingly benign files that only reveal malicious functionality when reassembled.\n\nAdversaries may also abuse Command Obfuscation to obscure commands executed from payloads or directly via Command and Scripting Interpreter. Environment variables, aliases, characters, and other platform/language specific semantics can be used to evade signature based detections and application control mechanisms.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may encrypt, encode, compress, or otherwise obfuscate files, payloads, or scripts on systems or in transit to make them difficult to discover and analyze. Payloads can also be split into separate files or require user interaction and passwords to deobfuscate. Additionally, adversaries may obscure commands using environment variables, aliases, characters, and platform-specific semantics to evade detections and application control mechanisms.\"}"
+}

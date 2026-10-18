@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1027.010]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:22:21+00:00",
+  "temperature": 0,
+  "prompt_sha256": "3a096f20aa2baed694d078d282f9167b25c62e1c13461912d8891cad2656a1a8",
+  "replicate": 0,
+  "cache_key": "77316eaed727f95de7399c5752734b44501787337f5fe2b41b723d2ecc7967c3",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may obfuscate content during command execution to impede detection. Command-line obfuscation is a method of making strings and patterns within commands and scripts more difficult to signature and analyze. This type of obfuscation can be included within commands executed by delivered payloads (e.g., Phishing and Drive-by Compromise) or interactively via Command and Scripting Interpreter.\n\nFor example, adversaries may abuse syntax that utilizes various symbols and escape characters (such as spacing, `^`, `+`. `$`, and `%`) to make commands difficult to analyze while maintaining the same intended functionality. Many languages support built-in obfuscation in the form of base64 or URL encoding. Adversaries may also manually implement command obfuscation via string splitting (`“Wor”+“d.Application”`), order and casing of characters (`rev <<<'dwssap/cte/ tac'`), globing (`mkdir -p '/tmp/:&$NiA'`), as well as various tricks involving passing strings through tokens/environment variables/input streams.\n\nAdversaries may also use tricks such as directory traversals to obfuscate references to the binary being invoked by a command (`C:\\voi\\pcw\\..\\..\\Windows\\tei\\qs\\k\\..\\..\\..\\system32\\erool\\..\\wbem\\wg\\je\\..\\..\\wmic.exe shadowcopy delete`).\n\nTools such as <code>Invoke-Obfuscation</code> and <code>Invoke-DOSfucation</code> have also been used to obfuscate commands.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may obfuscate content during command execution to impede detection, making strings and patterns harder to signature and analyze. This can be accomplished through techniques such as encoding, escape characters, string splitting, directory traversals, and passing strings via environment variables or input streams. Additionally, tools such as Invoke-Obfuscation and Invoke-DOSfucation have been used to obfuscate commands.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1087.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:27:22+00:00",
+  "temperature": 0,
+  "prompt_sha256": "f5ecfdab70360ed9a6c7f2a186ead21971603896bc5e93f19d618d158580f1c2",
+  "replicate": 0,
+  "cache_key": "7305a1c969929009d1944307241d4d21f8d011a69d0df6cb7cb7acac2d12b6c5",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to get a listing of local system accounts. This information can help adversaries determine which local accounts exist on a system to aid in follow-on behavior.\n\nCommands such as <code>net user</code> and <code>net localgroup</code> of the Net utility and <code>id</code> and <code>groups</code> on macOS and Linux can list local users and groups. On Linux, local users can also be enumerated through the use of the <code>/etc/passwd</code> file. On macOS, the <code>dscl. list /Users</code> command can be used to enumerate local accounts. On ESXi servers, the `esxcli system account list` command can list local user accounts.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may attempt to get a listing of local system accounts to determine which local accounts exist on a system to aid in follow-on behavior. Commands such as net user, net localgroup, id, and groups, as well as the /etc/passwd file on Linux, can be used to list local users and groups. Local accounts can also be enumerated using the dscl . list /Users command on macOS and the esxcli system account list command on ESXi servers.\"}"
+}

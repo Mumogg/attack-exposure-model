@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1482]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:18:43+00:00",
+  "temperature": 0,
+  "prompt_sha256": "81d001337e289db7ee9b313c63a30999f94b2afeda45e5950812c47ae714392b",
+  "replicate": 0,
+  "cache_key": "54c64a974aba6b1d1ee6524dc1f89e7364a2ca775c4e189dc6dd4e40c664c945",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to gather information on domain trust relationships that may be used to identify lateral movement opportunities in Windows multi-domain/forest environments. Domain trusts provide a mechanism for a domain to allow access to resources based on the authentication procedures of another domain. Domain trusts allow the users of the trusted domain to access resources in the trusting domain. The information discovered may help the adversary conduct SID-History Injection, Pass the Ticket, and Kerberoasting. Domain trusts can be enumerated using the `DSEnumerateDomainTrusts()` Win32 API call,.NET methods, and LDAP. The Windows utility Nltest is known to be used by adversaries to enumerate domain trusts.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may gather information on domain trust relationships to identify lateral movement opportunities in Windows multi-domain and forest environments. This discovered information may help adversaries conduct SID-History Injection, Pass the Ticket, and Kerberoasting. Domain trusts can be enumerated using LDAP, .NET methods, the DSEnumerateDomainTrusts() Win32 API call, and the Windows utility Nltest.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1046]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:19:22+00:00",
+  "temperature": 0,
+  "prompt_sha256": "eea14e236711090b669b379bcb790f4118341e68a6f05ac797a5d8c3d93549d6",
+  "replicate": 0,
+  "cache_key": "119411fdf483ed7fc8b21a4d9d920bde32d97b08b831a6cbfef7b40c03eab48e",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to get a listing of services running on remote hosts and local network infrastructure devices, including those that may be vulnerable to remote software exploitation. Common methods to acquire this information include port, vulnerability, and/or wordlist scans using tools that are brought onto a system. \n\nWithin cloud environments, adversaries may attempt to discover services running on other cloud hosts. Additionally, if the cloud environment is connected to a on-premises environment, adversaries may be able to identify services running on non-cloud systems as well.\n\nWithin macOS environments, adversaries may use the native Bonjour application to discover services running on other macOS hosts within a network. The Bonjour mDNSResponder daemon automatically registers and advertises a host’s registered services on the network. For example, adversaries can use a mDNS query (such as <code>dns-sd -B _ssh._tcp.</code>) to find other systems broadcasting the ssh service.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may attempt to list services running on remote hosts and local network infrastructure devices using port, vulnerability, or wordlist scans. In cloud environments, they may discover services running on other cloud hosts or connected on-premises systems. Within macOS environments, adversaries may use the native Bonjour application to discover services running on other hosts on the network.\"}"
+}

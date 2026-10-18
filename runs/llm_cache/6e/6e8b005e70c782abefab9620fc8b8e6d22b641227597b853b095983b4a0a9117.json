@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1048.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:28:25+00:00",
+  "temperature": 0,
+  "prompt_sha256": "940d74087664a1996e67830e3892c5d2cb86a9ddf37ad79e5dfbae1927b28f85",
+  "replicate": 0,
+  "cache_key": "6e8b005e70c782abefab9620fc8b8e6d22b641227597b853b095983b4a0a9117",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may steal data by exfiltrating it over an asymmetrically encrypted network protocol other than that of the existing command and control channel. The data may also be sent to an alternate network location from the main command and control server. \n\nAsymmetric encryption algorithms are those that use different keys on each end of the channel. Also known as public-key cryptography, this requires pairs of cryptographic keys that can encrypt/decrypt data from the corresponding key. Each end of the communication channels requires a private key (only in the procession of that entity) and the public key of the other entity. The public keys of each entity are exchanged before encrypted communications begin. \n\nNetwork protocols that use asymmetric encryption (such as HTTPS/TLS/SSL) often utilize symmetric encryption once keys are exchanged. Adversaries may opt to use these encrypted mechanisms that are baked into a protocol.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may steal data by exfiltrating it to an alternate network location over an asymmetrically encrypted network protocol separate from their existing command and control channel. Asymmetric encryption relies on public and private key pairs, and protocols using it often utilize symmetric encryption once the keys are exchanged. Adversaries may opt to use these encrypted mechanisms that are baked into protocols such as HTTPS/TLS/SSL.\"}"
+}

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1204.002]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:18:31+00:00",
+  "temperature": 0,
+  "prompt_sha256": "33543a4e23dfb04823fd072ffce16f9e335db9931f455268639aa9df44dc4e27",
+  "replicate": 0,
+  "cache_key": "1b95fe24a777653d5c165de778e31941b726ca16f4c3301898844a65dc690004",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAn adversary may rely upon a user opening a malicious file in order to gain execution. Users may be subjected to social engineering to get them to open a file that will lead to code execution. This user action will typically be observed as follow-on behavior from Spearphishing Attachment. Adversaries may use several types of files that require a user to execute them, including.doc,.pdf,.xls,.rtf,.scr,.exe,.lnk,.pif,.cpl,.reg, and.iso.\n\nAdversaries may employ various forms of Masquerading and Obfuscated Files or Information to increase the likelihood that a user will open and successfully execute a malicious file. These methods may include using a familiar naming convention and/or password protecting the file and supplying instructions to a user on how to open it. \n\nWhile Malicious File frequently occurs shortly after Initial Access it may occur at other phases of an intrusion, such as when an adversary places a file in a shared directory or on a user's desktop hoping that a user will click on it. This activity may also be seen shortly after Internal Spearphishing.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may use social engineering to get users to open malicious files of various formats to gain code execution, typically as follow-on behavior from Spearphishing Attachment. They may employ Masquerading and Obfuscated Files or Information, such as familiar naming conventions or password protection, to encourage users to open the files. While frequently occurring shortly after Initial Access or Internal Spearphishing, adversaries may also place files in shared directories or on desktops during other intrusion phases.\"}"
+}

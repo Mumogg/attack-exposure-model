@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1069.001]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:18:50+00:00",
+  "temperature": 0,
+  "prompt_sha256": "2a15c2b46a05554461d1eaedec694e1e2f88d23a96ca1e8b29152b784b6347a7",
+  "replicate": 0,
+  "cache_key": "31db575f3dd6f1d69384532bfbfcda05ccd6620860361baf8b9936774df9ac6a",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may attempt to find local system groups and permission settings. The knowledge of local system permission groups can help adversaries determine which groups exist and which users belong to a particular group. Adversaries may use this information to determine which users have elevated permissions, such as the users found within the local administrators group.\n\nCommands such as <code>net localgroup</code> of the Net utility, <code>dscl. -list /Groups</code> on macOS, and <code>groups</code> on Linux can list local groups.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may attempt to find local system groups and permission settings to determine which groups exist and which users belong to them. This information can help adversaries identify users with elevated permissions, such as members of the local administrators group. Commands such as net localgroup, dscl. -list /Groups on macOS, and groups on Linux can be used to list local groups.\"}"
+}

@@ -1,12 +1,10 @@
 # Resumen de resultados — corrida `2026-10-18-main`
 
-**RESULTADO PARCIAL: faltan escenarios** — ESCENARIOS OMITIDOS: akira (sin texto local)
-
 Generado con `aem report` a partir de `runs/2026-10-18-main/results/results.json`. Los números se copian tal como están en ese archivo, sin redondear.
 
 - Modelo (ID): `gemini-3.8-flash`
 - Versión del modelo informada por la API: gemini-3.8-flash
-- Fecha de la corrida: 2026-10-18 (inicio 2026-10-18T18:15:16+00:00, fin 2026-10-18T18:15:20+00:00)
+- Fecha de la corrida: 2026-10-18 (inicio 2026-10-18T19:29:35+00:00, fin 2026-10-18T19:29:39+00:00)
 - Hash SHA-256 de las plantillas de prompt: `extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b`
 - Origen de las respuestas: gemini-api · temperatura 0 · ATT&CK 19.2 · 5 corridas por escenario × versión
 - Porcentajes en %. «sin dato disponible»: el archivo no tiene el valor (sin corridas o valor no definido).
@@ -21,6 +19,9 @@ Generado con `aem report` a partir de `runs/2026-10-18-main/results/results.json
 | interlock | orig | 5 | 5 | 0 | 0 |
 | interlock | mut | 5 | 5 | 0 | 0 |
 | interlock | anon | 5 | 5 | 0 | 0 |
+| akira | orig | 5 | 5 | 0 | 0 |
+| akira | mut | 5 | 5 | 0 | 0 |
+| akira | anon | 5 | 5 | 0 | 0 |
 
 ## Indicador 1 — Precisión y exhaustividad del paso 1 (%)
 
@@ -42,12 +43,12 @@ Media principal: `_fail0`; `_valid` es secundaria (D-67). DE: desviación están
 | interlock | mut | padre | 92.21 | 5.53 | 92.21 | 5.53 | 5 | 5 | 0 |
 | interlock | anon | exacto (sub-técnica) | 90.73 | 7.32 | 90.73 | 7.32 | 5 | 5 | 0 |
 | interlock | anon | padre | 90.73 | 7.32 | 90.73 | 7.32 | 5 | 5 | 0 |
-| akira | orig | exacto (sub-técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | orig | padre | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | mut | exacto (sub-técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | mut | padre | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | anon | exacto (sub-técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | anon | padre | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
+| akira | orig | exacto (sub-técnica) | 73.33 | 1.03 | 73.33 | 1.03 | 5 | 5 | 0 |
+| akira | orig | padre | 85.65 | 3.2 | 85.65 | 3.2 | 5 | 5 | 0 |
+| akira | mut | exacto (sub-técnica) | 70.82 | 1.48 | 70.82 | 1.48 | 5 | 5 | 0 |
+| akira | mut | padre | 83.38 | 1.7 | 83.38 | 1.7 | 5 | 5 | 0 |
+| akira | anon | exacto (sub-técnica) | 75.79 | 5.4 | 75.79 | 5.4 | 5 | 5 | 0 |
+| akira | anon | padre | 87.0 | 2.92 | 87.0 | 2.92 | 5 | 5 | 0 |
 
 ### Exhaustividad
 
@@ -65,12 +66,12 @@ Media principal: `_fail0`; `_valid` es secundaria (D-67). DE: desviación están
 | interlock | mut | padre | 60.87 | 5.32 | 60.87 | 5.32 | 5 | 5 | 0 |
 | interlock | anon | exacto (sub-técnica) | 57.6 | 4.56 | 57.6 | 4.56 | 5 | 5 | 0 |
 | interlock | anon | padre | 62.61 | 4.96 | 62.61 | 4.96 | 5 | 5 | 0 |
-| akira | orig | exacto (sub-técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | orig | padre | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | mut | exacto (sub-técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | mut | padre | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | anon | exacto (sub-técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | anon | padre | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
+| akira | orig | exacto (sub-técnica) | 52.11 | 2.88 | 52.11 | 2.88 | 5 | 5 | 0 |
+| akira | orig | padre | 64.85 | 1.66 | 64.85 | 1.66 | 5 | 5 | 0 |
+| akira | mut | exacto (sub-técnica) | 50.0 | 6.71 | 50.0 | 6.71 | 5 | 5 | 0 |
+| akira | mut | padre | 64.24 | 7.84 | 64.24 | 7.84 | 5 | 5 | 0 |
+| akira | anon | exacto (sub-técnica) | 52.11 | 6.0 | 52.11 | 6.0 | 5 | 5 | 0 |
+| akira | anon | padre | 64.85 | 7.3 | 64.85 | 7.3 | 5 | 5 | 0 |
 
 ![Indicador 1 — precisión](indicador1_precision.png)
 
@@ -96,8 +97,8 @@ Denominador: técnicas de referencia con brecha (modelo) o todas las técnicas d
 | gunra | tradicional | 36 | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | no aplica (sin LLM) | orig 17, mut 0, anon 0 |
 | interlock | modelo | 18 | 52.22 | 3.04 | 56.67 | 4.65 | 56.67 | 7.24 | 1.0851 | 1.0851 | orig 0, mut 0, anon 0 |  |
 | interlock | tradicional | 25 | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | no aplica (sin LLM) | orig 19, mut 0, anon 0 |
-| akira | modelo | 25 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | orig 0, mut 0, anon 0 |  |
-| akira | tradicional | 38 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | no aplica (sin LLM) | sin dato disponible |
+| akira | modelo | 25 | 38.4 | 3.58 | 36.0 | 6.32 | 40.0 | 5.66 | 0.9375 | 1.0417 | orig 0, mut 0, anon 0 |  |
+| akira | tradicional | 38 | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | no aplica (sin LLM) | orig 22, mut 0, anon 0 |
 
 ### Media secundaria: `_valid`
 
@@ -107,8 +108,8 @@ Denominador: técnicas de referencia con brecha (modelo) o todas las técnicas d
 | gunra | tradicional | 36 | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | no aplica (sin LLM) | orig 17, mut 0, anon 0 |
 | interlock | modelo | 18 | 52.22 | 3.04 | 56.67 | 4.65 | 56.67 | 7.24 | 1.0851 | 1.0851 | orig 0, mut 0, anon 0 |  |
 | interlock | tradicional | 25 | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | no aplica (sin LLM) | orig 19, mut 0, anon 0 |
-| akira | modelo | 25 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | orig 0, mut 0, anon 0 |  |
-| akira | tradicional | 38 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | no aplica (sin LLM) | sin dato disponible |
+| akira | modelo | 25 | 38.4 | 3.58 | 36.0 | 6.32 | 40.0 | 5.66 | 0.9375 | 1.0417 | orig 0, mut 0, anon 0 |  |
+| akira | tradicional | 38 | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | no aplica (sin LLM) | orig 22, mut 0, anon 0 |
 
 ![Indicador 3 — persistencia del modelo](indicador3_persistencia.png)
 
@@ -118,7 +119,7 @@ El gráfico muestra solo el enfoque del modelo; la fila del enfoque tradicional 
 
 | Técnicas resumidas | Fallos del LLM | Chequeo automático ok | Chequeo automático ok (%) | Revisión manual |
 |---|---|---|---|---|
-| 49 | 0 | 49 | 100.0 | pendiente (hoja de revisión) |
+| 71 | 0 | 71 | 100.0 | pendiente (hoja de revisión) |
 
 ## Indicador 5 — Cumplimiento de los límites (violaciones)
 
@@ -132,24 +133,22 @@ El gráfico muestra solo el enfoque del modelo; la fila del enfoque tradicional 
 | interlock | orig | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
 | interlock | mut | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
 | interlock | anon | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
-| akira | orig | paso 1 (extracción) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | mut | paso 1 (extracción) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| akira | anon | paso 1 (extracción) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 |
-| todos | - | paso 4 (resúmenes, uno por técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 | 49 | 49 | ver indicador 4 (llm_failures) |
+| akira | orig | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
+| akira | mut | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
+| akira | anon | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
+| todos | - | paso 4 (resúmenes, uno por técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 | 71 | 71 | ver indicador 4 (llm_failures) |
 
 ## Escenarios omitidos
 
-- escenarios_omitidos: akira (sin texto local)
-- Resultado parcial: sí. Las tablas del LLM no tienen corridas de los escenarios omitidos; si aparecen filas suyas en el indicador 2 o en el enfoque tradicional del indicador 3, esas no dependen del LLM (D-73).
+- escenarios_omitidos: ninguno
+- Resultado parcial: no.
 
 ## Datos faltantes
 
-- Escenarios o versiones no evaluados: akira: orig, akira: mut, akira: anon.
-- Indicador 1: 48 celda(s) con «sin dato disponible» — `precision_mean_fail0` (6), `precision_sd_fail0` (6), `precision_mean_valid` (6), `precision_sd_valid` (6), `recall_mean_fail0` (6), `recall_sd_fail0` (6), `recall_mean_valid` (6), `recall_sd_valid` (6).
-- Indicador 3: 33 celda(s) con «sin dato disponible» — `orig_mean_fail0` (2), `orig_sd_fail0` (2), `orig_mean_valid` (2), `orig_sd_valid` (2), `mut_mean_fail0` (2), `mut_sd_fail0` (2), `mut_mean_valid` (2), `mut_sd_valid` (2), `anon_mean_fail0` (2), `anon_sd_fail0` (2), `anon_mean_valid` (2), `anon_sd_valid` (2), `persistence_mut_over_orig_fail0` (2), `persistence_mut_over_orig_valid` (2), `persistence_anon_over_orig_fail0` (2), `persistence_anon_over_orig_valid` (2), `ioc_matches` (1).
-- Indicador 5: 25 celda(s) con «sin dato disponible» — `violations_total` (3), `violations_mean_fail0` (4), `violations_sd_fail0` (4), `violations_mean_valid` (4), `violations_sd_valid` (4), `extra_fields` (3), `evaluative_text` (3).
-- Columna `data_sources` de las salidas por corrida: 0 de 505 filas con «sin dato disponible» (30 archivos `*_exposure.csv`).
-- Columna `prevalence` de las salidas por corrida: 505 de 505 filas con «sin dato disponible» (30 archivos `*_exposure.csv`).
+- Escenarios o versiones no evaluados: ninguno.
+- Indicador 5: 4 celda(s) con «sin dato disponible» — `violations_mean_valid` (1), `violations_sd_valid` (1), `violations_mean_fail0` (1), `violations_sd_fail0` (1).
+- Columna `data_sources` de las salidas por corrida: 0 de 879 filas con «sin dato disponible» (45 archivos `*_exposure.csv`).
+- Columna `prevalence` de las salidas por corrida: 879 de 879 filas con «sin dato disponible» (45 archivos `*_exposure.csv`).
 - Revisión manual de los indicadores 4 y 5: no está en `results.json`; ver las hojas en `eval/review_sheets/`.
 
 ## Lo que estos números permiten y no permiten afirmar

@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1654]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:18:22+00:00",
+  "temperature": 0,
+  "prompt_sha256": "469f43f0687e6cd8069f4ac0c9cbd3a2588e4c27e6de445d411e678c053ee069",
+  "replicate": 0,
+  "cache_key": "c1ac0bc6ee17cea6404ddbc733567777e2a41c57efe11ccdba456477ea24795a",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may enumerate system and service logs to find useful data. These logs may highlight various types of valuable insights for an adversary, such as user authentication records (Account Discovery), security or vulnerable software (Software Discovery), or hosts within a compromised network (Remote System Discovery).\n\nHost binaries may be leveraged to collect system logs. Examples include using `wevtutil.exe` or PowerShell on Windows to access and/or export security event information. In cloud environments, adversaries may leverage utilities such as the Azure VM Agent’s `CollectGuestLogs.exe` to collect security logs from cloud hosted infrastructure.\n\nAdversaries may also target centralized logging infrastructure such as SIEMs. Logs may also be bulk exported and sent to adversary-controlled infrastructure for offline analysis.\n\nIn addition to gaining a better understanding of the environment, adversaries may also monitor logs in real time to track incident response procedures. This may allow them to adjust their techniques in order to maintain persistence or evade defenses.\n>>>\n",
+ "response_text": "{\"summary\": \"Adversaries may enumerate system, service, or centralized logs using host or cloud utilities to discover authentication records, software, and network hosts. These logs may be bulk exported to adversary-controlled infrastructure for offline analysis. Furthermore, adversaries may monitor logs in real time to track incident response procedures and adjust techniques to maintain persistence or evade defenses.\"}"
+}

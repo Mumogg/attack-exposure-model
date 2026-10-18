@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1489]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:19:33+00:00",
+  "temperature": 0,
+  "prompt_sha256": "bcf5afabf351f903f15be7c3e3826fc5c136d5ef5305b73a1246679ee34c6df8",
+  "replicate": 0,
+  "cache_key": "577bce7ae03e301053f96cfe33e4d0f1fcd56d8ba814b7898c1aee166fd47408",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may stop or disable services on a system to render those services unavailable to legitimate users. Stopping critical services or processes can inhibit or stop response to an incident or aid in the adversary's overall objectives to cause damage to the environment. \n\nAdversaries may accomplish this by disabling individual services of high importance to an organization, such as <code>MSExchangeIS</code>, which will make Exchange content inaccessible. In some cases, adversaries may stop or disable many or all services to render systems unusable. Services or processes may not allow for modification of their data stores while running. Adversaries may stop services or processes in order to conduct Data Destruction or Data Encrypted for Impact on the data stores of services like Exchange and SQL Server, or on virtual machines hosted on ESXi infrastructure.\n\nThreat actors may also disable or stop service in cloud environments. For example, by leveraging the `DisableAPIServiceAccess` API in AWS, a threat actor may prevent the service from creating service-linked roles on new accounts in the AWS Organization.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may stop or disable services on systems or in cloud environments to render them unavailable to legitimate users, inhibit incident response, or aid in causing damage. This can be accomplished by targeting critical individual services or stopping many or all services to render systems unusable. Additionally, adversaries may halt services or processes to perform Data Destruction or Data Encrypted for Impact on data stores that cannot be modified while running.\"}"
+}

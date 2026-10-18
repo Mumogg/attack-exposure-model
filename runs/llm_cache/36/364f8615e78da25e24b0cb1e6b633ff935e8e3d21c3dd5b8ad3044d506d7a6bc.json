@@ -1,0 +1,30 @@
+{
+ "meta": {
+  "purpose": "step4_summary[T1048]",
+  "model": "gemini-3.8-flash",
+  "model_version": "gemini-3.8-flash",
+  "timestamp": "2026-10-18T19:22:27+00:00",
+  "temperature": 0,
+  "prompt_sha256": "6952baa8a0ddee156d05cf57af714331350dab9e21637f5d62376f495ffb0fd8",
+  "replicate": 0,
+  "cache_key": "364f8615e78da25e24b0cb1e6b633ff935e8e3d21c3dd5b8ad3044d506d7a6bc",
+  "source": "gemini-api"
+ },
+ "params": {
+  "temperature": 0,
+  "response_mime_type": "application/json"
+ },
+ "schema": {
+  "type": "object",
+  "properties": {
+   "summary": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "summary"
+  ]
+ },
+ "prompt": "Condense the following MITRE ATT&CK technique description into at most 3 sentences, in English.\n\nRules:\n- Do not add any information that is not in the description.\n- Do not evaluate, rate or prioritize. Do not recommend actions. Do not mention severity, risk or urgency.\n- Do not include technique IDs, numbers or names that are not in the description.\n\nReturn only JSON that follows the provided schema.\n\nDESCRIPTION:\n<<<\nAdversaries may steal data by exfiltrating it over a different protocol than that of the existing command and control channel. The data may also be sent to an alternate network location from the main command and control server. \n\nAlternate protocols include FTP, SMTP, HTTP/S, DNS, SMB, or any other network protocol not being used as the main command and control channel. Adversaries may also opt to encrypt and/or obfuscate these alternate channels. \n\nExfiltration Over Alternative Protocol can be done using various common operating system utilities such as Net/SMB or FTP. On macOS and Linux <code>curl</code> may be used to invoke protocols such as HTTP/S or FTP/S to exfiltrate data from a system.\n\nMany IaaS and SaaS platforms (such as Microsoft Exchange, Microsoft SharePoint, GitHub, and AWS S3) support the direct download of files, emails, source code, and other sensitive information via the web console or Cloud API.\n>>>\n",
+ "response_text": "{\"summary\":\"Adversaries may steal data by exfiltrating it over a different protocol or to an alternate network location than the existing command and control channel. This activity can be performed using various common operating system utilities or curl, and the alternate channels may be encrypted or obfuscated. Furthermore, data can be downloaded directly from many IaaS and SaaS platforms via web consoles or Cloud APIs.\"}"
+}
