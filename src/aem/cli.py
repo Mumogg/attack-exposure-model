@@ -458,6 +458,42 @@ def review_check_cmd(
         raise typer.Exit(1)
 
 
+@app.command("sensitivity", cls=SpanishCommand)
+def sensitivity_cmd(
+    run_id: str = typer.Option(..., "--run-id", help="Corrida ya evaluada (runs/<id>/results/)."),
+    org: Path = typer.Option(ORG_FILE, "--org", help="YAML de la organización (estilo DeTT&CT)."),
+    attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
+) -> None:
+    """Análisis de sensibilidad de los pasos 2 y 3 y del indicador 3 (sin API). No cambia los resultados principales."""
+    from aem.attack_data import AttackData
+    from aem.org import load_org
+    from aem.scenarios import load_scenarios
+    from aem.step3_prioritize import load_tree
+    from eval.sensitivity import (
+        SensitivityError, check_against_results, compute_sensitivity, load_runs, write_sensitivity,
+    )
+
+    if not attack.exists():
+        _fail(f"No existe {attack.name}. Ejecute antes `aem fetch-data`.")
+    run_dir = RUNS_DIR / run_id
+    scenarios = load_scenarios(SCENARIOS_FILE)
+    model_cfg = load_model_config()
+    try:
+        loaded = load_runs(run_dir, scenarios)
+    except SensitivityError as exc:
+        _fail(str(exc))
+    rows = compute_sensitivity(loaded, scenarios, load_org(org), model_cfg, AttackData.load(attack),
+                               load_tree(SSVC_TREE_FILE))
+    diffs = check_against_results(rows, loaded["results"])
+    if diffs:  # the current configuration must reproduce the main results; otherwise nothing is written
+        _fail("La fila de la configuración actual no coincide con el indicador 3 de results.json:\n  "
+              + "\n  ".join(diffs))
+    paths = write_sensitivity(run_dir, rows, loaded, model_cfg)
+    console.print("[green]Listo.[/green] La fila «actual» coincide con el indicador 3 de results.json.")
+    for label, path in paths.items():
+        console.print(f"  {label}: {path}")
+
+
 @app.command("report", cls=SpanishCommand)
 def report_cmd(
     run_id: str = typer.Option(..., "--run-id", help="Carpeta de runs/ con resultados reales (results/, no results_FAKE/)."),

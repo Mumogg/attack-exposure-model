@@ -195,6 +195,17 @@ aem report --run-id 2026-10-20
 - Si actualizó el repositorio desde una versión sin este comando, reinstale una vez para obtener `matplotlib`: `pip install -e .`
 - `docs/resultados/` se versiona: contiene solo cifras, sin texto de los reportes.
 
+### Análisis de sensibilidad: `aem sensitivity` (complemento, D-77)
+
+```bash
+aem sensitivity --run-id 2026-10-18-main
+```
+
+- Sin API. Necesita el archivo de ATT&CK (`aem fetch-data`) y las salidas por corrida. Recalcula los pasos 2 y 3 y el indicador 3 cambiando un parámetro a la vez: `covered_min` 3/4/5, `partial_min` 1/2, `no_inherit`/`inherit_parent`.
+- Escribe `runs/<run-id>/results/sensitivity/sensitivity.csv`, `.json` y `.md`. Por escenario y parámetro da: las brechas; la persistencia del modelo en `orig`/`mut`/`anon` (media y DE, `_fail0` y `_valid`); las razones `mut/orig` y `anon/orig`; y las acciones del paso 3.
+- **No sustituye los resultados principales:** no toca `model_config.yaml`, `coverage_design` ni `results/*.csv|json|md`. La fila «actual» tiene que coincidir con el indicador 3 de `results.json`; si no coincide, el comando se detiene sin escribir.
+- Resultado en `2026-10-18-main`: con `covered_min` = 3, las brechas pasan de 28/18/25 a 23/15/19 (Gunra/Interlock/Akira), y con `covered_min` = 5, a 35/23/35. Con `partial_min` = 2 o `inherit_parent`, las brechas y el indicador 3 no cambian; solo cambian acciones del paso 3.
+
 ## f. Hojas de revisión manual
 
 Están en `eval/review_sheets/`; la parte de Akira, en `eval/review_sheets/private/`. Ábralas con LibreOffice o Excel, llene **solo** las columnas vacías, no cambie los nombres de columna y guarde como CSV UTF-8.

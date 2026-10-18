@@ -147,6 +147,26 @@ def _parse_summary(raw: str | None) -> tuple[str | None, list[str]]:
     return text, [k for k in data if k != "summary"]
 
 
+def model_indicator3_row(scenario: str, gaps: list[str], persistence: dict[str, list],
+                         failed_by_version: dict[str, int]) -> dict:
+    """Model row of indicator 3; `persistence[v]` holds one value per scored run (also used by `aem sensitivity`)."""
+    row = {"scenario": scenario, "approach": "modelo", "denominator_techniques": len(gaps),
+           "failed_runs": ", ".join(f"{v} {failed_by_version[v]}" for v in VERSIONS)}
+    means = {}
+    for v in VERSIONS:
+        both = aggregate_with_failures(persistence[v], failed_by_version[v])
+        for view, a in both.items():
+            means[(v, view)] = a["mean"]
+            row[f"{v}_mean_{view}"] = _pct(a["mean"])
+            row[f"{v}_sd_{view}"] = _pct(a["sd"]) if a["n"] >= 2 else NO_DATA
+    for v in VERSIONS[1:]:
+        for view in ("fail0", "valid"):
+            o, m = means[("orig", view)], means[(v, view)]
+            row[f"persistence_{v}_over_orig_{view}"] = round(m / o, 4) if o and m is not None else NO_DATA
+    row["ioc_matches"] = ""
+    return row
+
+
 def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineContext, replicates: int) -> dict:
     org, cfg = ctx.org, ctx.model_cfg
     tables: dict[str, list[dict]] = {k: [] for k in ("runs", "indicator1", "indicator1_detail", "indicator2", "indicator3",
@@ -213,20 +233,7 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
             })
 
         # indicator 3
-        row = {"scenario": sc.name, "approach": "modelo", "denominator_techniques": len(gaps),
-               "failed_runs": ", ".join(f"{v} {failed_by_version[v]}" for v in VERSIONS)}
-        means = {}
-        for v in VERSIONS:
-            both = aggregate_with_failures(persistence[v], failed_by_version[v])
-            for view, a in both.items():
-                means[(v, view)] = a["mean"]
-                row[f"{v}_mean_{view}"] = _pct(a["mean"])
-                row[f"{v}_sd_{view}"] = _pct(a["sd"]) if a["n"] >= 2 else NO_DATA
-        for v in VERSIONS[1:]:
-            for view in ("fail0", "valid"):
-                o, m = means[("orig", view)], means[(v, view)]
-                row[f"persistence_{v}_over_orig_{view}"] = round(m / o, 4) if o and m is not None else NO_DATA
-        row["ioc_matches"] = ""
+        row = model_indicator3_row(sc.name, gaps, persistence, failed_by_version)
         tables["indicator3"].append(row)
         trad = {"scenario": sc.name, "approach": "tradicional", "denominator_techniques": len(ref),
                 "failed_runs": "no aplica (sin LLM)"}
