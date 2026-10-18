@@ -83,7 +83,7 @@ pytest              # no test calls the real API
 
 `aem --help` and `aem <command> --help` show the help in Spanish; `aem --version` prints the version declared in `pyproject.toml`.
 
-**Exact versions (optional).** `requirements.lock` pins every dependency as installed for the thesis (clean venv, `pip install -e ".[dev]"` + `pip freeze`, Python 3.14.7 on Linux). It is only for reproducing that environment: `pip install -r requirements.lock && pip install -e . --no-deps`. The normal install is still `pip install -e ".[dev]"`.
+**Exact versions (optional).** `requirements.lock` pins every dependency as installed for the thesis. It was generated with **Python 3.14.7** on Linux (clean venv, `pip install -e ".[dev]"` + `pip freeze`), the interpreter of the thesis runs. It is only for reproducing that environment, with Python 3.14.7: `pip install -r requirements.lock && pip install -e . --no-deps`. CI installs it that way and runs the tests. It does **not** install on Python 3.11 (`numpy` 2.5.4 and `contourpy` 1.4.0 have no 3.11 wheels); on 3.12 and 3.13 every pinned version resolves, but the tests are not run there with the lock. The normal install, for any supported version (≥ 3.11), is still `pip install -e ".[dev]"`.
 
 **Continuous integration.** `.github/workflows/tests.yml` runs `pytest` on Python 3.11 and 3.12 on every push and pull request. It installs with `pip install -e ".[dev]"` and runs `aem fetch-data`, so the ATT&CK tests are not skipped. It has read-only permissions and no secrets or API key; `tests/conftest.py` fails any test that tries to reach the Gemini API.
 

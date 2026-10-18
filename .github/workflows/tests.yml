@@ -36,3 +36,22 @@ jobs:
             echo "::error::Hay tests omitidos por falta de ATT&CK"
             exit 1
           fi
+
+  # requirements.lock was generated with Python 3.14.7 (the interpreter of the thesis runs). It does not install
+  # on 3.11 (numpy 2.5.4 and contourpy 1.4.0 have no 3.11 wheels), so it is checked with the same version.
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14.7"
+      - name: Install the exact versions
+        run: |
+          pip install -r requirements.lock
+          pip install -e . --no-deps
+          pip check
+      - name: Download ATT&CK v19.2
+        run: aem fetch-data
+      - name: Run tests
+        run: python -m pytest -q

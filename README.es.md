@@ -83,7 +83,7 @@ pytest              # ninguna prueba llama a la API real
 
 `aem --help` y `aem <comando> --help` muestran la ayuda en español; `aem --version` muestra la versión declarada en `pyproject.toml`.
 
-**Versiones exactas (opcional).** `requirements.lock` fija cada dependencia tal como se instaló para la tesis (venv limpio, `pip install -e ".[dev]"` + `pip freeze`, Python 3.14.7 en Linux). Sirve solo para reproducir ese entorno: `pip install -r requirements.lock && pip install -e . --no-deps`. La instalación normal sigue siendo `pip install -e ".[dev]"`.
+**Versiones exactas (opcional).** `requirements.lock` fija cada dependencia tal como se instaló para la tesis. Se generó con **Python 3.14.7** en Linux (venv limpio, `pip install -e ".[dev]"` + `pip freeze`), el intérprete de las corridas de la tesis. Sirve solo para reproducir ese entorno, con Python 3.14.7: `pip install -r requirements.lock && pip install -e . --no-deps`. El CI lo instala así y corre los tests. **No** se instala en Python 3.11 (`numpy` 2.5.4 y `contourpy` 1.4.0 no tienen wheels para 3.11); en 3.12 y 3.13 todas las versiones fijadas se resuelven, pero ahí no se corren los tests con el lock. La instalación normal, para cualquier versión soportada (≥ 3.11), sigue siendo `pip install -e ".[dev]"`.
 
 **Integración continua.** `.github/workflows/tests.yml` corre `pytest` con Python 3.11 y 3.12 en cada push y pull request. Instala con `pip install -e ".[dev]"` y ejecuta `aem fetch-data`, para que los tests de ATT&CK no se omitan. Tiene permisos de solo lectura y ningún secreto ni API key; `tests/conftest.py` hace fallar cualquier test que intente llegar a la API de Gemini.
 

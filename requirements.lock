@@ -1,5 +1,6 @@
 # Exact versions for reproducing the thesis environment (generated 2026-10-18 from a clean venv:
 # python -m venv; pip install -e ".[dev]"; pip freeze --exclude-editable). Python 3.14.7, Linux x86_64.
+# Use it with Python 3.14.7 (it does not install on 3.11: numpy 2.5.4 and contourpy 1.4.0 have no 3.11 wheels).
 # Normal install: pip install -e ".[dev]". To reproduce: pip install -r requirements.lock && pip install -e . --no-deps
 annotated-doc==0.0.5
 annotated-types==0.8.0
