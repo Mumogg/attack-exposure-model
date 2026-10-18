@@ -15,7 +15,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-from aem.llm import TEMPERATURE, InvalidResponse
+from aem.llm import TEMPERATURE, CacheMiss, InvalidResponse
 from aem.output import write_json
 from aem.pipeline import EmptyExtraction, PipelineContext, run_pipeline, write_outputs, write_record
 from aem.scenarios import VERSIONS, Scenario, load_reference
@@ -35,7 +35,7 @@ def _one_run(ctx: PipelineContext, sc: Scenario, version: str, replicate: int, t
     rec = {"scenario": sc.name, "version": version, "replicate": replicate, "status": "ok", "error": None,
            "raw": [], "extra_fields": [], "summaries": []}
     try:
-        result = run_pipeline(text, ctx, analyst_mode="auto", replicate=replicate)
+        result = run_pipeline(text, ctx, analyst_mode="auto", replicate=replicate, private=sc.copyrighted)
     except EmptyExtraction as exc:
         write_record(out / "run_record.json", exc.extraction, {"error": str(exc)})
         rec.update(status="empty", error=str(exc),
@@ -243,7 +243,10 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
     k = min(cfg.experiment.manual_sample_size, len(unique))
     sample = random.Random(cfg.experiment.sample_seed).sample(unique, k) if k else []
     sample_sheet = [dict(p, **{"contiene_valoracion (si/no)": "", "observación": ""}) for p in sample]
-    return {"tables": tables, "summary_sheet": sheet, "sample_sheet": sample_sheet}
+    private = {sc.name for sc in scenarios.values() if sc.copyrighted}
+    return {"tables": tables, "summary_sheet": sheet,
+            "sample_sheet": [r for r in sample_sheet if r["scenario"] not in private],
+            "private_sample_sheet": [r for r in sample_sheet if r["scenario"] in private]}
 
 
 # --- report -------------------------------------------------------------------------------------
@@ -270,6 +273,9 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
     write_table(paths["indicator4_sheet"], computed["summary_sheet"])
     paths["indicator5_sheet"] = sheets_dir / f"{run_id}_indicator5_sample.csv"
     write_table(paths["indicator5_sheet"], computed["sample_sheet"])
+    if computed["private_sample_sheet"]:  # quotes from copyrighted text: git-ignored folder
+        paths["indicator5_private_sheet"] = sheets_dir / "private" / f"{run_id}_indicator5_sample_private.csv"
+        write_table(paths["indicator5_private_sheet"], computed["private_sample_sheet"])
 
     md = [f"# Resultados de la evaluación — corrida `{run_id}`\n",
           f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
@@ -301,10 +307,21 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
                 skipped.append(f"{sc.name}: {version}")
                 continue
             text = path.read_text(encoding="utf-8")
+            base = run_dir / "private" if sc.copyrighted else run_dir
+            done = []
             for r in range(replicates):
                 if console is not None:
                     console.print(f"{sc.name} · {version} · corrida {r + 1}/{replicates}")
-                runs.append(_one_run(ctx, sc, version, r, text, run_dir / sc.name / version / f"r{r}"))
+                try:
+                    done.append(_one_run(ctx, sc, version, r, text, base / sc.name / version / f"r{r}"))
+                except CacheMiss:
+                    if not (ctx.client.demo and sc.copyrighted):
+                        raise
+                    # the private cache is never published: without it, the copyrighted scenario cannot be replayed
+                    skipped.append(f"{sc.name}: {version} (sin caché privada: texto con derechos de autor)")
+                    done = []
+                    break
+            runs += done
     computed = compute(runs, scenarios, ctx, replicates)
     meta = {"run_id": run_dir.name, "started": started,
             "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"), "model": ctx.client.model,

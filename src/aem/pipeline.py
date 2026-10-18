@@ -65,8 +65,10 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def run_step1(report_text: str, ctx: PipelineContext, analyst_mode: str, replicate: int = 0) -> ExtractionRecord:
-    run = extract(report_text, ctx.client, ctx.model_cfg.extraction, ctx.attack.version, replicate=replicate)
+def run_step1(report_text: str, ctx: PipelineContext, analyst_mode: str, replicate: int = 0,
+              private: bool = False) -> ExtractionRecord:
+    run = extract(report_text, ctx.client, ctx.model_cfg.extraction, ctx.attack.version, replicate=replicate,
+                  private=private)
     candidates = validate_candidates(run.extracted_raw, ctx.attack, report_text)
     reviewer = AutoReviewer() if analyst_mode == "auto" else InteractiveReviewer(console=ctx.console)
     validated, actions = review(candidates, reviewer, ctx.attack)
@@ -78,12 +80,13 @@ def run_step1(report_text: str, ctx: PipelineContext, analyst_mode: str, replica
 
 
 def run_pipeline(report_text: str, ctx: PipelineContext, analyst_mode: str = "auto",
-                 replicate: int = 0) -> PipelineResult:
+                 replicate: int = 0, private: bool = False) -> PipelineResult:
+    """`private=True` for copyrighted reports: step 1 requests use the git-ignored private cache."""
     if analyst_mode not in ("auto", "interactive"):
         raise ValueError(f"Modo de analista desconocido: {analyst_mode!r} (use interactive o auto)")
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
-    extraction = run_step1(report_text, ctx, analyst_mode, replicate)
+    extraction = run_step1(report_text, ctx, analyst_mode, replicate, private)
     if not extraction.extracted_validated:
         raise EmptyExtraction(
             "El paso 1 no produjo ninguna técnica válida (respuesta vacía del LLM o todas rechazadas). "
@@ -102,6 +105,7 @@ def run_pipeline(report_text: str, ctx: PipelineContext, analyst_mode: str = "au
         "started": started, "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "model": ctx.client.model, "temperature": TEMPERATURE, "demo": ctx.client.demo,
         "attack_version": ctx.attack.version, "analyst_mode": analyst_mode, "replicate": replicate,
+        "private": private,
         "summary_replicate": SUMMARY_REPLICATE, "report_sha256": extraction.report_sha256,
         "prompt_sha256": sorted({c["prompt_sha256"] for c in extraction.llm_calls}),
     }

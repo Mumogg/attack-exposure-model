@@ -44,7 +44,7 @@ def mk_ctx(tmp_path, mini_attack, transport=None, demo=False):
     clock = FakeClock()
     settings = Settings(None if demo else "k", "gemini-3.8-flash", "gemini-3.5-flash-lite", 600, 0)
     client = GeminiClient(settings, LLMCache(tmp_path / "cache"), demo=demo, transport=transport,
-                          sleep=clock.sleep, clock=clock.now)
+                          sleep=clock.sleep, clock=clock.now, private_cache=LLMCache(tmp_path / "private"))
     org = make_org(detections=[("T1190", 2, []), ("T1059.003", 5, ["Process Creation"])],
                    entries=[("T1190", "web")])
     return PipelineContext(attack=mini_attack, org=org, client=client, model_cfg=ModelConfig(),
@@ -109,3 +109,13 @@ def test_write_outputs(tmp_path, mini_attack):
     assert record["meta"]["temperature"] == 0 and record["meta"]["model"] == "gemini-3.8-flash"
     assert record["meta"]["attack_version"] == mini_attack.version
     assert len(record["extraction"]["extracted_raw"]) == 4
+
+
+def test_private_report_extraction_goes_to_private_cache(tmp_path, mini_attack):
+    res = run_pipeline(REPORT, mk_ctx(tmp_path, mini_attack, RoutingTransport()), analyst_mode="auto", private=True)
+    assert res.meta["private"] is True
+    private = [json.loads(p.read_text(encoding="utf-8")) for p in (tmp_path / "private").rglob("*.json")]
+    public = [json.loads(p.read_text(encoding="utf-8")) for p in (tmp_path / "cache").rglob("*.json")]
+    assert {e["meta"]["purpose"].split("[")[0] for e in private} == {"step1_extract"}
+    assert {e["meta"]["purpose"].split("[")[0] for e in public} == {"step4_summary"}
+    assert not any(REPORT[:40] in e["prompt"] for e in public)

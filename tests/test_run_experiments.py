@@ -47,7 +47,7 @@ def setup(tmp_path, mini_attack):
         clock = FakeClock()
         client = GeminiClient(Settings(None if demo else "k", "gemini-3.8-flash", "gemini-3.5-flash-lite", 600, 0),
                               LLMCache(tmp_path / "cache"), demo=demo, transport=transport,
-                              sleep=clock.sleep, clock=clock.now)
+                              sleep=clock.sleep, clock=clock.now, private_cache=LLMCache(tmp_path / "private"))
         return PipelineContext(attack=mini_attack, org=org, client=client, model_cfg=ModelConfig(),
                                tree=load_tree(SSVC_TREE_FILE), prevalence={}, patterns=load_patterns())
 
@@ -135,3 +135,36 @@ def test_api_error_stops_the_experiment(setup):
     from aem.llm import ApiError
     with pytest.raises(ApiError):
         run_experiment(setup["ctx"](Down()), setup["scenarios"], setup["run"], setup["sheets"], replicates=1)
+
+
+AKIRA = "Akira actors exploited a public-facing VPN appliance and then used cmd.exe to run commands."
+
+
+def _with_akira(setup):
+    a = setup["scenarios"]["akira"]
+    a.stripped.write_text(AKIRA, encoding="utf-8")
+    a.variant.write_text(AKIRA, encoding="utf-8")
+
+
+def test_copyrighted_scenario_stays_private(setup, tmp_path):
+    _with_akira(setup)
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=1)
+    assert (setup["run"] / "private" / "akira" / "orig" / "r0" / "run_record.json").exists()
+    assert not (setup["run"] / "akira").exists()
+    public = read_csv(setup["sheets"] / "r1_indicator5_sample.csv")
+    assert public and all(r["scenario"] != "akira" for r in public)
+    private = read_csv(setup["sheets"] / "private" / "r1_indicator5_sample_private.csv")
+    assert private and all(r["scenario"] == "akira" for r in private)
+    # nothing in the public cache was built from the Akira text
+    for f in (tmp_path / "cache").rglob("*.json"):
+        assert "Akira actors" not in f.read_text(encoding="utf-8")
+
+
+def test_demo_without_private_cache_skips_copyrighted_scenario(setup):
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=1)  # public cache only: Akira text absent
+    _with_akira(setup)
+    res = run_experiment(setup["ctx"](demo=True), setup["scenarios"], setup["run"].parent / "d", setup["sheets"],
+                         replicates=1)
+    assert any(s.startswith("akira: orig") and "caché privada" in s for s in res["skipped"])

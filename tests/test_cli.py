@@ -112,3 +112,21 @@ def test_eval_demo_without_cache_fails_clearly(files, tmp_path, monkeypatch):
                               "--org", str(files["org"]), "--run-id", "prueba", "--replicates", "1"])
     assert res.exit_code == 1
     assert "Modo demo" in res.output
+
+
+def test_copyrighted_report_detection():
+    from aem.cli import _is_copyrighted
+    from aem.config import DATA_DIR
+
+    assert _is_copyrighted(DATA_DIR / "reports" / "akira_dfir_2026_stripped.txt")
+    assert _is_copyrighted(DATA_DIR / "reports" / "akira_dfir_2026_mut_stripped.txt")
+    assert not _is_copyrighted(DATA_DIR / "reports" / "gunra_aa26-222a_stripped.txt")
+
+
+def test_gitignore_keeps_copyrighted_material_out():
+    from aem.config import REPO_ROOT
+
+    rules = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    for rule in ("data/reports/akira_dfir_2026*", "runs/llm_cache_private/", "runs/*/private/",
+                 "eval/review_sheets/private/", ".env"):
+        assert rule in rules, rule

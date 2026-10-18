@@ -28,6 +28,7 @@ PREVALENCE_FILE = DATA_DIR / "prevalence" / "red_canary_2026.csv"
 SCENARIOS_FILE = DATA_DIR / "scenarios.yaml"
 BOUNDARY_PATTERNS_FILE = DATA_DIR / "boundary_patterns.yaml"
 LLM_CACHE_DIR = RUNS_DIR / "llm_cache"
+LLM_PRIVATE_CACHE_DIR = RUNS_DIR / "llm_cache_private"  # git-ignored: requests built from copyrighted text
 
 
 class _Cfg(BaseModel):

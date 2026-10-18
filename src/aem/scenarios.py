@@ -31,6 +31,7 @@ class Scenario:
     advisory: str = ""
     attack_heading: str = "MITRE ATT&CK"
     end_headings: tuple[str, ...] = field(default_factory=tuple)
+    copyrighted: bool = False  # text must never reach git (cache, run outputs, review sheets)
     data_dir: Path = DATA_DIR
 
     @property
@@ -84,6 +85,7 @@ def load_scenarios(path: Path) -> dict[str, Scenario]:
             name=name, title=d["title"], source=d["source"], url=d["url"], text_rel=d["text"],
             reference_rel=d["reference"], published=str(d.get("published", "")), advisory=d.get("advisory", ""),
             attack_heading=d.get("attack_heading", "MITRE ATT&CK"), end_headings=tuple(d.get("end_headings") or ()),
+            copyrighted=bool(d.get("copyrighted", False)),
             data_dir=Path(path).parent,
         )
     return out

@@ -17,8 +17,12 @@ data/attack/*.json
 # Raw downloads (converted text is committed for CISA only)
 data/reports/raw/
 
-# DFIR Report content is copyrighted: never commit it
+# DFIR Report content is copyrighted: never commit it (text, stripped, variant, diff,
+# LLM cache entries built from it, run outputs and review sheets with quotes)
 data/reports/akira_dfir_2026*
+runs/llm_cache_private/
+runs/*/private/
+eval/review_sheets/private/
 
 # OS / editors
 .DS_Store

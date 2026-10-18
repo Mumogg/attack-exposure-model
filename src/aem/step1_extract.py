@@ -93,7 +93,7 @@ class ExtractionRun:
 
 
 def extract(report_text: str, client: GeminiClient, cfg: ExtractionConfig, attack_version: str,
-            replicate: int = 0) -> ExtractionRun:
+            replicate: int = 0, private: bool = False) -> ExtractionRun:
     template = prompt_template()
     chunks = chunk_text(report_text, cfg)
     merged: dict[str, ExtractedTechnique] = {}
@@ -102,7 +102,7 @@ def extract(report_text: str, client: GeminiClient, cfg: ExtractionConfig, attac
     for i, chunk in enumerate(chunks, 1):
         prompt = template.format(attack_version=attack_version, chunk_index=i, chunk_count=len(chunks), report=chunk)
         res = client.generate_json(prompt, EXTRACTION_SCHEMA, purpose=f"step1_extract[{i}/{len(chunks)}]",
-                                   replicate=replicate)
+                                   replicate=replicate, private=private)
         items, chunk_extra = parse_extraction(res.data)
         extra += [f"chunk{i}:{e}" for e in chunk_extra]
         calls.append(dict(res.meta, prompt_template=PROMPT_NAME, raw_response=res.raw_text))

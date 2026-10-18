@@ -9,8 +9,8 @@ from rich.console import Console
 
 from aem import config
 from aem.config import (
-    ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, LLM_CACHE_DIR, ORG_FILE, PREVALENCE_FILE, RUNS_DIR,
-    SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
+    ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, KNOWN_IOCS_FILE, LLM_CACHE_DIR, LLM_PRIVATE_CACHE_DIR,
+    ORG_FILE, PREVALENCE_FILE, RUNS_DIR, SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
 )
 from aem.fetch import http_get
 
@@ -50,10 +50,20 @@ def _build_context(org: Path, attack: Path, cache_dir: Path, demo: bool):
     settings = Settings.from_env(load_dotenv_file=False)
     return PipelineContext(
         attack=AttackData.load(attack), org=load_org(org),
-        client=GeminiClient(settings, LLMCache(cache_dir), demo=demo), model_cfg=load_model_config(),
+        client=GeminiClient(settings, LLMCache(cache_dir), demo=demo,
+                            private_cache=LLMCache(LLM_PRIVATE_CACHE_DIR)), model_cfg=load_model_config(),
         tree=load_tree(SSVC_TREE_FILE), prevalence=load_prevalence(PREVALENCE_FILE), patterns=load_patterns(),
         console=console,
     )
+
+
+def _is_copyrighted(report: Path) -> bool:
+    """True if the report is (a version of) a scenario whose text cannot be published."""
+    from aem.scenarios import load_scenarios
+
+    target = Path(report).resolve()
+    return any(target in {p.resolve() for p in (sc.text, sc.stripped, sc.variant)}
+               for sc in load_scenarios(SCENARIOS_FILE).values() if sc.copyrighted)
 
 
 def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, attack: Path, cache_dir: Path) -> None:
@@ -64,7 +74,12 @@ def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, atta
         _fail(f"No existe el reporte {report}. Para los escenarios de la tesis ejecute `aem fetch-data`.")
     try:
         ctx = _build_context(org, attack, cache_dir, demo)
-        result = run_pipeline(Path(report).read_text(encoding="utf-8"), ctx, analyst_mode=analyst_mode)
+        private = _is_copyrighted(report)
+        if private:
+            console.print("[yellow]Reporte con derechos de autor:[/yellow] la caché va a runs/llm_cache_private/ "
+                          "(ignorada por git). No suba la carpeta de salida: contiene citas del reporte.")
+        result = run_pipeline(Path(report).read_text(encoding="utf-8"), ctx, analyst_mode=analyst_mode,
+                              private=private)
     except EmptyExtraction as exc:
         write_record(Path(out) / "run_record.json", exc.extraction, {"error": str(exc)})
         _fail(f"{exc} Registro guardado en {Path(out) / 'run_record.json'}")

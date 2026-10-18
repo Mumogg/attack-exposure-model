@@ -23,6 +23,7 @@ akira:
   # Contenido con derechos de autor: el texto NO se incluye en el repositorio (ver docs/report_preparation.md).
   title: "From Bing search to ransomware: BumbleBee and AdaptixC2 deliver Akira"
   source: dfir
+  copyrighted: true      # caché, salidas y hojas de revisión de este escenario van a carpetas ignoradas por git
   published: 2026-06-29
   url: https://thedfirreport.com/2026/06/29/from-bing-search-to-ransomware-bumblebee-and-adaptixc2-deliver-akira-3/
   text: reports/akira_dfir_2026.txt

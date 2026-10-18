@@ -149,3 +149,11 @@ Una violación es (a) un campo extra no previsto por el esquema en la salida del
 ### D-68. Indicador 4 — chequeo automático — **PENDIENTE DE CONFIRMAR**
 Hoja de revisión manual: `eval/review_sheets/<corrida>_indicator4_summaries.csv`, una fila por técnica resumida, con la descripción fuente (limpia, D-40), el resumen, el estado y columnas vacías `ok (si/no)` y `observación`. El chequeo automático marca un resumen como no conforme si contiene (a) un identificador de ATT&CK (`T`, `TA`, `M`, `G`, `S`, `C`, `DS`, `DC` + 4 dígitos) o (b) una cifra que no aparece en la descripción fuente, o (c) más oraciones que `summary.max_sentences`. Es una aproximación; la medida de fidelidad es la revisión manual de Sebas.
 
+### D-69. Material con derechos de autor fuera de git (Akira)
+La caché del LLM guarda el prompt completo, que incluye el texto del reporte, y las salidas de cada corrida guardan citas textuales (`evidence_quote`). Como `runs/` se versiona, para el escenario marcado `copyrighted: true` en `data/scenarios.yaml` (Akira, The DFIR Report):
+- las llamadas del paso 1 usan una caché aparte, `runs/llm_cache_private/` (ignorada por git); los resúmenes del paso 4 (texto de ATT&CK) siguen en la caché pública;
+- las salidas de sus corridas van a `runs/<corrida>/private/akira/…` y su parte de la muestra del indicador 5 a `eval/review_sheets/private/` (ambas ignoradas);
+- `aem run` detecta el reporte de Akira y avisa que no se suba la carpeta de salida;
+- en `aem eval --demo` sin caché privada (cualquier persona que clone el repositorio), Akira se omite con el aviso «sin caché privada» y el resto se reproduce;
+- las tablas de resultados (`runs/<corrida>/results/`) solo contienen IDs, cifras y nombres de ATT&CK, y sí se versionan.
+

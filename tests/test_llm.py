@@ -146,3 +146,22 @@ def test_api_errors_and_bad_output_are_distinguishable(tmp_path):
     c, _ = client(tmp_path, FakeTransport(["no json"]))
     with pytest.raises(InvalidResponse):
         c.generate_json("otro", SCHEMA, purpose="test")
+
+
+def test_private_requests_use_the_private_cache(tmp_path):
+    """Copyrighted report text (DFIR) must never land in the committed cache (runs/llm_cache)."""
+    clock = FakeClock()
+    c = GeminiClient(settings(), LLMCache(tmp_path / "cache"), transport=FakeTransport([{"x": 1}, "no json"]),
+                     sleep=clock.sleep, clock=clock.now, private_cache=LLMCache(tmp_path / "private"))
+    c.generate_json("texto con derechos", SCHEMA, purpose="t", private=True)
+    assert list((tmp_path / "private").rglob("*.json"))
+    assert not (tmp_path / "cache").exists()
+    with pytest.raises(LLMError):
+        c.generate_json("otro texto con derechos", SCHEMA, purpose="t", private=True)
+    assert not (tmp_path / "cache").exists()  # failure dumps also stay private
+
+
+def test_private_request_without_private_cache_is_refused(tmp_path):
+    c, _ = client(tmp_path, FakeTransport([{"x": 1}]))
+    with pytest.raises(LLMError, match="privada"):
+        c.generate_json("texto", SCHEMA, purpose="t", private=True)

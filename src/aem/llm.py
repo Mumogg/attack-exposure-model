@@ -2,6 +2,8 @@
 
 Every response is cached under SHA-256(model + prompt + params + schema + replicate).
 `demo=True` reads only from the cache, so results can be reproduced without an API key.
+Requests built from copyrighted text (`private=True`, the DFIR report) go to a separate,
+git-ignored cache so that text never reaches the repository.
 The replicate number is part of the key but never sent to the API (docs/DECISIONS.md D-12).
 """
 
@@ -130,9 +132,11 @@ class LLMCache:
 
 class GeminiClient:
     def __init__(self, settings: Settings, cache: LLMCache, demo: bool = False, transport: Transport | None = None,
-                 sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic):
+                 sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic,
+                 private_cache: LLMCache | None = None):
         self.settings = settings
         self.cache = cache
+        self.private_cache = private_cache
         self.demo = demo
         self.transport = transport
         self._sleep = sleep
@@ -176,17 +180,24 @@ class GeminiClient:
                 self._sleep(wait)
         self._last_call = self._clock()
 
-    def generate_json(self, prompt: str, schema: dict, *, purpose: str, replicate: int = 0) -> LLMResult:
+    def generate_json(self, prompt: str, schema: dict, *, purpose: str, replicate: int = 0,
+                      private: bool = False) -> LLMResult:
+        cache = self.cache
+        if private:
+            if self.private_cache is None:
+                raise LLMError("Solicitud con texto protegido por derechos de autor sin caché privada configurada.")
+            cache = self.private_cache
         params = {"temperature": TEMPERATURE, "response_mime_type": "application/json"}
-        key = self.cache.key(self.model, prompt, params, schema, replicate)
-        hit = self.cache.get(key)
+        key = cache.key(self.model, prompt, params, schema, replicate)
+        hit = cache.get(key)
         if hit is not None:
             meta = dict(hit["meta"], from_cache=True)
             return LLMResult(data=json.loads(hit["response_text"]), raw_text=hit["response_text"], meta=meta)
         if self.demo:
             raise CacheMiss(
                 f"Modo demo: no hay respuesta guardada para esta solicitud ({purpose}, modelo {self.model}, "
-                f"réplica {replicate}, clave {key[:12]}…). Ejecute primero sin --demo con una API key."
+                f"réplica {replicate}, clave {key[:12]}…"
+                + (", caché privada" if private else "") + "). Ejecute primero sin --demo con una API key."
             )
 
         transport = self._transport()
@@ -202,9 +213,9 @@ class GeminiClient:
         try:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
-            path = self.cache.put_failure(key, entry)
+            path = cache.put_failure(key, entry)
             raise InvalidResponse(f"La respuesta del LLM no es JSON válido ({purpose}); guardada en {path}") from exc
-        self.cache.put(key, entry)
+        cache.put(key, entry)
         return LLMResult(data=data, raw_text=text, meta=dict(meta, from_cache=False))
 
     def _call_with_retries(self, transport: Transport, prompt: str, schema: dict) -> tuple[str, str]:
