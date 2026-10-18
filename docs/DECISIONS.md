@@ -138,7 +138,7 @@ Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado s
 - (2026-10-17) Para no ocultar fallas, la tabla `runs` informa por escenario × versión `runs_total`, `runs_valid`, `failed_runs`, `empty_runs` y `failure_reasons` (`r<k>: <motivo>`, el texto completo queda en `results.json` y en `run_error.json`). Cada media y desviación de los indicadores 1, 3 (modelo) y 5 se calcula dos veces: `_valid`, solo con corridas válidas, y `_fail0`, contando cada corrida fallida como 0 (precisión, exhaustividad y persistencia 0). La columna `failed_runs` aparece en las tablas CSV y Markdown de esos indicadores. En el indicador 5, contar una falla como 0 violaciones favorece al modelo; se informa solo por completitud y la cifra a citar es `_valid` junto con `failed_runs`. Cuál de las dos vistas se reporta como principal en la tesis queda a decisión de Sebas.
 - Media y desviación estándar **muestral** (n−1) sobre las corridas; los porcentajes se redondean a 2 decimales.
 - Un error de la API (cuota, modelo inexistente, falta de clave, caché ausente en `--demo`) detiene `aem eval` con un mensaje claro; al repetirlo, la caché evita repetir lo ya obtenido.
-- Las tablas quedan en `runs/<corrida>/results/` (CSV con BOM, `results.md`, `results.json`) y las salidas de cada corrida en `runs/<corrida>/<escenario>/<versión>/r<k>/`.
+- Las tablas quedan en `runs/<corrida>/results/` (o `results_FAKE/`, D-71) (CSV con BOM, `results.md`, `results.json`) y las salidas de cada corrida en `runs/<corrida>/<escenario>/<versión>/r<k>/`.
 
 ### D-68. Indicador 4 — chequeo automático — **PENDIENTE DE CONFIRMAR**
 Hoja de revisión manual: `eval/review_sheets/<corrida>_indicator4_summaries.csv`, una fila por técnica resumida, con la descripción fuente (limpia, D-40), el resumen, el estado y columnas vacías `ok (si/no)` y `observación`. El chequeo automático marca un resumen como no conforme si contiene (a) un identificador de ATT&CK (`T`, `TA`, `M`, `G`, `S`, `C`, `DS`, `DC` + 4 dígitos) o (b) una cifra que no aparece en la descripción fuente, o (c) más oraciones que `summary.max_sentences`. Es una aproximación; la medida de fidelidad es la revisión manual de Sebas.
@@ -148,6 +148,13 @@ Para que el enfoque tradicional sea una comparación justa, reconoce todo lo que
 - `qtox`: ID de qTox, 76 caracteres alfanuméricos aislados con al menos `ioc.qtox_min_hex` (70) hexadecimales. La tolerancia existe porque CISA publicó uno con una errata (`…923AS199…`); se compara en minúsculas.
 - `account`: valores de las columnas de tablas cuyo encabezado está en `ioc.account_columns` (`Username`, `User Account`, `Account Name`) y cada mención de ese valor en el texto (palabra completa, sin distinguir mayúsculas).
 Con esto Gunra pasa de 29 a 34 IoC (los 34 de la sección) y la organización «conoce» 17 (antes 15). Interlock no cambia (38; conocidos 19).
+
+### D-71. Resultados con un LLM simulado: siempre «FAKE»
+Las pruebas usan transportes simulados en lugar de la API. Para que esos resultados nunca se confundan con los reales:
+- cada respuesta guarda en la caché su `source`: `gemini-api` solo si vino del transporte real del SDK (`GenaiTransport`, comprobación de tipo exacta); si no, `fake:<clase>`. Una entrada de caché sin `source` cuenta como `desconocida`, no como real;
+- una corrida o un experimento es real solo si **todas** sus respuestas (incluidas las leídas de la caché o en `--demo`) son `gemini-api`;
+- si no lo es: las salidas de `aem run` y de cada corrida llevan el prefijo `FAKE_`, las tablas de `aem eval` van a `runs/<corrida>/results_FAKE/` (nunca a `results/`) con prefijo `FAKE_` y un encabezado «FAKE» en `results.md`, y las hojas de revisión llevan el prefijo `FAKE_`; la consola lo avisa;
+- toda fila de toda tabla lleva `llm_source`, `model`, `model_version`, `run_date` y `prompt_templates_sha256` (SHA-256 de `extract_v1.txt` y `summary_v1.txt`).
 
 ### D-69. Material con derechos de autor fuera de git (Akira)
 La caché del LLM guarda el prompt completo, que incluye el texto del reporte, y las salidas de cada corrida guardan citas textuales (`evidence_quote`). Como `runs/` se versiona, para el escenario marcado `copyrighted: true` en `data/scenarios.yaml` (Akira, The DFIR Report):

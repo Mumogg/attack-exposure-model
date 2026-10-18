@@ -43,11 +43,12 @@ def test_run_demo_end_to_end(files):
     run_pipeline(REPORT, files["ctx"], analyst_mode="auto")  # fills the tmp cache with fake answers
     res = runner.invoke(app, _args(files, "--demo"))
     assert res.exit_code == 0, res.output
-    csv_path = files["out"] / "report_exposure.csv"
+    csv_path = files["out"] / "FAKE_report_exposure.csv"  # the cache holds fake answers (D-71)
+    assert "FAKE" in res.output
     with csv_path.open(encoding="utf-8-sig", newline="") as fh:
         rows = list(csv.DictReader(fh))
     assert [r["technique_id"] for r in rows] == ["T1190", "T1021.001", "T1059.003"]
-    assert json.loads((files["out"] / "global_review.json").read_text(encoding="utf-8"))["mode"] == "auto"
+    assert json.loads((files["out"] / "FAKE_global_review.json").read_text(encoding="utf-8"))["mode"] == "auto"
 
 
 def test_run_demo_without_cache_fails_clearly(files):

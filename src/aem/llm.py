@@ -5,6 +5,8 @@ Every response is cached under SHA-256(model + prompt + params + schema + replic
 Requests built from copyrighted text (`private=True`, the DFIR report) go to a separate,
 git-ignored cache so that text never reaches the repository.
 The replicate number is part of the key but never sent to the API (docs/DECISIONS.md D-12).
+Each response records its `source`: "gemini-api" only when it came from the real SDK
+transport; anything else (test doubles, cache entries without a source) is not real (D-71).
 """
 
 from __future__ import annotations
@@ -22,6 +24,8 @@ from aem.config import Settings
 TEMPERATURE = 0
 RETRYABLE = {429, 500, 502, 503, 504}
 BACKOFF_BASE_SECONDS = 2
+REAL_SOURCE = "gemini-api"
+UNKNOWN_SOURCE = "desconocida"
 
 
 class LLMError(RuntimeError):
@@ -90,6 +94,11 @@ class GenaiTransport:
         return resp.text or "", getattr(resp, "model_version", None) or model
 
 
+def transport_source(transport: Transport) -> str:
+    """Exact type check: a subclass or a stand-in of the SDK transport does not count as real."""
+    return REAL_SOURCE if type(transport) is GenaiTransport else f"fake:{type(transport).__name__}"
+
+
 @dataclass
 class LLMResult:
     data: dict
@@ -143,6 +152,14 @@ class GeminiClient:
         self._clock = clock
         self._last_call: float | None = None
         self._model_checked = False
+        self.call_log: list[dict] = []  # meta of every answer served (cache hits included), for provenance
+
+    def provenance(self, start: int = 0) -> dict:
+        """Where the answers since call number `start` came from; `real` only if every one is from the API."""
+        calls = self.call_log[start:]
+        sources = sorted({c["source"] for c in calls})
+        return {"real": bool(calls) and sources == [REAL_SOURCE], "sources": sources,
+                "model_versions": sorted({c.get("model_version") or c.get("model") or "" for c in calls})}
 
     @property
     def model(self) -> str:
@@ -192,6 +209,8 @@ class GeminiClient:
         hit = cache.get(key)
         if hit is not None:
             meta = dict(hit["meta"], from_cache=True)
+            meta.setdefault("source", UNKNOWN_SOURCE)
+            self.call_log.append(meta)
             return LLMResult(data=json.loads(hit["response_text"]), raw_text=hit["response_text"], meta=meta)
         if self.demo:
             raise CacheMiss(
@@ -207,8 +226,9 @@ class GeminiClient:
             "purpose": purpose, "model": self.model, "model_version": version,
             "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "temperature": TEMPERATURE, "prompt_sha256": _sha256(prompt), "replicate": replicate,
-            "cache_key": key,
+            "cache_key": key, "source": transport_source(transport),
         }
+        self.call_log.append(meta)
         entry = {"meta": meta, "params": params, "schema": schema, "prompt": prompt, "response_text": text}
         try:
             data = json.loads(text)

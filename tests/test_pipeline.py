@@ -100,8 +100,9 @@ def test_demo_uses_only_cache(tmp_path, mini_attack):
 def test_write_outputs(tmp_path, mini_attack):
     res = run_pipeline(REPORT, mk_ctx(tmp_path, mini_attack, RoutingTransport()), analyst_mode="auto")
     paths = write_outputs(res, tmp_path / "out", stem="gunra")
-    assert paths["csv"].name == "gunra_exposure.csv"
-    assert paths["global_review"].name == "global_review.json"
+    assert res.meta["fake"] is True and res.meta["llm_sources"] == ["fake:RoutingTransport"]
+    assert paths["csv"].name == "FAKE_gunra_exposure.csv"  # fake LLM → every output file says so (D-71)
+    assert paths["global_review"].name == "FAKE_global_review.json"
     with paths["csv"].open(encoding="utf-8-sig", newline="") as fh:
         assert len(list(csv.DictReader(fh))) == 3
     record = json.loads(paths["record"].read_text(encoding="utf-8"))
@@ -119,3 +120,10 @@ def test_private_report_extraction_goes_to_private_cache(tmp_path, mini_attack):
     assert {e["meta"]["purpose"].split("[")[0] for e in private} == {"step1_extract"}
     assert {e["meta"]["purpose"].split("[")[0] for e in public} == {"step4_summary"}
     assert not any(REPORT[:40] in e["prompt"] for e in public)
+
+
+def test_real_outputs_have_no_fake_prefix(tmp_path, mini_attack):
+    from fakes import as_real_transport
+    res = run_pipeline(REPORT, mk_ctx(tmp_path, mini_attack, as_real_transport(RoutingTransport())), analyst_mode="auto")
+    assert res.meta["fake"] is False and res.meta["llm_sources"] == ["gemini-api"]
+    assert write_outputs(res, tmp_path / "out", stem="gunra")["csv"].name == "gunra_exposure.csv"

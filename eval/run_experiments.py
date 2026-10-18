@@ -4,20 +4,28 @@ Every run goes through the same pipeline as `aem run` in `--analyst-mode auto`.
 API failures (quota, model, missing key, demo cache miss) stop the experiment
 with a clear error; thanks to the cache, re-running resumes where it stopped.
 An unusable LLM answer (not JSON / outside the schema) is recorded as a failed run.
+Unless every answer came from the real Gemini API, tables go to `results_FAKE/` with a
+`FAKE_` prefix and never to `results/` (D-71).
 """
 
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import random
 from collections import Counter
 from datetime import datetime, timezone
+from importlib import resources
 from pathlib import Path
 
 from aem.llm import TEMPERATURE, CacheMiss, InvalidResponse
 from aem.output import write_json
-from aem.pipeline import EmptyExtraction, PipelineContext, run_pipeline, write_outputs, write_record
+from aem.pipeline import (
+    EmptyExtraction, PipelineContext, output_prefix, run_pipeline, write_outputs, write_record,
+)
+from aem.step1_extract import PROMPT_NAME
+from aem.step4_reference import SUMMARY_PROMPT
 from aem.scenarios import VERSIONS, Scenario, load_reference
 from eval.baseline_ioc import baseline_recognizes
 from eval.metrics import (
@@ -34,16 +42,21 @@ NO_DATA = "sin dato disponible"
 def _one_run(ctx: PipelineContext, sc: Scenario, version: str, replicate: int, text: str, out: Path) -> dict:
     rec = {"scenario": sc.name, "version": version, "replicate": replicate, "status": "ok", "error": None,
            "raw": [], "extra_fields": [], "summaries": []}
+    first_call = len(ctx.client.call_log)
+
+    def pre() -> str:
+        return output_prefix(not ctx.client.provenance(first_call)["real"])
+
     try:
         result = run_pipeline(text, ctx, analyst_mode="auto", replicate=replicate, private=sc.copyrighted)
     except EmptyExtraction as exc:
-        write_record(out / "run_record.json", exc.extraction, {"error": str(exc)})
+        write_record(out / f"{pre()}run_record.json", exc.extraction, {"error": str(exc)})
         rec.update(status="empty", error=str(exc),
                    raw=[t.model_dump() for t in exc.extraction.extracted_raw],
                    extra_fields=exc.extraction.extra_fields)
         return rec
     except InvalidResponse as exc:
-        write_json(out / "run_error.json", {"error": str(exc)})
+        write_json(out / f"{pre()}run_error.json", {"error": str(exc)})
         rec.update(status="error", error=str(exc))
         return rec
     write_outputs(result, out, stem=Path(sc.report_for(version)).stem)
@@ -293,39 +306,64 @@ _TITLES = {
 }
 
 
+def prompt_templates_sha256() -> str:
+    files = resources.files("aem.prompts")
+    return "; ".join(f"{name}={hashlib.sha256(files.joinpath(name).read_bytes()).hexdigest()}"
+                     for name in (PROMPT_NAME, SUMMARY_PROMPT))
+
+
+def provenance_columns(meta: dict) -> dict:
+    """Prepended to every row of every table, so a table copied on its own still says where it came from."""
+    source = "gemini-api" if not meta["fake"] else "FAKE (" + ", ".join(meta["llm_sources"] or ["sin llamadas"]) + ")"
+    return {"llm_source": source, "model": meta["model"], "model_version": "; ".join(meta["model_versions"]) or NO_DATA,
+            "run_date": meta["started"][:10], "prompt_templates_sha256": meta["prompt_templates_sha256"]}
+
+
 def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -> dict[str, Path]:
-    results = run_dir / "results"
+    pre = output_prefix(meta["fake"])
+    results = run_dir / ("results_FAKE" if meta["fake"] else "results")
+    prov = provenance_columns(meta)
+    tables = {name: [{**prov, **r} for r in rows] for name, rows in computed["tables"].items()}
     paths = {}
-    for name, rows in computed["tables"].items():
-        paths[name] = results / f"{name}.csv"
+    for name, rows in tables.items():
+        paths[name] = results / f"{pre}{name}.csv"
         write_table(paths[name], rows)
     run_id = run_dir.name
-    paths["indicator4_sheet"] = sheets_dir / f"{run_id}_indicator4_summaries.csv"
+    paths["indicator4_sheet"] = sheets_dir / f"{pre}{run_id}_indicator4_summaries.csv"
     write_table(paths["indicator4_sheet"], computed["summary_sheet"])
-    paths["indicator5_sheet"] = sheets_dir / f"{run_id}_indicator5_sample.csv"
+    paths["indicator5_sheet"] = sheets_dir / f"{pre}{run_id}_indicator5_sample.csv"
     write_table(paths["indicator5_sheet"], computed["sample_sheet"])
     if computed["private_sample_sheet"]:  # quotes from copyrighted text: git-ignored folder
-        paths["indicator5_private_sheet"] = sheets_dir / "private" / f"{run_id}_indicator5_sample_private.csv"
+        paths["indicator5_private_sheet"] = sheets_dir / "private" / f"{pre}{run_id}_indicator5_sample_private.csv"
         write_table(paths["indicator5_private_sheet"], computed["private_sample_sheet"])
 
-    md = [f"# Resultados de la evaluación — corrida `{run_id}`\n",
+    md = []
+    if meta["fake"]:
+        md += [f"# FAKE — resultados con un LLM simulado, no válidos para la tesis (corrida `{run_id}`)\n",
+               f"> Origen de las respuestas: {prov['llm_source']}. Estas tablas no provienen de la API real de "
+               "Gemini y no deben citarse.\n"]
+    md += [f"# Resultados de la evaluación — corrida `{run_id}`\n",
           f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
           f"{meta['replicates']} corridas por escenario × versión · modo demo: {'sí' if meta['demo'] else 'no'}",
           f"- Media y desviación estándar muestral (n−1). «{NO_DATA}»: no hay corridas o el valor no está definido.",
           "- Cada media se informa dos veces (D-67): `_valid` solo con las corridas válidas y `_fail0` contando "
           "cada corrida fallida (`failed_runs`) como 0. En el indicador 5, contar una falla como 0 violaciones es "
           "optimista: se informa solo por completitud.",
+          f"- Origen: {prov['llm_source']} · versión del modelo: {prov['model_version']} · fecha: {prov['run_date']} · "
+          f"hash SHA-256 de las plantillas de prompt: {prov['prompt_templates_sha256']}",
           "- No hay indicador para el paso 3 ni para la revisión global (criterio del analista).\n"]
     if meta["skipped"]:
         md.append("Escenarios/versiones sin texto (no evaluados): " + ", ".join(meta["skipped"]) + "\n")
+    stamp = (f"_{prov['llm_source']} · modelo `{prov['model']}` ({prov['model_version']}) · {prov['run_date']} · "
+             f"prompts {prov['prompt_templates_sha256']}_\n")
     for name in _TITLES:
-        md += [f"## {_TITLES[name]}\n", md_table(computed["tables"][name])]
+        md += [f"## {'FAKE — ' if meta['fake'] else ''}{_TITLES[name]}\n", stamp, md_table(computed["tables"][name])]
     md.append(f"Hojas de revisión manual: `{paths['indicator4_sheet'].name}`, `{paths['indicator5_sheet'].name}` "
               f"(carpeta `eval/review_sheets/`).\n")
-    paths["markdown"] = results / "results.md"
+    paths["markdown"] = results / f"{pre}results.md"
     paths["markdown"].write_text("\n".join(md), encoding="utf-8")
-    paths["json"] = results / "results.json"
-    write_json(paths["json"], dict(meta, tables=computed["tables"]))
+    paths["json"] = results / f"{pre}results.json"
+    write_json(paths["json"], dict(meta, tables=tables))
     return paths
 
 
@@ -357,7 +395,10 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
                     break
             runs += done
     computed = compute(runs, scenarios, ctx, replicates)
-    meta = {"run_id": run_dir.name, "started": started,
+    provenance = ctx.client.provenance()
+    meta = {"fake": not provenance["real"], "llm_sources": provenance["sources"],
+            "model_versions": provenance["model_versions"], "prompt_templates_sha256": prompt_templates_sha256(),
+            "run_id": run_dir.name, "started": started,
             "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"), "model": ctx.client.model,
             "temperature": TEMPERATURE, "attack_version": ctx.attack.version, "replicates": replicates,
             "demo": ctx.client.demo, "skipped": skipped,

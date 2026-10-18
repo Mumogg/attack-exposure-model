@@ -38,3 +38,16 @@ class FakeClock:
     def sleep(self, s):
         self.sleeps.append(s)
         self.t += s
+
+
+def as_real_transport(inner):
+    """A genuine `GenaiTransport` object whose network methods are replaced by `inner`'s.
+
+    Only for testing what happens *with* real provenance; it never touches the network.
+    """
+    from aem.llm import GenaiTransport
+
+    t = GenaiTransport.__new__(GenaiTransport)
+    t.get_model = inner.get_model
+    t.generate = inner.generate
+    return t

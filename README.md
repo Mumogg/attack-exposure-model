@@ -141,7 +141,7 @@ aem make-variants
 aem eval                 # con API key; o `aem eval --demo` con la caché publicada
 ```
 
-`aem eval` corre **3 escenarios × 2 versiones (`orig`, `mut`) × 5 corridas** con los mismos parámetros (`temperature = 0`) y reporta media y desviación estándar. Resultados en `runs/<fecha>/results/` (`results.md`, CSV y JSON) y hojas de revisión manual en `eval/review_sheets/`. La estimación de llamadas y tiempo está en `docs/PLAN.md` (≈ 110–150 llamadas, 20–35 minutos con `GEMINI_RPM=10`).
+`aem eval` corre **3 escenarios × 2 versiones (`orig`, `mut`) × 5 corridas** con los mismos parámetros (`temperature = 0`) y reporta media y desviación estándar. Resultados en `runs/<fecha>/results/` (`results.md`, CSV y JSON; cada tabla lleva modelo, versión, fecha y hash de las plantillas de prompt) y hojas de revisión manual en `eval/review_sheets/`. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). La estimación de llamadas y tiempo está en `docs/PLAN.md` (≈ 110–150 llamadas, 20–35 minutos con `GEMINI_RPM=10`).
 
 | Indicador | Qué mide |
 |---|---|

@@ -86,6 +86,9 @@ def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, atta
     except (LLMError, FileNotFoundError, ValueError, KeyError) as exc:
         _fail(str(exc))
     paths = write_outputs(result, out, stem=Path(report).stem)
+    if result.meta["fake"]:
+        console.print(f"[bold red]FAKE:[/bold red] respuestas que no provienen de la API real de Gemini "
+                      f"(origen: {', '.join(result.meta['llm_sources'])}). Los archivos llevan el prefijo FAKE_.")
     counts = {a: sum(r["action"] == a for r in result.rows) for a in ("Act", "Attend", "Track*", "Track")}
     console.print(f"[green]Listo.[/green] {len(result.rows)} técnicas. Acciones asignadas por el analista "
                   f"(árbol SSVC adaptado): " + ", ".join(f"{a}={n}" for a, n in counts.items()))
@@ -231,6 +234,9 @@ def eval_cmd(
         _fail(f"{exc}\nLas respuestas ya obtenidas quedan en la caché: al repetir el comando se reutilizan.")
     for item in result["skipped"]:
         console.print(f"[yellow]Sin texto, no evaluado:[/yellow] {item}")
+    if result["paths"]["markdown"].parent.name == "results_FAKE":
+        console.print("[bold red]FAKE:[/bold red] alguna respuesta no proviene de la API real de Gemini. Las tablas "
+                      "quedaron en results_FAKE/ con prefijo FAKE_ y no sirven como resultados de la tesis.")
     failed = [r for r in result["runs"] if r["status"] != "ok"]
     console.print(f"[green]Listo.[/green] {len(result['runs'])} corridas ({len(failed)} sin salida utilizable).")
     for label in ("markdown", "indicator4_sheet", "indicator5_sheet"):

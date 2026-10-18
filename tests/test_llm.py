@@ -165,3 +165,42 @@ def test_private_request_without_private_cache_is_refused(tmp_path):
     c, _ = client(tmp_path, FakeTransport([{"x": 1}]))
     with pytest.raises(LLMError, match="privada"):
         c.generate_json("texto", SCHEMA, purpose="t", private=True)
+
+
+# --- provenance: results produced with a fake LLM must never pass as real -------------------------
+
+
+def test_fake_transport_is_recorded_as_fake(tmp_path):
+    c, _ = client(tmp_path, FakeTransport([{"x": 1}]))
+    res = c.generate_json("hola", SCHEMA, purpose="test")
+    assert res.meta["source"] == "fake:FakeTransport"
+    assert c.provenance()["real"] is False and c.provenance()["sources"] == ["fake:FakeTransport"]
+    # the cached entry keeps the label, so a later cache hit is still fake
+    again, _ = client(tmp_path, transport=None, demo=True)
+    assert again.generate_json("hola", SCHEMA, purpose="test").meta["source"] == "fake:FakeTransport"
+    assert again.provenance()["real"] is False
+
+
+def test_real_transport_is_recorded_as_real(tmp_path):
+    from fakes import as_real_transport
+    c, _ = client(tmp_path, as_real_transport(FakeTransport([{"x": 1}])))
+    assert c.generate_json("hola", SCHEMA, purpose="test").meta["source"] == "gemini-api"
+    p = c.provenance()
+    assert p["real"] is True and p["model_versions"] == ["gemini-3.8-flash-001"]
+
+
+def test_cache_entry_without_source_is_not_real(tmp_path):
+    c, _ = client(tmp_path, FakeTransport([{"x": 1}]))
+    c.generate_json("hola", SCHEMA, purpose="test")
+    for f in (tmp_path / "cache").rglob("*.json"):
+        entry = json.loads(f.read_text(encoding="utf-8"))
+        del entry["meta"]["source"]
+        f.write_text(json.dumps(entry), encoding="utf-8")
+    d, _ = client(tmp_path, transport=None, demo=True)
+    assert d.generate_json("hola", SCHEMA, purpose="test").meta["source"] == "desconocida"
+    assert d.provenance()["real"] is False
+
+
+def test_no_calls_is_not_real(tmp_path):
+    c, _ = client(tmp_path, FakeTransport())
+    assert c.provenance()["real"] is False

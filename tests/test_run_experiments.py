@@ -11,7 +11,7 @@ from aem.reports import ReferenceRow
 from aem.scenarios import load_scenarios, write_reference_csv
 from aem.step3_prioritize import load_tree
 from eval.run_experiments import run_experiment
-from fakes import FakeClock
+from fakes import FakeClock, as_real_transport
 from helpers import make_org
 from test_pipeline import RoutingTransport
 
@@ -43,8 +43,11 @@ def setup(tmp_path, mini_attack):
                                     {"technique_id": "T1059.003", "intended": "cubierta"}],
                    known_iocs=[{"type": "ipv4", "value": "45.61.136.10", "scenario": "gunra"}])
 
-    def ctx(transport=None, demo=False):
+    def ctx(transport=None, demo=False, real=True):
+        """`real=True` wraps the fake in a genuine GenaiTransport object, so results count as real."""
         clock = FakeClock()
+        if transport is not None and real:
+            transport = as_real_transport(transport)
         client = GeminiClient(Settings(None if demo else "k", "gemini-3.8-flash", "gemini-3.5-flash-lite", 600, 0),
                               LLMCache(tmp_path / "cache"), demo=demo, transport=transport,
                               sleep=clock.sleep, clock=clock.now, private_cache=LLMCache(tmp_path / "private"))
@@ -203,3 +206,39 @@ def test_demo_without_private_cache_skips_copyrighted_scenario(setup):
     res = run_experiment(setup["ctx"](demo=True), setup["scenarios"], setup["run"].parent / "d", setup["sheets"],
                          replicates=1)
     assert any(s.startswith("akira: orig") and "caché privada" in s for s in res["skipped"])
+
+
+# --- D-71: results from a fake LLM never pass as real -------------------------------------------
+
+
+def test_fake_llm_results_never_reach_results_dir(setup):
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION), real=False), setup["scenarios"],
+                   setup["run"], setup["sheets"], replicates=1)
+    assert not (setup["run"] / "results").exists()
+    fake = setup["run"] / "results_FAKE"
+    assert all(p.name.startswith("FAKE_") for p in fake.iterdir())
+    rows = read_csv(fake / "FAKE_indicator1.csv")
+    assert rows and all(r["llm_source"].startswith("FAKE") for r in rows)
+    assert (fake / "FAKE_results.md").read_text(encoding="utf-8").startswith("# FAKE")
+    assert (setup["sheets"] / "FAKE_r1_indicator4_summaries.csv").exists()
+    assert not (setup["sheets"] / "r1_indicator4_summaries.csv").exists()
+    out = setup["run"] / "gunra" / "orig" / "r0"
+    assert sorted(p.name for p in out.iterdir()) == ["FAKE_global_review.json",
+                                                     "FAKE_gunra_aa26-222a_stripped_exposure.csv",
+                                                     "FAKE_run_record.json"]
+
+
+def test_real_results_carry_model_date_and_prompt_hash(setup):
+    import hashlib
+    from importlib import resources
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=1)
+    extract_sha = hashlib.sha256(resources.files("aem.prompts").joinpath("extract_v1.txt").read_bytes()).hexdigest()
+    for table in (setup["run"] / "results").glob("*.csv"):
+        rows = read_csv(table)
+        for r in rows:
+            assert r["llm_source"] == "gemini-api" and r["model"] == "gemini-3.8-flash"
+            assert r["model_version"] == "gemini-3.8-flash" and len(r["run_date"]) == 10
+            assert f"extract_v1.txt={extract_sha}" in r["prompt_templates_sha256"]
+    md = (setup["run"] / "results" / "results.md").read_text(encoding="utf-8")
+    assert "FAKE" not in md and extract_sha in md

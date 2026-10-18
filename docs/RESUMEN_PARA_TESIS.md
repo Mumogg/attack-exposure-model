@@ -36,7 +36,7 @@ Fuentes de verdad, por si algo cambia: `data/model_config.yaml` (parámetros), `
 
 ### 1.4 Evaluación (`eval/`, `aem eval`)
 
-`eval/run_experiments.py` corre cada escenario × versión (`orig`, `mut`) × 5 corridas con el mismo pipeline de `aem run` en modo `auto`, guarda cada respuesta cruda y cada salida en `runs/<fecha>/…`, y calcula los cinco indicadores (`eval/metrics.py`). Produce tablas en CSV y Markdown (`runs/<fecha>/results/`) y dos hojas de revisión manual (`eval/review_sheets/`).
+`eval/run_experiments.py` corre cada escenario × versión (`orig`, `mut`) × 5 corridas con el mismo pipeline de `aem run` en modo `auto`, guarda cada respuesta cruda y cada salida en `runs/<fecha>/…`, y calcula los cinco indicadores (`eval/metrics.py`). Produce tablas en CSV y Markdown (`runs/<fecha>/results/`) y dos hojas de revisión manual (`eval/review_sheets/`). Cada fila de cada tabla lleva el origen de las respuestas, el ID y la versión del modelo, la fecha y el SHA-256 de las plantillas de prompt. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71).
 
 | Indicador | Definición implementada |
 |---|---|
@@ -177,6 +177,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-68 | Chequeo automático del indicador 4 | PENDIENTE DE CONFIRMAR |
 | D-69 | Material con derechos de autor fuera de git | Técnica |
 | D-70 | Tipos de IoC adicionales (qTox, cuentas) para un enfoque tradicional justo | PENDIENTE DE CONFIRMAR |
+| D-71 | Resultados con LLM simulado marcados FAKE y separados | Técnica |
 
 ---
 
