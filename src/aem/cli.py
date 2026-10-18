@@ -1,0 +1,118 @@
+"""Command-line interface (texts in Spanish)."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import typer
+from rich.console import Console
+
+from aem import config
+from aem.config import (
+    ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, LLM_CACHE_DIR, ORG_FILE, PREVALENCE_FILE, RUNS_DIR,
+    SSVC_TREE_FILE, Settings, load_model_config,
+)
+
+app = typer.Typer(
+    help="Prototipo de tesis: evaluación de exposición a técnicas MITRE ATT&CK asistida por IA "
+         "(solo para reproducibilidad; no es una herramienta de producción).",
+    no_args_is_help=True, add_completion=False,
+)
+console = Console()
+
+DEMO_REPORT = DATA_DIR / "reports" / "gunra_aa26-222a_stripped.txt"
+DEMO_OUT = RUNS_DIR / "demo" / "gunra"
+
+
+def _load_env() -> None:
+    from dotenv import load_dotenv
+
+    load_dotenv(config.REPO_ROOT / ".env")
+
+
+def _fail(message: str) -> None:
+    console.print(f"[bold red]Error:[/bold red] {message}")
+    raise typer.Exit(1)
+
+
+def _build_context(org: Path, attack: Path, cache_dir: Path, demo: bool):
+    from aem.attack_data import AttackData
+    from aem.boundaries import load_patterns
+    from aem.llm import GeminiClient, LLMCache
+    from aem.org import load_org
+    from aem.pipeline import PipelineContext
+    from aem.step3_prioritize import load_tree
+    from aem.step4_reference import load_prevalence
+
+    _load_env()
+    settings = Settings.from_env(load_dotenv_file=False)
+    return PipelineContext(
+        attack=AttackData.load(attack), org=load_org(org),
+        client=GeminiClient(settings, LLMCache(cache_dir), demo=demo), model_cfg=load_model_config(),
+        tree=load_tree(SSVC_TREE_FILE), prevalence=load_prevalence(PREVALENCE_FILE), patterns=load_patterns(),
+        console=console,
+    )
+
+
+def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, attack: Path, cache_dir: Path) -> None:
+    from aem.llm import LLMError
+    from aem.pipeline import EmptyExtraction, run_pipeline, write_outputs, write_record
+
+    if not Path(report).is_file():
+        _fail(f"No existe el reporte {report}. Para los escenarios de la tesis ejecute `aem fetch-data`.")
+    try:
+        ctx = _build_context(org, attack, cache_dir, demo)
+        result = run_pipeline(Path(report).read_text(encoding="utf-8"), ctx, analyst_mode=analyst_mode)
+    except EmptyExtraction as exc:
+        write_record(Path(out) / "run_record.json", exc.extraction, {"error": str(exc)})
+        _fail(f"{exc} Registro guardado en {Path(out) / 'run_record.json'}")
+    except (LLMError, FileNotFoundError, ValueError, KeyError) as exc:
+        _fail(str(exc))
+    paths = write_outputs(result, out, stem=Path(report).stem)
+    counts = {a: sum(r["action"] == a for r in result.rows) for a in ("Act", "Attend", "Track*", "Track")}
+    console.print(f"[green]Listo.[/green] {len(result.rows)} técnicas. Acciones asignadas por el analista "
+                  f"(árbol SSVC adaptado): " + ", ".join(f"{a}={n}" for a, n in counts.items()))
+    for label, p in paths.items():
+        console.print(f"  {label}: {p}")
+    console.print("La salida no afirma que la organización haya sido comprometida.")
+
+
+@app.command("fetch-data")
+def fetch_data() -> None:
+    """Descarga ATT&CK Enterprise v19.2 (verificando su SHA-256)."""
+    from aem.fetch import ChecksumMismatch, fetch_verified
+
+    try:
+        digest = fetch_verified(ATTACK_URL, ATTACK_FILE, ATTACK_CHECKSUMS)
+    except (ChecksumMismatch, OSError) as exc:
+        _fail(str(exc))
+    console.print(f"ATT&CK v19.2: {ATTACK_FILE} (SHA-256 {digest})")
+
+
+@app.command("run")
+def run(
+    report: Path = typer.Option(..., "--report", help="Reporte de amenaza en texto plano (.txt o .md)."),
+    org: Path = typer.Option(ORG_FILE, "--org", help="YAML de la organización (estilo DeTT&CT)."),
+    analyst_mode: str = typer.Option("interactive", "--analyst-mode",
+                                     help="interactive (analista en la terminal) o auto (solo experimentos)."),
+    demo: bool = typer.Option(False, "--demo", help="Usar solo respuestas guardadas en la caché (sin API key)."),
+    out: Path = typer.Option(..., "--out", help="Carpeta de salida."),
+    attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
+    cache_dir: Path = typer.Option(LLM_CACHE_DIR, "--cache-dir", help="Carpeta de la caché de respuestas del LLM."),
+) -> None:
+    """Corre los 4 pasos del modelo sobre un reporte y escribe el CSV y global_review.json."""
+    _run(report, org, analyst_mode, demo, out, attack, cache_dir)
+
+
+@app.command("demo")
+def demo_cmd(
+    out: Path = typer.Option(DEMO_OUT, "--out", help="Carpeta de salida."),
+    attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
+    cache_dir: Path = typer.Option(LLM_CACHE_DIR, "--cache-dir", help="Carpeta de la caché de respuestas del LLM."),
+) -> None:
+    """Corre el escenario de Gunra (AA26-222A) en modo demo, sin API key."""
+    _run(DEMO_REPORT, ORG_FILE, "auto", True, out, attack, cache_dir)
+
+
+if __name__ == "__main__":
+    app()

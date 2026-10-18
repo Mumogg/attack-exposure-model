@@ -1,0 +1,69 @@
+import csv
+import json
+
+import pytest
+import yaml
+from typer.testing import CliRunner
+
+from aem.cli import app
+from test_pipeline import REPORT, RoutingTransport, mk_ctx
+from aem.pipeline import run_pipeline
+
+runner = CliRunner()
+
+
+@pytest.fixture
+def files(tmp_path, mini_attack, monkeypatch):
+    monkeypatch.setenv("GEMINI_MODEL", "gemini-3.8-flash")
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.setattr("aem.cli._load_env", lambda: None)  # never read the developer's .env in tests
+    ctx = mk_ctx(tmp_path, mini_attack, RoutingTransport())
+    report = tmp_path / "report.txt"
+    report.write_text(REPORT, encoding="utf-8")
+    org = tmp_path / "org.yaml"
+    org.write_text(yaml.safe_dump(ctx.org.model_dump(mode="json"), allow_unicode=True), encoding="utf-8")
+    return {"ctx": ctx, "report": report, "org": org, "cache": tmp_path / "cache", "attack": mini_attack.bundle_path,
+            "out": tmp_path / "out"}
+
+
+def _args(f, *extra):
+    return ["run", "--report", str(f["report"]), "--org", str(f["org"]), "--analyst-mode", "auto",
+            "--out", str(f["out"]), "--attack", str(f["attack"]), "--cache-dir", str(f["cache"]), *extra]
+
+
+def test_help_is_in_spanish():
+    res = runner.invoke(app, ["--help"])
+    assert res.exit_code == 0
+    for cmd in ("fetch-data", "run", "demo"):
+        assert cmd in res.output
+    assert "Descarga" in res.output
+
+
+def test_run_demo_end_to_end(files):
+    run_pipeline(REPORT, files["ctx"], analyst_mode="auto")  # fills the tmp cache with fake answers
+    res = runner.invoke(app, _args(files, "--demo"))
+    assert res.exit_code == 0, res.output
+    csv_path = files["out"] / "report_exposure.csv"
+    with csv_path.open(encoding="utf-8-sig", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    assert [r["technique_id"] for r in rows] == ["T1190", "T1021.001", "T1059.003"]
+    assert json.loads((files["out"] / "global_review.json").read_text(encoding="utf-8"))["mode"] == "auto"
+
+
+def test_run_demo_without_cache_fails_clearly(files):
+    res = runner.invoke(app, _args(files, "--demo"))
+    assert res.exit_code == 1
+    assert "Modo demo" in res.output
+
+
+def test_run_without_key_fails_clearly(files):
+    res = runner.invoke(app, _args(files))
+    assert res.exit_code == 1
+    assert "GEMINI_API_KEY" in res.output
+
+
+def test_demo_command_missing_report(files, tmp_path, monkeypatch):
+    monkeypatch.setattr("aem.cli.DEMO_REPORT", tmp_path / "no_existe.txt")
+    res = runner.invoke(app, ["demo", "--attack", str(files["attack"]), "--cache-dir", str(files["cache"])])
+    assert res.exit_code == 1
+    assert "no_existe.txt" in res.output

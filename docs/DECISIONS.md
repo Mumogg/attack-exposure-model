@@ -10,16 +10,18 @@ Cada decisión tomada sin confirmación explícita de Sebas lleva la etiqueta **
 ### D-02. Archivo de ATT&CK
 `enterprise-attack-19.2.json` existe en `mitre-attack/attack-stix-data` con ese nombre exacto. Su SHA-256 se guarda en `data/attack/CHECKSUMS.sha256` y `aem fetch-data` lo verifica. Informativa.
 
-### D-03. Campo `data_sources` del paso 4 — **PENDIENTE DE CONFIRMAR**
-En ATT&CK v18+ las técnicas ya no tienen el campo `x_mitre_data_sources`; la detección se modela como *estrategia de detección → analíticas → componentes de datos*. El campo `data_sources` de la salida lista los **nombres de los componentes de datos** (p. ej. `Process Creation`, `Logon Session Creation`) que alcanzan la técnica por esa cadena. Los objetos `x-mitre-data-source` de v19 están todos deprecados.
+### D-03. Campo `data_sources` del paso 4 — **PENDIENTE DE CONFIRMAR (Sebas lo verifica contra la documentación de ATT&CK v19)**
+En ATT&CK v18+ las técnicas ya no tienen el campo `x_mitre_data_sources`; la detección se modela como *estrategia de detección → analíticas → componentes de datos*. El campo `data_sources` de la salida lista los **nombres de los componentes de datos** (p. ej. `Process Creation`, `Logon Session Creation`) que alcanzan la técnica por esa cadena. Los objetos `x-mitre-data-source` de v19 están todos deprecados. En el CSV la columna conserva el nombre `data_sources` (instrucción de Sebas, 2026-10-17).
+
+**Nota sobre DeTT&CT:** el modelo de datos de DeTT&CT, en el que se inspira el YAML de la organización, es anterior a este cambio de ATT&CK (usa las *data sources* clásicas). Por eso el YAML declara sus fuentes con nombres propios (`data_sources[].name`, aquí escritos como componentes de datos de v19 para que sean legibles), que no se cruzan automáticamente con la columna `data_sources` del paso 4: son dos cosas distintas (lo que la organización registra frente a lo que ATT&CK asocia a la técnica).
 
 ### D-04. SDK de Gemini
 Paquete `google-genai` 2.x. Se usa `client.models.generate_content` con `GenerateContentConfig(temperature=0, response_mime_type="application/json", response_json_schema=…)`, verificado por introspección del SDK instalado (2.31.0). La documentación vigente muestra además una API nueva (`client.interactions`), que no se usa porque `generate_content` sigue disponible y permite fijar `temperature`. La existencia del modelo se verifica con `client.models.get`. Modelos `gemini-3.8-flash` y `gemini-3.5-flash-lite` figuran como estables en https://ai.google.dev/gemini-api/docs/models (consulta del 2026-10-17).
 
 ## Paso 1 — Extracción
 
-### D-10. Limpieza de los boletines de CISA antes de dárselos al LLM — **PENDIENTE DE CONFIRMAR**
-Los boletines de CISA no solo tienen la sección «MITRE ATT&CK Tactics and Techniques»: también etiquetan cada párrafo en línea (`[T1190]`, `[TA0001]`) y una nota inicial dice qué versión de ATT&CK usan. Si solo se quitara la sección, la extracción copiaría las etiquetas. Por eso el texto `_stripped` elimina: (1) la sección completa «MITRE ATT&CK Tactics and Techniques»; (2) toda etiqueta entre corchetes con un ID de técnica o táctica; (3) la nota que remite a la tabla de ATT&CK. El detalle exacto de cada escenario está en `docs/report_preparation.md`.
+### D-10. Limpieza de los reportes antes de dárselos al LLM — **CONFIRMADA (2026-10-17)**
+Los boletines de CISA no solo tienen la sección «MITRE ATT&CK Tactics and Techniques»: también etiquetan cada párrafo en línea (`[T1190]`, `[TA0001]`) y una nota inicial dice qué versión de ATT&CK usan. Si solo se quitara la sección, la extracción copiaría las etiquetas. Por eso el texto `_stripped` elimina: (1) la sección completa del mapeo ATT&CK (y sus tablas); (2) **todo** ID de técnica, sub-técnica o táctica que aparezca en el cuerpo (`T####`, `T####.###`, `TA####`, entre corchetes o no), quitando solo el ID y dejando la oración legible; (3) la nota que remite a la tabla de ATT&CK. Lo mismo se aplica al texto de Akira (The DFIR Report) que coloca Sebas. Un test (`tests/test_reports.py`) falla si algún `*_stripped.txt` contiene `\bT\d{4}(\.\d{3})?\b` o `\bTA\d{4}\b`. El detalle de cada tipo de sección o patrón eliminado está en `docs/report_preparation.md`.
 
 ### D-11. Fragmentación de reportes largos — **PENDIENTE DE CONFIRMAR**
 Por defecto el reporte se envía completo si tiene ≤ `chunk_max_chars` caracteres (100 000 en `data/model_config.yaml`; los tres reportes están por debajo). Si lo supera, se divide en fragmentos de `chunk_size_chars` con `chunk_overlap_chars` de solapamiento, cortando en saltos de párrafo, y se unifican por `technique_id` conservando la primera cita.
@@ -38,7 +40,7 @@ Adaptación propia de la escala de detección de DeTT&CT: `score` 0 o sin entrad
 ### D-21. Sub-técnicas sin entrada propia — **PENDIENTE DE CONFIRMAR**
 Política `subtechnique_policy` en `data/model_config.yaml`. Por defecto `no_inherit`: una sub-técnica sin entrada propia queda `sin cobertura`, aunque el padre tenga detección. Alternativa `inherit_parent`: toma el puntaje del padre y lo registra como heredado. Una técnica padre **nunca** agrega la cobertura de sus sub-técnicas.
 
-### D-22. Borrador de la organización ficticia — **PENDIENTE DE CONFIRMAR (Sebas decide las brechas)**
+### D-22. Borrador de la organización ficticia — **CONFIRMADA como verdad de referencia del indicador 2 (2026-10-17): las brechas las define Sebas; el borrador es de Claude**
 `data/org/fictional_org.yaml` es un borrador. Cubre las técnicas de referencia de los tres escenarios con una mezcla de cubiertas, parciales y sin cobertura. La sección `coverage_design` declara la brecha que se pretende para cada técnica; el indicador 2 compara el paso 2 contra esa declaración.
 
 ## Paso 3 — Priorización
@@ -66,21 +68,30 @@ Si la técnica figura en `red_canary_2026.csv`: `Red Canary 2026: puesto <rank>`
 ### D-43. Grupos
 Solo grupos (`intrusion-set`) no revocados ni deprecados con relación `uses` directa hacia la técnica. No incluye campañas ni software.
 
+### D-44. Caché de resúmenes por técnica
+El resumen del paso 4 depende solo de la descripción de ATT&CK, no del escenario. Por eso todas las llamadas de resumen usan la réplica 0: hay **un resumen por técnica**, compartido por todos los escenarios, versiones y corridas. Las 5 corridas repiten solo la extracción del paso 1. Consecuencia para los indicadores 4 y 5: los resúmenes se evalúan una vez por técnica, no cinco.
+
+### D-45. Idioma de los resúmenes — **CONFIRMADA (2026-10-17)**
+Los resúmenes del paso 4 se generan en inglés, el idioma de la descripción fuente de ATT&CK, para que los chequeos de fidelidad (indicador 4) y de límites (indicador 5) comparen textos en el mismo idioma. Se documenta en el README.
+
 ## Salida
 
 ### D-50. Orden de filas
 Por acción (`Act`, `Attend`, `Track*`, `Track`). Dentro de cada acción, por el índice de táctica más temprano en la matriz (si una técnica tiene varias tácticas, cuenta la primera en el orden de la matriz). A igual táctica se ordena por `technique_id` solo para que el orden sea determinístico; no expresa prioridad.
 
 ### D-51. Listas en celdas
-Las celdas con varios valores (`tactics`, `mitigations`, `data_sources`, `groups`) usan `; ` como separador.
+Las celdas con varios valores (`tactics`, `mitigations`, `data_sources`, `groups`) usan `; ` como separador. Una lista vacía se escribe `sin dato disponible`.
+
+### D-52. Archivos de salida de `aem run`
+En la carpeta `--out`: `<reporte>_exposure.csv` (UTF-8 con BOM), `global_review.json` y `run_record.json` (auditoría: `extracted_raw`, `extracted_validated`, acciones del analista, cobertura original y validada, registro de cada resumen y metadatos: modelo, temperatura, versión de ATT&CK, SHA-256 del reporte y de los prompts). Si el paso 1 no produce ninguna técnica válida, el programa se detiene con un error claro y guarda igualmente `run_record.json`.
 
 ## Evaluación
 
-### D-60. Mapeo de referencia de Akira — **PENDIENTE DE CONFIRMAR**
-`CLAUDE.md` dice 32 técnicas, pero la sección «MITRE ATT&CK» del reporte (consultada el 2026-10-17) lista **38 IDs únicos**. Se usan los 38 tal como aparecen; Sebas debe confirmar si el 32 venía de otro conteo.
+### D-60. Mapeo de referencia de Akira — **CONFIRMADA (2026-10-17)**
+Se usan las **38 técnicas** que muestra la sección «MITRE ATT&CK» del reporte (consultada el 2026-10-17). El «32» de `CLAUDE.md` era un dato errado y se ignora.
 
-### D-61. Filas de táctica en las tablas de CISA
-Las tablas de CISA incluyen a veces un ID de táctica (p. ej. `TA0009` Collection) en lugar de una técnica. Esas filas no entran en el mapeo de referencia, porque no son técnicas; se listan en `docs/report_preparation.md`.
+### D-61. Filas de táctica en las tablas de CISA — **CONFIRMADA (2026-10-17)**
+Las tablas de CISA incluyen a veces un ID de táctica (p. ej. `TA0009` Collection) en lugar de una técnica. Esas filas no entran en el mapeo de referencia, porque no son técnicas; se listan en `docs/report_preparation.md`. En concreto, las filas TA0005, TA0006, TA0009 y TA0011 quedan fuera: la comparación es a nivel de técnica/sub-técnica.
 
 ### D-62. Enfoque tradicional (IoC) — **PENDIENTE DE CONFIRMAR**
 `baseline.known_ioc_fraction` (por defecto 0,5) de los IoC del reporte `orig` se toman, con semilla fija, como `known_iocs` de la organización (archivo generado `data/org/known_iocs_generated.yaml`, referenciado desde el YAML). Si hay ≥ `baseline.min_matches` (por defecto 1) coincidencias, se reconocen todas las técnicas del escenario; si no, ninguna.
