@@ -225,4 +225,6 @@ MIT (ver `LICENSE`). Los datos de terceros conservan sus propias condiciones (AT
 
 ## Declaración de uso de IA en el desarrollo
 
-**[PENDIENTE: Sebas confirma la redacción y si la universidad lo exige]**
+El código de este repositorio fue escrito con asistencia de Claude Code (Anthropic), bajo la dirección de Sebastián Murillo Mora. El diseño del modelo, las decisiones técnicas (ver `docs/DECISIONS.md`), la evaluación y la interpretación de los resultados son del autor.
+
+Revisada por el autor el 2026-10-18.
