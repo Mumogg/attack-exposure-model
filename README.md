@@ -128,10 +128,12 @@ Archivos de salida en `--out`:
 |---|---|
 | `aem fetch-data` | Descarga ATT&CK v19.2 y los boletines de CISA; genera los textos, las versiones `stripped` y los mapeos de referencia. |
 | `aem prepare-reports` | Prepara el texto de Akira que usted coloque (y regenera los de CISA con `--force`). |
+| `aem suggest-anon-names` | Propone los nombres de la amenaza que la versión `anon` debería reemplazar (`--scenario akira`), con su conteo y contexto. No modifica `data/anon_names.yaml`; escribe la lista en `data/reports/private/` (ignorada por git). |
 | `aem make-variants` | Genera las versiones `mut` (IoC cambiados) y `anon` (además, nombres de la amenaza cambiados) de cada reporte, y los IoC «conocidos» de la organización. Falla si algún IoC o nombre del original sobrevive. |
 | `aem run` | Corre los 4 pasos sobre un reporte. |
 | `aem preflight` | Comprueba que todo está listo antes de gastar llamadas (OK / FALTA / AVISO) y estima llamadas y tiempo. |
 | `aem eval` | Corre el experimento completo y genera las tablas de los 5 indicadores. Ejecuta antes el preflight y no arranca si hay un FALTA. Use siempre `--run-id <fecha>`. |
+| `aem report` | Resume una corrida real (`--run-id <fecha>`) en `docs/resultados/<fecha>/`: una tabla por indicador, gráficos de los indicadores 1 y 3, datos faltantes y límites (C1–C3, D-67). Se niega con resultados FAKE. |
 | `aem check-repo` | Revisa los archivos versionados y todo el historial de git en busca de `.env`, API keys, texto del reporte de DFIR y archivos `private/`. Obligatorio antes de subir a GitHub. |
 | `aem demo` | Atajo: Gunra en modo demo. |
 
@@ -144,6 +146,7 @@ aem prepare-reports
 aem make-variants
 aem preflight
 aem eval --run-id 2026-10-20   # con API key; o `aem eval --demo --run-id …` con la caché publicada
+aem report --run-id 2026-10-20
 ```
 
 `aem eval` corre **3 escenarios × 3 versiones (`orig`, `mut`, `anon`) × 5 corridas** con los mismos parámetros (`temperature = 0`) y reporta media y desviación estándar. Resultados en `runs/<fecha>/results/` (`results.md`, CSV y JSON; cada tabla lleva modelo, versión, fecha y hash de las plantillas de prompt) y hojas de revisión manual en `eval/review_sheets/`. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). La estimación de llamadas y tiempo está en `docs/PLAN.md` (≈ 125–165 llamadas, 25–45 minutos con `GEMINI_RPM=10`). En los indicadores 1 y 3 la media principal es `_fail0` (las corridas fallidas cuentan como 0); `_valid` es secundaria (D-67). El paso a paso completo está en `docs/RUNBOOK.md`.
@@ -222,4 +225,4 @@ MIT (ver `LICENSE`). Los datos de terceros conservan sus propias condiciones (AT
 
 ## Declaración de uso de IA en el desarrollo
 
-[PENDIENTE: Sebas confirma la redacción y si la universidad lo exige]
+**[PENDIENTE: Sebas confirma la redacción y si la universidad lo exige]**

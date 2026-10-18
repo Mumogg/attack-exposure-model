@@ -36,7 +36,7 @@ Fuentes de verdad, por si algo cambia: `data/model_config.yaml` (parámetros), `
 
 ### 1.4 Evaluación (`eval/`, `aem eval`)
 
-`eval/run_experiments.py` corre cada escenario × versión (`orig`, `mut`, `anon`) × 5 corridas con el mismo pipeline de `aem run` en modo `auto`, guarda cada respuesta cruda y cada salida en `runs/<fecha>/…`, y calcula los cinco indicadores (`eval/metrics.py`). Produce tablas en CSV y Markdown (`runs/<fecha>/results/`) y dos hojas de revisión manual (`eval/review_sheets/`). Cada fila de cada tabla lleva el origen de las respuestas, el ID y la versión del modelo, la fecha y el SHA-256 de las plantillas de prompt. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). Antes de empezar, `aem eval` ejecuta `aem preflight` y no arranca si falta algo (API key, modelo, checksum de ATT&CK, texto de Akira, versiones, reglas de `.gitignore`).
+`eval/run_experiments.py` corre cada escenario × versión (`orig`, `mut`, `anon`) × 5 corridas con el mismo pipeline de `aem run` en modo `auto`, guarda cada respuesta cruda y cada salida en `runs/<fecha>/…`, y calcula los cinco indicadores (`eval/metrics.py`). Produce tablas en CSV y Markdown (`runs/<fecha>/results/`) y dos hojas de revisión manual (`eval/review_sheets/`). Cada fila de cada tabla lleva el origen de las respuestas, el ID y la versión del modelo, la fecha y el SHA-256 de las plantillas de prompt. Si alguna respuesta no proviene de la API real de Gemini (p. ej. un LLM simulado en pruebas), todo va a `runs/<fecha>/results_FAKE/` con prefijo `FAKE_` y nunca a `results/` (D-71). `aem report --run-id <fecha>` resume una corrida real en `docs/resultados/<fecha>/` (una tabla por indicador con los números tal como están en los archivos, gráficos de los indicadores 1 y 3 y los límites C1–C3 y D-67); se niega con resultados FAKE. Antes de empezar, `aem eval` ejecuta `aem preflight` y no arranca si falta algo (API key, modelo, checksum de ATT&CK, texto de Akira, versiones, reglas de `.gitignore`).
 
 **Versiones de cada escenario:** `orig` (texto sin la sección del mapeo ni los IDs), `mut` (además, IoC cambiados, D-66) y `anon` (además, nombres del actor, de la familia y del malware cambiados por nombres genéricos como ActorX o LoaderX, D-72). `anon` sirve para controlar si la persistencia del modelo se debe a que reconoce la amenaza por su nombre (limitación C2).
 
@@ -82,7 +82,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 | ATT&CK | Enterprise **v19.2**, `enterprise-attack-19.2.json`, SHA-256 `dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4` |
 | Python | ≥ 3.11 (desarrollo con 3.14.7) |
 | Bibliotecas | `mitreattack-python` 6.3.1, `pydantic` 2.14.1, `typer` 0.27.3, `rich` 15.0.0, `PyYAML` 6.0.3, `pytest` 9.1.1 |
-| Pruebas | 300 pruebas automatizadas; ninguna llama a la API real |
+| Pruebas | 322 pruebas automatizadas; ninguna llama a la API real |
 
 ### 2.3 Diseño experimental
 

@@ -5,7 +5,7 @@ Cada decisión tomada sin confirmación explícita de Sebas lleva la etiqueta **
 ## Entorno y datos
 
 ### D-01. Ubicación del repositorio
-`/run/media/sebas/8b2a925b-…/Github/attack-exposure-model` (disco `Info`, 1 TB, carpeta `Github` con mayúscula). Era el único volumen con esa etiqueta. Informativa.
+Disco externo de la máquina de desarrollo (etiqueta `Info`, 1 TB), carpeta `Github/attack-exposure-model`. La ruta absoluta de esa máquina no se versiona. Informativa.
 
 ### D-02. Archivo de ATT&CK
 `enterprise-attack-19.2.json` existe en `mitre-attack/attack-stix-data` con ese nombre exacto. Su SHA-256 se guarda en `data/attack/CHECKSUMS.sha256` y `aem fetch-data` lo verifica. Informativa.
