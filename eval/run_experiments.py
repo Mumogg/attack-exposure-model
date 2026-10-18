@@ -218,7 +218,7 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
                 means[(v, view)] = a["mean"]
                 row[f"{v}_mean_{view}"] = _pct(a["mean"])
                 row[f"{v}_sd_{view}"] = _pct(a["sd"]) if a["n"] >= 2 else NO_DATA
-        for view in ("valid", "fail0"):
+        for view in ("fail0", "valid"):
             o, m = means[("orig", view)], means[("mut", view)]
             row[f"persistence_mut_over_orig_{view}"] = round(m / o, 4) if o and m is not None else NO_DATA
         row["ioc_matches"] = ""
@@ -296,12 +296,15 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
 
 _TITLES = {
     "runs": "Corridas por escenario y versión (válidas, fallidas y motivo de cada falla)",
-    "indicator1": "Indicador 1 — Precisión y exhaustividad del paso 1 (%, sobre extracted_raw)",
+    "indicator1": "Indicador 1 — Precisión y exhaustividad del paso 1 (%, sobre extracted_raw; media principal: "
+                  "`_fail0`)",
     "indicator2": "Indicador 2 — Corrección del cruce de cobertura (paso 2, sobre la referencia)",
     "indicator3": "Indicador 3 — Persistencia en el reconocimiento de la exposición (%). Denominador: técnicas "
-                  "de referencia con brecha (modelo) o todas las técnicas de referencia (tradicional)",
+                  "de referencia con brecha (modelo) o todas las técnicas de referencia (tradicional); media principal del "
+                  "modelo: `_fail0`",
     "indicator4": "Indicador 4 — Fidelidad de los resúmenes (chequeo automático; la revisión manual está en la hoja)",
-    "indicator5": "Indicador 5 — Cumplimiento de los límites (violaciones)",
+    "indicator5": "Indicador 5 — Cumplimiento de los límites (violaciones; `_fail0` y `_valid` con el mismo peso. "
+                  "Aviso: contar una corrida fallida como 0 violaciones favorece al modelo)",
     "indicator1_detail": "Anexo — Indicador 1: técnicas omitidas y erróneas (en cuántas corridas)",
 }
 
@@ -346,9 +349,10 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
           f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
           f"{meta['replicates']} corridas por escenario × versión · modo demo: {'sí' if meta['demo'] else 'no'}",
           f"- Media y desviación estándar muestral (n−1). «{NO_DATA}»: no hay corridas o el valor no está definido.",
-          "- Cada media se informa dos veces (D-67): `_valid` solo con las corridas válidas y `_fail0` contando "
-          "cada corrida fallida (`failed_runs`) como 0. En el indicador 5, contar una falla como 0 violaciones es "
-          "optimista: se informa solo por completitud.",
+          "- Cada media se informa dos veces (D-67): `_fail0` cuenta cada corrida fallida (`failed_runs`) como 0 y "
+          "`_valid` usa solo las corridas válidas. Indicadores 1 y 3 (modelo): media principal: `_fail0`; `_valid` "
+          "es secundaria. Indicador 5: ambas con el mismo peso; contar una falla como 0 violaciones favorece al "
+          "modelo.",
           f"- Origen: {prov['llm_source']} · versión del modelo: {prov['model_version']} · fecha: {prov['run_date']} · "
           f"hash SHA-256 de las plantillas de prompt: {prov['prompt_templates_sha256']}",
           "- No hay indicador para el paso 3 ni para la revisión global (criterio del analista).\n"]

@@ -242,3 +242,18 @@ def test_real_results_carry_model_date_and_prompt_hash(setup):
             assert f"extract_v1.txt={extract_sha}" in r["prompt_templates_sha256"]
     md = (setup["run"] / "results" / "results.md").read_text(encoding="utf-8")
     assert "FAKE" not in md and extract_sha in md
+
+
+def test_fail0_is_the_primary_mean_for_indicators_1_and_3(setup):
+    """D-67 (confirmed): `_fail0` columns come first in indicators 1 and 3; indicator 5 warns in its title."""
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=1)
+    results = setup["run"] / "results"
+    cols1 = list(read_csv(results / "indicator1.csv")[0])
+    assert cols1.index("precision_mean_fail0") < cols1.index("precision_mean_valid")
+    cols3 = list(read_csv(results / "indicator3.csv")[0])
+    assert cols3.index("orig_mean_fail0") < cols3.index("orig_mean_valid")
+    md = (results / "results.md").read_text(encoding="utf-8")
+    assert "media principal: `_fail0`" in md
+    i5_title = next(line for line in md.splitlines() if line.startswith("## Indicador 5"))
+    assert "favorece al modelo" in i5_title

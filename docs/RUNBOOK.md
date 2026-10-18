@@ -207,6 +207,6 @@ En Windows (PowerShell), cambie `grep -i -E "…"` por `Select-String -Pattern "
    - **Indicadores 1, 3 y 5:** media ± desviación estándar en las dos vistas, `_valid` y `_fail0`, junto con `failed_runs`. Decida cuál es la principal (D-67).
    - **Indicador 2:** exactitud y discrepancias.
    - **Indicadores 4 y 5:** resultados de su revisión manual (conteos del paso f).
-3. Revise la tabla de decisiones `PENDIENTE DE CONFIRMAR` del resumen (D-03, D-62, D-63, D-65, D-66, D-67, D-68, D-70). Confirme o cambie cada una en `docs/DECISIONS.md`.
+3. Revise la tabla de decisiones `PENDIENTE DE CONFIRMAR` del resumen (D-03, D-62, D-65 y las que se agreguen). Confirme o cambie cada una en `docs/DECISIONS.md`.
 4. Si lo prefiere, pídale a Claude: «actualiza RESUMEN_PARA_TESIS.md con runs/<run-id>/results/results.md y las hojas revisadas».
 5. Haga commit (ver paso g).

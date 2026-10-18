@@ -169,14 +169,14 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-60 | Akira: 38 técnicas | **CONFIRMADA** (2026-10-17) |
 | D-61 | Filas de táctica (TA0005, TA0006, TA0009, TA0011) fuera de la referencia | **CONFIRMADA** (2026-10-17) |
 | D-62 | Enfoque tradicional: 50 % de IoC conocidos, ≥ 1 coincidencia | PENDIENTE DE CONFIRMAR |
-| D-63 | Reglas de extracción de IoC (defang obligatorio, correos, exclusiones) | PENDIENTE DE CONFIRMAR |
+| D-63 | Reglas de extracción de IoC (defang obligatorio, SHA-512, correos, exclusiones) | **CONFIRMADA** (2026-10-17) |
 | D-64 | Definición del indicador 3 del modelo | Técnica |
 | D-65 | Definición de violación (indicador 5) | PENDIENTE DE CONFIRMAR |
-| D-66 | Construcción de la variante `mut` | PENDIENTE DE CONFIRMAR |
-| D-67 | Cálculo de métricas (repetidos, corridas fallidas, n−1) | PENDIENTE DE CONFIRMAR |
-| D-68 | Chequeo automático del indicador 4 | PENDIENTE DE CONFIRMAR |
+| D-66 | Construcción de la variante `mut` (incluye la parte local de los correos) | **CONFIRMADA** (2026-10-17) |
+| D-67 | Cálculo de métricas (repetidos, corridas fallidas, n−1); media principal `_fail0` en los indicadores 1 y 3 | **CONFIRMADA** (2026-10-17) |
+| D-68 | Chequeo automático del indicador 4 (cifras e IDs como palabras) | **CONFIRMADA** (2026-10-17) |
 | D-69 | Material con derechos de autor fuera de git | Técnica |
-| D-70 | Tipos de IoC adicionales (qTox, cuentas) para un enfoque tradicional justo | PENDIENTE DE CONFIRMAR |
+| D-70 | Tipos de IoC adicionales (qTox, cuentas; cuentas genéricas excluidas) para un enfoque tradicional justo | **CONFIRMADA** (2026-10-17) |
 | D-71 | Resultados con LLM simulado marcados FAKE y separados | Técnica |
 
 ---
