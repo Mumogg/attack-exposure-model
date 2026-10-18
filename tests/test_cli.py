@@ -156,3 +156,20 @@ def test_help_option_text_is_in_spanish(args):
     assert res.exit_code == 0
     assert "Show this message and exit" not in res.output
     assert "Muestra esta ayuda y termina." in res.output
+
+
+def test_make_variants_leak_is_a_clear_error(tmp_path, monkeypatch):
+    import shutil
+    from aem.config import SCENARIOS_FILE
+
+    data = tmp_path / "data"
+    (data / "reports").mkdir(parents=True)
+    shutil.copy(SCENARIOS_FILE, data / "scenarios.yaml")
+    (data / "reports" / "gunra_aa26-222a_stripped.txt").write_text("x\nC2 45.61.136[.]10\n", encoding="utf-8")
+    monkeypatch.setattr("aem.cli.SCENARIOS_FILE", data / "scenarios.yaml")
+    monkeypatch.setattr("aem.cli.KNOWN_IOCS_FILE", tmp_path / "known.yaml")
+    monkeypatch.setattr("eval.make_variants.make_variant", lambda text, cfg, seed, salt: (text, []))
+    res = runner.invoke(app, ["make-variants"])
+    assert res.exit_code == 1 and "Traceback" not in res.output
+    out = res.output.replace("\n", "")
+    assert "45.61.136.10" in out and "línea 2" in out

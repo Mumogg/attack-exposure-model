@@ -188,11 +188,14 @@ def prepare_reports(
 def make_variants() -> None:
     """Genera la variante «mut» de cada reporte (IoC modificados, comportamiento intacto) y los IoC conocidos."""
     from aem.scenarios import load_scenarios
-    from eval.make_variants import build_variants
+    from eval.make_variants import VariantLeak, build_variants
 
     cfg = load_model_config()
     scenarios = load_scenarios(SCENARIOS_FILE)
-    logs = build_variants(scenarios, cfg, KNOWN_IOCS_FILE)
+    try:
+        logs = build_variants(scenarios, cfg, KNOWN_IOCS_FILE)
+    except VariantLeak as exc:
+        _fail(str(exc))
     for log in logs:
         console.print(f"{log['scenario']}: {log['variant']} — {log['unique_replaced']} formas escritas de IoC reemplazadas "
                       f"({log['occurrences_replaced']} apariciones) {log['replacements_by_type']}; "
