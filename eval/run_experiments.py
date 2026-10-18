@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from importlib import resources
 from pathlib import Path
 
+from aem.config import REPO_ROOT
 from aem.llm import TEMPERATURE, CacheMiss, InvalidResponse, redact
 from aem.output import write_json
 from aem.pipeline import (
@@ -30,6 +31,7 @@ from aem.scenarios import (
     OMITTED_NO_PRIVATE_CACHE, VERSIONS, Scenario, format_omitted, load_reference, omitted_before_run,
 )
 from eval.baseline_ioc import baseline_recognizes
+from eval import provenance as run_provenance
 from eval import review
 from eval.metrics import (
     aggregate, aggregate_with_failures, boundary_violations_extraction, coverage_correctness, extraction_scores, gap_techniques,
@@ -524,6 +526,9 @@ def _run_and_write(ctx, scenarios, run_dir, sheets_dir, replicates, console, sta
             "api_events": ctx.client.event_counts(),
             "runs": [{k: r[k] for k in ("scenario", "version", "replicate", "status", "error")} for r in runs]}
     paths = write_results(run_dir, sheets_dir, computed, meta)
+    # next to results.json (results/ or results_FAKE/): code commit, frozen-file hashes, Python, dependencies
+    paths["provenance"] = run_provenance.write(paths["json"].parent, run_provenance.live(REPO_ROOT, meta),
+                                               output_prefix(meta["fake"]))
     _append_history(run_dir, {"started": started, "finished": meta["finished"], "status": "completa",
                               **{k: meta[k] for k in ("fake", "demo", "partial", "escenarios_omitidos", "skipped")},
                               "runs_completed": len(runs), "api_events": meta["api_events"]})

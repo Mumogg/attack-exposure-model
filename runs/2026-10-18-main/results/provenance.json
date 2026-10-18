@@ -1,0 +1,242 @@
+{
+  "run_id": "2026-10-18-main",
+  "reconstructed": true,
+  "written": "2026-10-18T23:46:06+00:00",
+  "written_by": "aem provenance",
+  "code": {
+    "commit": "no registrado",
+    "note": "El commit y el estado del árbol de trabajo no se registraron al evaluar. Para cada ejecución de `aem eval` se da el último commit anterior a su inicio y los commits de código o de archivos congelados hechos entre ese inicio y el commit que publicó los resultados: si hay alguno, la ejecución pudo usar esos cambios sin commit todavía.",
+    "invocations": [
+      {
+        "started": "2026-10-18T17:45:05+00:00",
+        "finished": "2026-10-18T17:47:12+00:00",
+        "status": "interrumpida",
+        "runs_completed": 3,
+        "head_commit_before_start": {
+          "commit": "58803fcb46c1e222897c644ade16b200de00194a",
+          "committed": "2026-10-18T11:44:49-06:00",
+          "subject": "feat: log full 429 bodies, honour retryDelay, stop on daily quota"
+        },
+        "working_tree": "no registrado",
+        "code_commits_after_start_until_results_commit": [
+          {
+            "commit": "37e0e274ba5f2b65f0f4d68d3394413e4094f91a",
+            "committed": "2026-10-18T11:57:54-06:00",
+            "subject": "fix: quota errors stop step 4 too; document the paid Gemini tier"
+          },
+          {
+            "commit": "1a862fa7a8858141592ed55fca3fd19771d0991b",
+            "committed": "2026-10-18T12:39:10-06:00",
+            "subject": "fix: eval_history records interrupted eval invocations too"
+          }
+        ],
+        "results_committed_in": "7e6935199210a8a80091c65c4b5dd434b75bbd64"
+      },
+      {
+        "started": "2026-10-18T17:59:07+00:00",
+        "finished": "2026-10-18T18:14:55+00:00",
+        "status": "no registrado",
+        "runs_completed": "no registrado",
+        "head_commit_before_start": {
+          "commit": "37e0e274ba5f2b65f0f4d68d3394413e4094f91a",
+          "committed": "2026-10-18T11:57:54-06:00",
+          "subject": "fix: quota errors stop step 4 too; document the paid Gemini tier"
+        },
+        "working_tree": "no registrado",
+        "code_commits_after_start_until_results_commit": [
+          {
+            "commit": "1a862fa7a8858141592ed55fca3fd19771d0991b",
+            "committed": "2026-10-18T12:39:10-06:00",
+            "subject": "fix: eval_history records interrupted eval invocations too"
+          }
+        ],
+        "results_committed_in": "7e6935199210a8a80091c65c4b5dd434b75bbd64"
+      },
+      {
+        "started": "2026-10-18T18:15:16+00:00",
+        "finished": "2026-10-18T18:15:20+00:00",
+        "status": "no registrado",
+        "runs_completed": "no registrado",
+        "head_commit_before_start": {
+          "commit": "fda24fc74789f9688b98791ec2e2486ff694cb2a",
+          "committed": "2026-10-18T12:05:39-06:00",
+          "subject": "docs: courtesy English translation of the thesis title"
+        },
+        "working_tree": "no registrado",
+        "code_commits_after_start_until_results_commit": [
+          {
+            "commit": "1a862fa7a8858141592ed55fca3fd19771d0991b",
+            "committed": "2026-10-18T12:39:10-06:00",
+            "subject": "fix: eval_history records interrupted eval invocations too"
+          }
+        ],
+        "results_committed_in": "7e6935199210a8a80091c65c4b5dd434b75bbd64"
+      },
+      {
+        "started": "2026-10-18T19:17:39+00:00",
+        "finished": "2026-10-18T19:29:00+00:00",
+        "status": "completa",
+        "runs_completed": 45,
+        "head_commit_before_start": {
+          "commit": "a5302a5d1376083f5a36cddb3e343ca7a07f6eed",
+          "committed": "2026-10-18T12:41:46-06:00",
+          "subject": "docs: demo mode works from the published cache; Akira not redistributed"
+        },
+        "working_tree": "no registrado",
+        "code_commits_after_start_until_results_commit": [
+          {
+            "commit": "299651502b6d39d84b7e7638630ff56f1a0af3fb",
+            "committed": "2026-10-18T13:34:29-06:00",
+            "subject": "feat: Akira anon list, private known IoCs, IoC search in check-repo (D-74, D-76)"
+          }
+        ],
+        "results_committed_in": "5bac71333a1d5d734201f0ac3dd6f998deec9e51"
+      },
+      {
+        "started": "2026-10-18T19:29:35+00:00",
+        "finished": "2026-10-18T19:29:39+00:00",
+        "status": "completa",
+        "runs_completed": 45,
+        "head_commit_before_start": {
+          "commit": "a5302a5d1376083f5a36cddb3e343ca7a07f6eed",
+          "committed": "2026-10-18T12:41:46-06:00",
+          "subject": "docs: demo mode works from the published cache; Akira not redistributed"
+        },
+        "working_tree": "no registrado",
+        "code_commits_after_start_until_results_commit": [
+          {
+            "commit": "299651502b6d39d84b7e7638630ff56f1a0af3fb",
+            "committed": "2026-10-18T13:34:29-06:00",
+            "subject": "feat: Akira anon list, private known IoCs, IoC search in check-repo (D-74, D-76)"
+          }
+        ],
+        "results_committed_in": "5bac71333a1d5d734201f0ac3dd6f998deec9e51"
+      }
+    ],
+    "results_commits": [
+      {
+        "commit": "5bac71333a1d5d734201f0ac3dd6f998deec9e51",
+        "committed": "2026-10-18T13:34:51-06:00",
+        "subject": "eval: complete run 2026-10-18-main with Akira (aggregate results only)"
+      },
+      {
+        "commit": "7e6935199210a8a80091c65c4b5dd434b75bbd64",
+        "committed": "2026-10-18T12:39:59-06:00",
+        "subject": "eval: real run 2026-10-18-main (Gunra and Interlock; Akira omitted, partial)"
+      }
+    ],
+    "per_run_outputs": {
+      "gunra": {
+        "versioned_in_commit": "7e6935199210a8a80091c65c4b5dd434b75bbd64",
+        "source": "`git log` de la carpeta de la corrida"
+      },
+      "interlock": {
+        "versioned_in_commit": "7e6935199210a8a80091c65c4b5dd434b75bbd64",
+        "source": "`git log` de la carpeta de la corrida"
+      },
+      "akira": {
+        "versioned_in_commit": "no se versiona (texto con derechos de autor, D-69)",
+        "run_record_mtime_utc": [
+          "2026-10-18T19:29:38+00:00",
+          "2026-10-18T19:29:39+00:00"
+        ],
+        "source": "fecha de modificación de los archivos locales (cambia si se copian o restauran)"
+      }
+    }
+  },
+  "model": {
+    "name": "gemini-3.8-flash",
+    "versions_reported_by_api": [
+      "gemini-3.8-flash"
+    ],
+    "temperature": 0
+  },
+  "attack": {
+    "version": "19.2",
+    "file": "data/attack/enterprise-attack-19.2.json",
+    "sha256": "dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4",
+    "expected_sha256": "dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4",
+    "matches_expected": true,
+    "note": "El SHA-256 es el del archivo local actual; no se registró al evaluar. `aem fetch-data` solo acepta el archivo si coincide con `expected_sha256`."
+  },
+  "prompt_templates_sha256": "extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+  "prompt_templates_match_current_files": true,
+  "frozen_files_sha256": {
+    "src/aem/prompts/extract_v1.txt": {
+      "at_head_before_final_eval": "950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3",
+      "at_results_commit": "950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3",
+      "current": "950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3"
+    },
+    "src/aem/prompts/summary_v1.txt": {
+      "at_head_before_final_eval": "8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+      "at_results_commit": "8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+      "current": "8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b"
+    },
+    "data/model_config.yaml": {
+      "at_head_before_final_eval": "62f4af73ec9c3731b44a5bbead0ebfb07e0e8362e6a3b05224abca39bc2018df",
+      "at_results_commit": "62f4af73ec9c3731b44a5bbead0ebfb07e0e8362e6a3b05224abca39bc2018df",
+      "current": "62f4af73ec9c3731b44a5bbead0ebfb07e0e8362e6a3b05224abca39bc2018df"
+    },
+    "data/ssvc_tree.yaml": {
+      "at_head_before_final_eval": "b372f81d7ffb1cd0728cbedddb9e6498c4714cdd3e18ddaf7a84d0825ca00b34",
+      "at_results_commit": "b372f81d7ffb1cd0728cbedddb9e6498c4714cdd3e18ddaf7a84d0825ca00b34",
+      "current": "b372f81d7ffb1cd0728cbedddb9e6498c4714cdd3e18ddaf7a84d0825ca00b34"
+    },
+    "data/org/fictional_org.yaml": {
+      "at_head_before_final_eval": "e6272edc66ddf24df44cf73951395fa2637b772be49d3ecae29b02c79467edf1",
+      "at_results_commit": "9790206f66054be00ecf6f80d490b6eac80c5fbacf02dd7cf2b948e12f969ef2",
+      "current": "a785534b4c95c56fe57adfc8ded5d0a599dcf4d978a79a12aabf8e52a4455f50"
+    },
+    "data/org/known_iocs_generated.yaml": {
+      "at_head_before_final_eval": "11e27b99e8143f87dc225f054779f25b22aea984efa5517d9c4c3680b17af934",
+      "at_results_commit": "11e27b99e8143f87dc225f054779f25b22aea984efa5517d9c4c3680b17af934",
+      "current": "11e27b99e8143f87dc225f054779f25b22aea984efa5517d9c4c3680b17af934"
+    },
+    "data/anon_names.yaml": {
+      "at_head_before_final_eval": "ff7e5a3de89ce0ae67eedfe349151b0b65885f228c547f3927ed29302d937481",
+      "at_results_commit": "d8a466ef10b73add749ee17b04be07ed0d603379360a2fa0bc5266f083b470a3",
+      "current": "d8a466ef10b73add749ee17b04be07ed0d603379360a2fa0bc5266f083b470a3"
+    },
+    "data/scenarios.yaml": {
+      "at_head_before_final_eval": "ed9039bdb397dec41ca0a10a551e742569a696c3094b048a22ad887760463372",
+      "at_results_commit": "ed9039bdb397dec41ca0a10a551e742569a696c3094b048a22ad887760463372",
+      "current": "ed9039bdb397dec41ca0a10a551e742569a696c3094b048a22ad887760463372"
+    },
+    "data/boundary_patterns.yaml": {
+      "at_head_before_final_eval": "65f51ae579b87f491e9aec30aacf2a519d59db187b2a0d165fb74c817ea40a2f",
+      "at_results_commit": "65f51ae579b87f491e9aec30aacf2a519d59db187b2a0d165fb74c817ea40a2f",
+      "current": "65f51ae579b87f491e9aec30aacf2a519d59db187b2a0d165fb74c817ea40a2f"
+    },
+    "data/reference_mappings/gunra.csv": {
+      "at_head_before_final_eval": "4c2f280f305b749d493bc3a2cec27655fe8e79f593ef60c077a0fb033018f98d",
+      "at_results_commit": "4c2f280f305b749d493bc3a2cec27655fe8e79f593ef60c077a0fb033018f98d",
+      "current": "4c2f280f305b749d493bc3a2cec27655fe8e79f593ef60c077a0fb033018f98d"
+    },
+    "data/reference_mappings/interlock.csv": {
+      "at_head_before_final_eval": "965172fc0d6f85c58208367abf0828a12b6010160317cf0093eb3deaea2319b6",
+      "at_results_commit": "965172fc0d6f85c58208367abf0828a12b6010160317cf0093eb3deaea2319b6",
+      "current": "965172fc0d6f85c58208367abf0828a12b6010160317cf0093eb3deaea2319b6"
+    },
+    "data/reference_mappings/akira.csv": {
+      "at_head_before_final_eval": "9a1165807f72bd5101a2182bddc0da00026bc1f3ecb0d653014598156f20259b",
+      "at_results_commit": "9a1165807f72bd5101a2182bddc0da00026bc1f3ecb0d653014598156f20259b",
+      "current": "9a1165807f72bd5101a2182bddc0da00026bc1f3ecb0d653014598156f20259b"
+    },
+    "data/attack/CHECKSUMS.sha256": {
+      "at_head_before_final_eval": "4439f709dd6b9c02884abf4a99e88523439f4130c0a1b098c0440d25bbc4daef",
+      "at_results_commit": "4439f709dd6b9c02884abf4a99e88523439f4130c0a1b098c0440d25bbc4daef",
+      "current": "4439f709dd6b9c02884abf4a99e88523439f4130c0a1b098c0440d25bbc4daef"
+    }
+  },
+  "python": "no registrado",
+  "dependencies": "no registrado",
+  "sources": {
+    "model, attack.version, prompt_templates_sha256": "results/results.json (escrito por `aem eval`)",
+    "code.invocations": "eval_history.json (horas de cada `aem eval`) cruzado con `git log`",
+    "code.results_commits": "`git log` de results/results.json",
+    "code.per_run_outputs": "`git log` de cada carpeta versionada; fecha de modificación para private/",
+    "attack.sha256": "archivo local actual; attack.expected_sha256: data/attack/CHECKSUMS.sha256",
+    "frozen_files_sha256": "`git show <commit>:<archivo>` en el último commit antes de la ejecución final y en el commit de resultados, más el archivo actual",
+    "python, dependencies": "no se registraron al evaluar; las del entorno actual no prueban las de la corrida"
+  }
+}

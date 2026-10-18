@@ -524,6 +524,25 @@ def sensitivity_cmd(
         console.print(f"  {label}: {path}")
 
 
+@app.command("provenance", cls=SpanishCommand)
+def provenance_cmd(
+    run_id: str = typer.Option(..., "--run-id", help="Corrida evaluada antes de que `aem eval` escribiera "
+                                                     "results/provenance.json."),
+) -> None:
+    """Reconstruye results/provenance.json de una corrida antigua a partir de git y de sus registros (sin API)."""
+    from eval.provenance import reconstruct, write
+
+    run_dir = RUNS_DIR / run_id
+    target = run_dir / "results" / "provenance.json"
+    if not (run_dir / "results" / "results.json").exists():
+        _fail(f"No hay results/results.json en la corrida {run_id}.")
+    if target.exists():
+        _fail(f"{target.name} ya existe en la corrida {run_id}: no se reemplaza.")
+    path = write(run_dir / "results", reconstruct(run_dir, config.REPO_ROOT))
+    console.print(f"[green]Listo.[/green] {path} (reconstruida: lo que no se registró al evaluar figura como "
+                  "«no registrado»).")
+
+
 @app.command("report", cls=SpanishCommand)
 def report_cmd(
     run_id: str = typer.Option(..., "--run-id", help="Carpeta de runs/ con resultados reales (results/, no results_FAKE/)."),
