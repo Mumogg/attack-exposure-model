@@ -74,6 +74,8 @@ class VariantConfig(_Cfg):
 
 class ExperimentConfig(_Cfg):
     replicates: int = Field(5, ge=1)
+    manual_sample_size: int = Field(30, ge=1)
+    sample_seed: int = 20261017
 
 
 class ModelConfig(_Cfg):

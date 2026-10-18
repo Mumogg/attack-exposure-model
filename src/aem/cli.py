@@ -23,6 +23,7 @@ console = Console()
 
 DEMO_REPORT = DATA_DIR / "reports" / "gunra_aa26-222a_stripped.txt"
 DEMO_OUT = RUNS_DIR / "demo" / "gunra"
+REVIEW_SHEETS_DIR = config.REPO_ROOT / "eval" / "review_sheets"
 
 
 def _load_env() -> None:
@@ -181,6 +182,38 @@ def demo_cmd(
 ) -> None:
     """Corre el escenario de Gunra (AA26-222A) en modo demo, sin API key."""
     _run(DEMO_REPORT, ORG_FILE, "auto", True, out, attack, cache_dir)
+
+
+@app.command("eval")
+def eval_cmd(
+    demo: bool = typer.Option(False, "--demo", help="Usar solo respuestas guardadas en la caché (sin API key)."),
+    run_id: str = typer.Option("", "--run-id", help="Nombre de la carpeta en runs/ (por defecto, la fecha de hoy)."),
+    replicates: int = typer.Option(0, "--replicates", help="Corridas por escenario × versión (0 = valor de "
+                                                            "data/model_config.yaml)."),
+    org: Path = typer.Option(ORG_FILE, "--org", help="YAML de la organización (estilo DeTT&CT)."),
+    attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
+    cache_dir: Path = typer.Option(LLM_CACHE_DIR, "--cache-dir", help="Carpeta de la caché de respuestas del LLM."),
+) -> None:
+    """Corre el experimento completo (escenarios × orig/mut × corridas) y genera las tablas de los 5 indicadores."""
+    from datetime import date
+
+    from aem.llm import LLMError
+    from aem.scenarios import load_scenarios
+    from eval.run_experiments import run_experiment
+
+    run_dir = RUNS_DIR / (run_id or date.today().isoformat())
+    try:
+        ctx = _build_context(org, attack, cache_dir, demo)
+        n = replicates or ctx.model_cfg.experiment.replicates
+        result = run_experiment(ctx, load_scenarios(SCENARIOS_FILE), run_dir, REVIEW_SHEETS_DIR, n, console=console)
+    except (LLMError, FileNotFoundError, ValueError) as exc:
+        _fail(f"{exc}\nLas respuestas ya obtenidas quedan en la caché: al repetir el comando se reutilizan.")
+    for item in result["skipped"]:
+        console.print(f"[yellow]Sin texto, no evaluado:[/yellow] {item}")
+    failed = [r for r in result["runs"] if r["status"] != "ok"]
+    console.print(f"[green]Listo.[/green] {len(result['runs'])} corridas ({len(failed)} sin salida utilizable).")
+    for label in ("markdown", "indicator4_sheet", "indicator5_sheet"):
+        console.print(f"  {label}: {result['paths'][label]}")
 
 
 if __name__ == "__main__":

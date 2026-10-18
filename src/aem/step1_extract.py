@@ -15,7 +15,7 @@ from typing import Callable
 
 from aem.attack_data import AttackData, IdStatus
 from aem.config import ExtractionConfig
-from aem.llm import GeminiClient, LLMError
+from aem.llm import GeminiClient, InvalidResponse
 from aem.models import AnalystAction, Candidate, ExtractedTechnique, ValidatedTechnique
 
 PROMPT_NAME = "extract_v1.txt"
@@ -43,12 +43,12 @@ def prompt_template() -> str:
 def parse_extraction(data: dict) -> tuple[list[ExtractedTechnique], list[str]]:
     """Keep only the three schema fields; report any extra field (counted by indicator 5)."""
     if not isinstance(data, dict) or not isinstance(data.get("techniques"), list):
-        raise LLMError("La respuesta del LLM no tiene la forma {'techniques': [...]}")
+        raise InvalidResponse("La respuesta del LLM no tiene la forma {'techniques': [...]}")
     extra = [k for k in data if k != "techniques"]
     items = []
     for i, raw in enumerate(data["techniques"]):
         if not isinstance(raw, dict) or not all(isinstance(raw.get(f), str) for f in _FIELDS):
-            raise LLMError(f"Elemento {i} de la respuesta del LLM no cumple el esquema: {raw!r}")
+            raise InvalidResponse(f"Elemento {i} de la respuesta del LLM no cumple el esquema: {raw!r}")
         extra += [f"techniques[{i}].{k}" for k in raw if k not in _FIELDS]
         items.append(ExtractedTechnique(**{f: raw[f].strip() for f in _FIELDS}))
     return items, extra

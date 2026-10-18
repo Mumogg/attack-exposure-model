@@ -46,6 +46,26 @@ La de `CLAUDE.md` §4, con estos agregados:
 4. Nombres de archivo (`main.exe`, `psexec.py`) que parecen dominios → el extractor de IoC no debe tratarlos como dominios al generar la variante `mut` (test).
 5. Técnicas extraídas que no figuran en `analyst_context` → en modo `auto` se usa un activo por defecto declarado en el YAML, nunca un valor inventado (test).
 
+## Estimación de llamadas a la API para `aem eval` (bloque 9, 2026-10-17)
+
+**Paso 1 (extracción).** 3 escenarios × 2 versiones (`orig`, `mut`) × 5 corridas = **30 combinaciones**. Cada combinación hace una llamada por fragmento del reporte (D-11: el texto se envía completo si tiene ≤ 100 000 caracteres).
+- Gunra `stripped`: 33 194 caracteres → 1 fragmento. Interlock: 29 608 → 1 fragmento.
+- Akira: el tamaño se conoce cuando Sebas coloque el texto. Si queda ≤ 100 000 caracteres, 1 fragmento; si no, ≈ ⌈largo / 28 000⌉ fragmentos (30 000 con 2 000 de solapamiento).
+- Total paso 1: **30 llamadas** si los tres caben en un fragmento; en el peor caso razonable (Akira de ~120 000 caracteres → 5 fragmentos) 20 + 10 × 5 = **70 llamadas**.
+
+**Paso 4 (resúmenes).** Caché por técnica (D-44): un resumen por técnica distinta validada en cualquier corrida, sin importar escenario, versión ni réplica. Cota inferior: las **78 técnicas** distintas de los tres mapeos de referencia, si el LLM las encuentra todas; a eso se suman las técnicas propuestas fuera de la referencia (falsos positivos válidos). Estimación: **80–120 llamadas**. Las técnicas que solo aparecen como `needs_review` no se resumen (el modo `auto` las excluye).
+
+**Verificación del modelo.** 1 llamada `models.get` por proceso (no genera contenido).
+
+**Total estimado:** ≈ **110–150 llamadas** (hasta ≈ 190 en el peor caso de fragmentación de Akira).
+
+**Tiempo a `GEMINI_RPM` = 10** (pausa mínima de 6 s entre llamadas, `src/aem/llm.py`):
+- Solo por el límite: 110–150 × 6 s ≈ **11–15 min** (≈ 19 min en el peor caso).
+- Latencia: una extracción con ~8 000–9 000 tokens de entrada puede tardar 10–40 s; 30 extracciones añaden ≈ 5–20 min. Los resúmenes son cortos (1–3 s cada uno, por debajo de la pausa de 6 s).
+- **Estimación realista: 20–35 minutos** para la primera corrida completa. Reintentos por HTTP 429 (espera 2, 4, 8, 16, 32 s) pueden alargarla.
+- Los límites diarios de la capa gratuita no son cifras oficiales; si se alcanza uno, `aem eval` se detiene con un error claro y, al volver a ejecutarlo, **reutiliza la caché**: solo repite las llamadas que faltan.
+- Con la caché completa, `aem eval --demo` reproduce todo sin API key y sin llamadas (segundos).
+
 ## Bitácora (una línea por bloque)
 - Bloque 2 ✔ models/config/attack_data/fetch + tests (39). Pendiente: comando CLI `fetch-data` se conecta en el bloque 7.
 - Bloque 3 ✔ step2_coverage + borrador fictional_org.yaml (79 técnicas, coverage_design) + tests (60). Pendiente: Sebas define las brechas definitivas.
@@ -53,4 +73,5 @@ La de `CLAUDE.md` §4, con estos agregados:
 - Bloque 5 ✔ step4_reference (lote, 5 campos, filtro evaluativo), boundary_patterns.yaml, plantilla de prevalencia vacía + tests (131). Pendiente: Sebas llena red_canary_2026.csv.
 - Bloque 6 ✔ llm.py (caché, demo, reintentos, verificación de modelo) + step1_extract + LLMSummarizer + tests (156).
 - Bloque 7 ✔ output.py (CSV fijo, BOM, orden acción→matriz), pipeline.py, cli.py (fetch-data, run, demo) + decisiones confirmadas por Sebas (D-10, D-22, D-45, D-60, D-61; D-03 sigue pendiente) + tests (175).
-- Bloque 8 ✔ reports.py/scenarios.py (HTML→texto, strip D-10, mapeos de referencia Gunra 36 / Interlock 25 / Akira 38, todos válidos en v19.2), aem fetch-data/prepare-reports/make-variants, eval/make_variants.py (RFC 5737, .invalid, semilla), eval/baseline_ioc.py (D-62/D-63) + tests (212). Pendiente: Sebas coloca el texto de Akira. SIGUIENTE: bloque 9 (estimación de llamadas en PLAN.md, metrics, run_experiments, aem eval).
+- Bloque 8 ✔ reports.py/scenarios.py (HTML→texto, strip D-10, mapeos de referencia Gunra 36 / Interlock 25 / Akira 38, todos válidos en v19.2), aem fetch-data/prepare-reports/make-variants, eval/make_variants.py (RFC 5737, .invalid, semilla), eval/baseline_ioc.py (D-62/D-63) + tests (212). Pendiente: Sebas coloca el texto de Akira.
+- Bloque 9 ✔ estimación de llamadas (arriba), eval/metrics.py (5 indicadores), eval/run_experiments.py, aem eval (CSV + Markdown + JSON, hojas de revisión en eval/review_sheets/), ApiError vs InvalidResponse en llm.py + tests (229). Pendiente: Sebas corre `aem eval` con la API key real. SIGUIENTE: bloque 10 (README, revisión de secretos, RESUMEN_PARA_TESIS.md).

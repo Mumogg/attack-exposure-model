@@ -35,4 +35,6 @@ variants:
   seed: 20261017
 
 experiment:
-  replicates: 5
+  replicates: 5              # corridas por escenario x versión
+  manual_sample_size: 30     # tamaño de la muestra para la revisión manual del indicador 5
+  sample_seed: 20261017

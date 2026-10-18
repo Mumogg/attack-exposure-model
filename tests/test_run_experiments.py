@@ -1,0 +1,137 @@
+import csv
+import json
+
+import pytest
+
+from aem.boundaries import load_patterns
+from aem.config import SCENARIOS_FILE, SSVC_TREE_FILE, ModelConfig, Settings
+from aem.llm import CacheMiss, GeminiClient, LLMCache, TransportError
+from aem.pipeline import PipelineContext
+from aem.reports import ReferenceRow
+from aem.scenarios import load_scenarios, write_reference_csv
+from aem.step3_prioritize import load_tree
+from eval.run_experiments import run_experiment
+from fakes import FakeClock
+from helpers import make_org
+from test_pipeline import RoutingTransport
+
+ORIG = ("The actors exploited a public-facing VPN appliance from 45.61.136[.]10. "
+        "They then used cmd.exe to run commands.")
+MUT = ("The actors exploited a public-facing VPN appliance from 198.51.100[.]7. "
+       "They then used cmd.exe to run commands.")
+EXTRACTION = {"techniques": [
+    {"technique_id": "T1190", "technique_name": "Exploit Public-Facing Application",
+     "evidence_quote": "exploited a public-facing VPN appliance"},
+    {"technique_id": "T1059", "technique_name": "Command and Scripting Interpreter", "evidence_quote": "used cmd.exe"},
+]}
+
+
+@pytest.fixture
+def setup(tmp_path, mini_attack):
+    scenarios = {k: v.relocated(tmp_path / "data") for k, v in load_scenarios(SCENARIOS_FILE).items()}
+    g = scenarios["gunra"]
+    g.stripped.parent.mkdir(parents=True)
+    g.stripped.write_text(ORIG, encoding="utf-8")
+    g.variant.write_text(MUT, encoding="utf-8")
+    write_reference_csv(g.reference, [ReferenceRow("T1190", "Exploit Public-Facing Application", "Initial Access"),
+                                      ReferenceRow("T1059.003", "Windows Command Shell", "Execution")], mini_attack)
+    for other in ("interlock", "akira"):  # references exist, texts do not
+        write_reference_csv(scenarios[other].reference, [ReferenceRow("T1190", "x", "Initial Access")], mini_attack)
+    org = make_org(detections=[("T1190", 2, []), ("T1059.003", 5, ["Process Creation"])],
+                   entries=[("T1190", "web")],
+                   coverage_design=[{"technique_id": "T1190", "intended": "parcial"},
+                                    {"technique_id": "T1059.003", "intended": "cubierta"}],
+                   known_iocs=[{"type": "ipv4", "value": "45.61.136.10", "scenario": "gunra"}])
+
+    def ctx(transport=None, demo=False):
+        clock = FakeClock()
+        client = GeminiClient(Settings(None if demo else "k", "gemini-3.8-flash", "gemini-3.5-flash-lite", 600, 0),
+                              LLMCache(tmp_path / "cache"), demo=demo, transport=transport,
+                              sleep=clock.sleep, clock=clock.now)
+        return PipelineContext(attack=mini_attack, org=org, client=client, model_cfg=ModelConfig(),
+                               tree=load_tree(SSVC_TREE_FILE), prevalence={}, patterns=load_patterns())
+
+    return {"scenarios": scenarios, "ctx": ctx, "run": tmp_path / "runs" / "r1", "sheets": tmp_path / "sheets"}
+
+
+def read_csv(path):
+    with path.open(encoding="utf-8-sig", newline="") as fh:
+        return list(csv.DictReader(fh))
+
+
+def test_full_experiment(setup):
+    t = RoutingTransport(extraction=EXTRACTION)
+    res = run_experiment(setup["ctx"](t), setup["scenarios"], setup["run"], setup["sheets"], replicates=2)
+    assert set(res["skipped"]) == {"akira: orig", "akira: mut", "interlock: orig", "interlock: mut"}
+    # 2 versions x 2 replicates extraction calls + 2 summaries (cached per technique)
+    assert len(t.calls) == 4 + 2
+    out = setup["run"] / "gunra" / "orig" / "r0"
+    assert (out / "gunra_aa26-222a_stripped_exposure.csv").exists() and (out / "global_review.json").exists()
+
+    results = setup["run"] / "results"
+    i1 = {(r["scenario"], r["version"], r["level"]): r for r in read_csv(results / "indicator1.csv")}
+    exact = i1[("gunra", "orig", "exact")]
+    assert float(exact["precision_mean"]) == pytest.approx(50.0) and float(exact["recall_mean"]) == pytest.approx(50.0)
+    assert float(exact["precision_sd"]) == 0.0 and exact["runs"] == "2"
+    parent = i1[("gunra", "orig", "parent")]
+    assert float(parent["precision_mean"]) == pytest.approx(100.0)
+    assert i1[("interlock", "orig", "exact")]["precision_mean"] == "sin dato disponible"
+
+    i2 = {r["scenario"]: r for r in read_csv(results / "indicator2.csv")}
+    assert float(i2["gunra"]["accuracy"]) == 100.0
+
+    i3 = {(r["scenario"], r["approach"]): r for r in read_csv(results / "indicator3.csv")}
+    assert float(i3[("gunra", "modelo")]["orig_mean"]) == 100.0  # T1190 is the only gap and is found
+    assert float(i3[("gunra", "modelo")]["mut_mean"]) == 100.0
+    assert float(i3[("gunra", "tradicional")]["orig_mean"]) == 100.0
+    assert float(i3[("gunra", "tradicional")]["mut_mean"]) == 0.0
+
+    sheet = read_csv(setup["sheets"] / "r1_indicator4_summaries.csv")
+    assert {r["technique_id"] for r in sheet} == {"T1190", "T1059"}
+    assert set(sheet[0]) >= {"source_description", "summary", "auto_check", "ok (si/no)", "observación"}
+    assert all(r["ok (si/no)"] == "" for r in sheet)
+    assert (setup["sheets"] / "r1_indicator5_sample.csv").exists()
+
+    md = (results / "results.md").read_text(encoding="utf-8")
+    for k in ("Indicador 1", "Indicador 2", "Indicador 3", "Indicador 4", "Indicador 5"):
+        assert k in md
+    assert json.loads((results / "results.json").read_text(encoding="utf-8"))["replicates"] == 2
+
+
+def test_demo_reproduces_from_cache(setup):
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=2)
+    first = (setup["run"] / "results" / "indicator1.csv").read_text(encoding="utf-8")
+    again = setup["run"].parent / "r2"
+    run_experiment(setup["ctx"](demo=True), setup["scenarios"], again, setup["sheets"], replicates=2)
+    assert (again / "results" / "indicator1.csv").read_text(encoding="utf-8") == first
+
+
+def test_demo_without_cache_stops_clearly(setup):
+    with pytest.raises(CacheMiss):
+        run_experiment(setup["ctx"](demo=True), setup["scenarios"], setup["run"], setup["sheets"], replicates=1)
+
+
+def test_invalid_llm_output_is_recorded_as_failed_run(setup):
+    class Bad(RoutingTransport):
+        def generate(self, model, prompt, schema, temperature):
+            if "extracting MITRE ATT&CK" in prompt:
+                self.calls.append(prompt)
+                return "not json", model
+            return super().generate(model, prompt, schema, temperature)
+
+    res = run_experiment(setup["ctx"](Bad()), setup["scenarios"], setup["run"], setup["sheets"], replicates=1)
+    runs = [r for r in res["runs"] if r["scenario"] == "gunra"]
+    assert {r["status"] for r in runs} == {"error"}
+    i1 = {(r["scenario"], r["version"], r["level"]): r for r in read_csv(setup["run"] / "results" / "indicator1.csv")}
+    assert i1[("gunra", "orig", "exact")]["failed_runs"] == "1"
+
+
+def test_api_error_stops_the_experiment(setup):
+    class Down(RoutingTransport):
+        def generate(self, model, prompt, schema, temperature):
+            raise TransportError(400, "bad request")
+
+    from aem.llm import ApiError
+    with pytest.raises(ApiError):
+        run_experiment(setup["ctx"](Down()), setup["scenarios"], setup["run"], setup["sheets"], replicates=1)

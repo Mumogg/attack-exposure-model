@@ -38,6 +38,14 @@ class ModelUnavailable(LLMError):
     pass
 
 
+class ApiError(LLMError):
+    """The API call itself failed (after retries for 429/5xx)."""
+
+
+class InvalidResponse(LLMError):
+    """The API answered, but the output is not usable (e.g. not JSON or outside the schema)."""
+
+
 class TransportError(Exception):
     def __init__(self, code: int | None, message: str):
         super().__init__(f"HTTP {code}: {message}")
@@ -195,7 +203,7 @@ class GeminiClient:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
             path = self.cache.put_failure(key, entry)
-            raise LLMError(f"La respuesta del LLM no es JSON válido ({purpose}); guardada en {path}") from exc
+            raise InvalidResponse(f"La respuesta del LLM no es JSON válido ({purpose}); guardada en {path}") from exc
         self.cache.put(key, entry)
         return LLMResult(data=data, raw_text=text, meta=dict(meta, from_cache=False))
 
@@ -207,6 +215,6 @@ class GeminiClient:
                 return transport.generate(self.model, prompt, schema, TEMPERATURE)
             except TransportError as exc:
                 if exc.code not in RETRYABLE or attempt >= self.settings.gemini_max_retries:
-                    raise LLMError(f"Error de la API de Gemini tras {attempt + 1} intento(s): {exc}") from exc
+                    raise ApiError(f"Error de la API de Gemini tras {attempt + 1} intento(s): {exc}") from exc
                 self._sleep(BACKOFF_BASE_SECONDS * 2**attempt)
                 attempt += 1

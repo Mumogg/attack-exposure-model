@@ -134,3 +134,15 @@ def test_invalid_json_fails_and_keeps_raw(tmp_path):
     # failure is not cached: a retry calls the API again
     c.transport.responses.append({"x": 3})
     assert c.generate_json("a", SCHEMA, purpose="t").data == {"x": 3}
+
+
+def test_api_errors_and_bad_output_are_distinguishable(tmp_path):
+    """run_experiments stops on API errors but records a bad response as a failed run."""
+    from aem.llm import ApiError, InvalidResponse
+
+    c, _ = client(tmp_path, FakeTransport([TransportError(400, "bad request")]))
+    with pytest.raises(ApiError):
+        c.generate_json("hola", SCHEMA, purpose="test")
+    c, _ = client(tmp_path, FakeTransport(["no json"]))
+    with pytest.raises(InvalidResponse):
+        c.generate_json("otro", SCHEMA, purpose="test")

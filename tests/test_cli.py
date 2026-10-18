@@ -103,3 +103,12 @@ def test_make_variants_command(tmp_path, monkeypatch):
     assert (data / "reports" / "gunra_aa26-222a_mut_stripped.txt").exists()
     assert (tmp_path / "known.yaml").exists()
     assert "semilla" in res.output
+
+
+def test_eval_demo_without_cache_fails_clearly(files, tmp_path, monkeypatch):
+    monkeypatch.setattr("aem.cli.RUNS_DIR", tmp_path / "runs")
+    monkeypatch.setattr("aem.cli.REVIEW_SHEETS_DIR", tmp_path / "sheets")
+    res = runner.invoke(app, ["eval", "--demo", "--attack", str(files["attack"]), "--cache-dir", str(files["cache"]),
+                              "--org", str(files["org"]), "--run-id", "prueba", "--replicates", "1"])
+    assert res.exit_code == 1
+    assert "Modo demo" in res.output

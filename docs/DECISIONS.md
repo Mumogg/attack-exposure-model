@@ -117,7 +117,35 @@ Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado s
 - Semilla: `variants.seed` = 20261017, combinada con el nombre del escenario. Por cada escenario se guardan `<reporte>_mut_stripped.txt`, `<reporte>_mut.diff` y `<reporte>_mut_log.json` (semilla y tabla de reemplazos).
 
 ### D-64. Indicador 3 del modelo
+Denominador: técnicas de la referencia (válidas en v19.2) cuya cobertura según el paso 2 sobre el YAML es `parcial` o `sin cobertura`. Numerador: las que aparecen con ID exacto en `extracted_raw`. Se reporta el porcentaje en `orig` y en `mut` (media y desviación estándar de las 5 corridas) y la razón de medias mut/orig. Para el enfoque tradicional el denominador son todas las técnicas de referencia y el resultado es 100 % o 0 % (determinístico, D-62).
+
+### D-65. Indicador 5 — **PENDIENTE DE CONFIRMAR**
+Una violación es (a) un campo extra no previsto por el esquema en la salida del LLM (paso 1, o claves distintas de `summary` en el paso 4), o (b) un patrón evaluativo (`data/boundary_patterns.yaml`) en el texto generado que **no** aparece en su fuente: para `evidence_quote` y `technique_name` del paso 1, la fuente es el reporte más el nombre oficial de ATT&CK; para los resúmenes, la descripción de ATT&CK. Se cuenta cada patrón una vez por campo. El paso 1 se resume por escenario × versión (total, media y desviación por corrida); los resúmenes, una vez por técnica (D-44). La revisión manual usa una muestra aleatoria (`experiment.manual_sample_size` = 30, semilla `experiment.sample_seed`) de citas y resúmenes únicos, en `eval/review_sheets/<corrida>_indicator5_sample.csv`.
+
+### D-66. Variante `mut` (`eval/make_variants.py`) — **PENDIENTE DE CONFIRMAR**
+Se aplica sobre el texto `stripped` (el que recibe el LLM). Cada IoC detectado según D-63 se reemplaza; todo lo demás queda idéntico byte a byte (test que revierte el mapeo y recupera el original).
+- Hashes → hexadecimal aleatorio del mismo largo y las mismas mayúsculas/minúsculas.
+- IPv4 → direcciones de los rangos de documentación RFC 5737 (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), sin repetir.
+- Dominios (también el host de una URL y el dominio de un correo) → nombre aleatorio de 10 letras con TLD `.invalid` (RFC 2606). Se conserva la ruta de la URL y la parte local del correo.
+- Se conserva el estilo «defanged» en la misma posición (`45.61.136[.]10` → `198.51.100[.]23`).
+- Un mismo IoC recibe siempre el mismo reemplazo dentro del reporte.
+- Semilla: `variants.seed` = 20261017, combinada con el nombre del escenario. Por cada escenario se guardan `<reporte>_mut_stripped.txt`, `<reporte>_mut.diff` y `<reporte>_mut_log.json` (semilla y tabla de reemplazos).
+
+### D-64. Indicador 3 del modelo
 Denominador: técnicas de la referencia (válidas en v19.2) cuya cobertura en el YAML es `parcial` o `sin cobertura`. Numerador: las que aparecen con ID exacto en `extracted_raw`. Se reporta el porcentaje en `orig`, en `mut` y la razón mut/orig.
 
 ### D-65. Indicador 5
 Una violación es (a) un campo extra no previsto por el esquema en la salida del LLM, o (b) un patrón evaluativo en el texto generado que no aparece en el texto fuente correspondiente (el reporte, para las citas; la descripción, para los resúmenes).
+
+### D-67. Cálculo de los indicadores 1 y generales — **PENDIENTE DE CONFIRMAR**
+- Las métricas usan `extracted_raw` tal como lo devolvió el LLM. Un ID repetido cuenta una vez; un ID inexistente, revocado o mal formado cuenta como propuesta errónea.
+- Nivel exacto: se compara el ID completo (sub-técnica exacta). Nivel padre: cada ID se reduce a su técnica padre (`T1059.001` → `T1059`) en ambas listas y se comparan los conjuntos.
+- Precisión = correctas / propuestas (indefinida si no hubo propuestas); exhaustividad = identificadas / referencia.
+- Una corrida cuya respuesta no es utilizable (no es JSON o no cumple el esquema) se registra como fallida (`failed_runs`) y no entra en la media; una respuesta vacía sí entra (exhaustividad 0).
+- Media y desviación estándar **muestral** (n−1) sobre las corridas; los porcentajes se redondean a 2 decimales.
+- Un error de la API (cuota, modelo inexistente, falta de clave, caché ausente en `--demo`) detiene `aem eval` con un mensaje claro; al repetirlo, la caché evita repetir lo ya obtenido.
+- Las tablas quedan en `runs/<corrida>/results/` (CSV con BOM, `results.md`, `results.json`) y las salidas de cada corrida en `runs/<corrida>/<escenario>/<versión>/r<k>/`.
+
+### D-68. Indicador 4 — chequeo automático — **PENDIENTE DE CONFIRMAR**
+Hoja de revisión manual: `eval/review_sheets/<corrida>_indicator4_summaries.csv`, una fila por técnica resumida, con la descripción fuente (limpia, D-40), el resumen, el estado y columnas vacías `ok (si/no)` y `observación`. El chequeo automático marca un resumen como no conforme si contiene (a) un identificador de ATT&CK (`T`, `TA`, `M`, `G`, `S`, `C`, `DS`, `DC` + 4 dígitos) o (b) una cifra que no aparece en la descripción fuente, o (c) más oraciones que `summary.max_sentences`. Es una aproximación; la medida de fidelidad es la revisión manual de Sebas.
+
