@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from importlib import resources
 from pathlib import Path
 
-from aem.llm import TEMPERATURE, CacheMiss, InvalidResponse
+from aem.llm import TEMPERATURE, CacheMiss, InvalidResponse, redact
 from aem.output import write_json
 from aem.pipeline import (
     EmptyExtraction, PipelineContext, output_prefix, run_pipeline, write_outputs, write_record,
@@ -384,12 +384,12 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
     return paths
 
 
-def _append_history(run_dir: Path, meta: dict) -> None:
-    """One entry per `aem eval` on this run id, so a run completed later still shows it was once partial (D-73)."""
+def _append_history(run_dir: Path, entry: dict) -> None:
+    """One entry per `aem eval` on this run id, finished or interrupted, so a run completed later still shows
+    it was once partial or stopped (D-73)."""
     path = run_dir / "eval_history.json"
     history = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
-    history.append({k: meta[k] for k in ("started", "finished", "fake", "demo", "partial", "escenarios_omitidos",
-                                         "skipped")})
+    history.append(entry)
     write_json(path, history)
 
 
@@ -399,6 +399,23 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
     runs, skipped = [], []
     omitted = omitted_before_run(scenarios)  # copyrighted text not placed locally (D-73)
+    progress = {"runs_completed": 0}
+    try:
+        return _run_and_write(ctx, scenarios, run_dir, sheets_dir, replicates, console, started, runs, skipped,
+                              omitted, progress)
+    except BaseException as exc:  # the stop is recorded too (quota, API error, Ctrl+C), then re-raised
+        provenance = ctx.client.provenance()
+        _append_history(run_dir, {
+            "started": started, "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "status": "interrumpida", "error": redact(f"{type(exc).__name__}: {exc}", ctx.client.settings.gemini_api_key),
+            "fake": not provenance["real"] if ctx.client.call_log else None, "demo": ctx.client.demo,
+            "partial": True, "escenarios_omitidos": omitted, "skipped": skipped,
+            "runs_completed": progress["runs_completed"], "api_events": ctx.client.event_counts()})
+        raise
+
+
+def _run_and_write(ctx, scenarios, run_dir, sheets_dir, replicates, console, started, runs, skipped,
+                   omitted, progress) -> dict:
     for sc in scenarios.values():
         if any(o["scenario"] == sc.name for o in omitted):
             skipped += [f"{sc.name}: {v}" for v in VERSIONS]
@@ -416,6 +433,7 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
                     console.print(f"{sc.name} · {version} · corrida {r + 1}/{replicates}")
                 try:
                     done.append(_one_run(ctx, sc, version, r, text, base / sc.name / version / f"r{r}"))
+                    progress["runs_completed"] += 1
                 except CacheMiss:
                     if not (ctx.client.demo and sc.copyrighted):
                         raise
@@ -443,6 +461,8 @@ def run_experiment(ctx: PipelineContext, scenarios: dict[str, Scenario], run_dir
             "api_events": ctx.client.event_counts(),
             "runs": [{k: r[k] for k in ("scenario", "version", "replicate", "status", "error")} for r in runs]}
     paths = write_results(run_dir, sheets_dir, computed, meta)
-    _append_history(run_dir, meta)
+    _append_history(run_dir, {"started": started, "finished": meta["finished"], "status": "completa",
+                              **{k: meta[k] for k in ("fake", "demo", "partial", "escenarios_omitidos", "skipped")},
+                              "runs_completed": len(runs), "api_events": meta["api_events"]})
     return {"runs": meta["runs"], "skipped": skipped, "omitted": omitted, "partial": meta["partial"],
             "computed": computed, "paths": paths}

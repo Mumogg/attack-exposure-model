@@ -350,3 +350,34 @@ def test_daily_quota_in_a_summary_stops_the_experiment(setup):
                        setup["sheets"], replicates=1)
     assert not (setup["run"] / "gunra" / "orig" / "r0" / "gunra_aa26-222a_stripped_exposure.csv").exists()
     assert not (setup["run"] / "results").exists()
+
+
+def test_interrupted_eval_is_recorded_in_history(setup):
+    """D-73: an `aem eval` stopped by the API (here, daily quota) also leaves an entry in eval_history.json."""
+    from aem.llm import DailyQuotaExhausted
+
+    body = {"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "quota", "details": [
+        {"@type": "type.googleapis.com/google.rpc.QuotaFailure",
+         "violations": [{"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier", "quotaValue": "20"}]}]}}
+
+    class QuotaOnSecondExtraction(RoutingTransport):
+        def generate(self, model, prompt, schema, temperature):
+            if "extracting MITRE ATT&CK" in prompt and sum("extracting" in p for p in self.calls) >= 1:
+                raise TransportError(429, "q", body)
+            return super().generate(model, prompt, schema, temperature)
+
+    with pytest.raises(DailyQuotaExhausted):
+        run_experiment(setup["ctx"](QuotaOnSecondExtraction(extraction=EXTRACTION)), setup["scenarios"],
+                       setup["run"], setup["sheets"], replicates=2)
+    history = json.loads((setup["run"] / "eval_history.json").read_text(encoding="utf-8"))
+    assert len(history) == 1
+    h = history[0]
+    assert h["status"] == "interrumpida" and h["partial"] is True and "DailyQuotaExhausted" in h["error"]
+    assert h["runs_completed"] == 1 and h["api_events"]["http_429"] == 1 and h["started"] <= h["finished"]
+    assert not (setup["run"] / "results").exists()
+
+    # resumed later: a second entry, complete
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=2)
+    history = json.loads((setup["run"] / "eval_history.json").read_text(encoding="utf-8"))
+    assert [h["status"] for h in history] == ["interrumpida", "completa"]
