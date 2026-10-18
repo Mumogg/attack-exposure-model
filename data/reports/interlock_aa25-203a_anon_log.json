@@ -1,0 +1,71 @@
+{
+  "scenario": "interlock",
+  "source": "interlock_aa25-203a_mut_stripped.txt",
+  "anon": "interlock_aa25-203a_anon_stripped.txt",
+  "names_file": "anon_names.yaml",
+  "names": [
+    {
+      "name": "Interlock",
+      "replacement": "ActorX",
+      "role": "actor y familia de ransomware",
+      "occurrences": 63
+    },
+    {
+      "name": "Interlock RAT",
+      "replacement": "RatX",
+      "role": "troyano de acceso remoto propio",
+      "occurrences": 1
+    },
+    {
+      "name": "NodeSnake RAT",
+      "replacement": "RatY",
+      "role": "troyano de acceso remoto",
+      "occurrences": 3
+    },
+    {
+      "name": "NodeSnake",
+      "replacement": "RatY",
+      "role": "troyano de acceso remoto",
+      "occurrences": 0
+    },
+    {
+      "name": "Rhysida",
+      "replacement": "RansomwareW",
+      "role": "familia de ransomware relacionada",
+      "occurrences": 3
+    },
+    {
+      "name": "Lumma Stealer",
+      "replacement": "StealerX",
+      "role": "ladrón de información",
+      "occurrences": 6
+    },
+    {
+      "name": "Lumma",
+      "replacement": "StealerX",
+      "role": "ladrón de información",
+      "occurrences": 0
+    },
+    {
+      "name": "Berserk Stealer",
+      "replacement": "StealerY",
+      "role": "ladrón de información",
+      "occurrences": 1
+    },
+    {
+      "name": "SystemBC",
+      "replacement": "MalwareX",
+      "role": "malware de C2 y proxy",
+      "occurrences": 4
+    },
+    {
+      "name": "DarkGate",
+      "replacement": "MalwareY",
+      "role": "malware mencionado junto a ClickFix",
+      "occurrences": 1
+    }
+  ],
+  "names_replaced": 82,
+  "leak_check": "ok",
+  "ioc_replacements": "ver interlock_aa25-203a_mut_log.json"
+}

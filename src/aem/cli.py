@@ -81,7 +81,7 @@ def _is_copyrighted(report: Path) -> bool:
     from aem.scenarios import load_scenarios
 
     target = Path(report).resolve()
-    return any(target in {p.resolve() for p in (sc.text, sc.stripped, sc.variant)}
+    return any(target in {p.resolve() for p in (sc.text, sc.stripped, sc.variant, sc.anon)}
                for sc in load_scenarios(SCENARIOS_FILE).values() if sc.copyrighted)
 
 
@@ -200,6 +200,10 @@ def make_variants() -> None:
         console.print(f"{log['scenario']}: {log['variant']} — {log['unique_replaced']} IoC distintos reemplazados "
                       f"({log['occurrences_replaced']} apariciones) {log['replacements_by_type']}; "
                       "verificación: ningún IoC del original queda en mut")
+        a = log["anon"]
+        console.print(f"  anon: {a['file']} — {a['names_replaced']} nombres de la amenaza reemplazados; "
+                      "verificación: ningún nombre ni IoC del original queda en anon"
+                      + (f" (no aparecen en el texto: {', '.join(a['names_absent'])})" if a["names_absent"] else ""))
         if log["plain_candidates_kept"]:
             console.print(f"  {len(log['plain_candidates_kept'])} tokens sin defang con forma de IoC se dejaron "
                           f"intactos (revíselos en el diff): "

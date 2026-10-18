@@ -1,0 +1,37 @@
+# Versión `anon` (D-72, PENDIENTE DE CONFIRMAR): nombres propios de la amenaza que se reemplazan, además de
+# todo lo que hace `mut`. Se reemplazan sin distinguir mayúsculas, en prosa, tablas y enlaces (en un enlace,
+# los espacios del nombre se buscan también como guiones: «lumma-stealer»), y nunca dentro de otra palabra
+# («Conti» no toca «continually»). Si dos nombres se solapan, gana el más largo («Interlock RAT» antes que
+# «Interlock»).
+# Se reemplazan: el actor o grupo y sus alias, la familia de ransomware, y el malware que nombra el reporte
+# (también familias relacionadas, porque permiten reconocer la amenaza).
+# NO se reemplazan: herramientas legítimas o de uso general (PowerShell, RDP, AnyDesk, PsExec, Impacket,
+# RClone, FileZilla, Cobalt Strike…), nombres de técnicas (ClickFix), CVE, nombres de archivo ni el
+# comportamiento descrito.
+# `role` es solo documentación.
+
+gunra:
+  - {name: Gunra, replacement: ActorX, role: actor y familia de ransomware}
+  - {name: Golden Community, replacement: ActorY, role: alias del actor}
+  - {name: Conti, replacement: RansomwareW, role: familia de ransomware de cuyo código deriva}
+
+interlock:
+  - {name: Interlock, replacement: ActorX, role: actor y familia de ransomware}
+  - {name: Interlock RAT, replacement: RatX, role: troyano de acceso remoto propio}
+  - {name: NodeSnake RAT, replacement: RatY, role: troyano de acceso remoto}
+  - {name: NodeSnake, replacement: RatY, role: troyano de acceso remoto}
+  - {name: Rhysida, replacement: RansomwareW, role: familia de ransomware relacionada}
+  - {name: Lumma Stealer, replacement: StealerX, role: ladrón de información}
+  - {name: Lumma, replacement: StealerX, role: ladrón de información}
+  - {name: Berserk Stealer, replacement: StealerY, role: ladrón de información}
+  - {name: SystemBC, replacement: MalwareX, role: malware de C2 y proxy}
+  - {name: DarkGate, replacement: MalwareY, role: malware mencionado junto a ClickFix}
+
+akira:
+  # Lista tomada SOLO del título (el texto no está en el repositorio). Sebas debe revisar el texto completo y
+  # agregar aquí los demás nombres propios de la amenaza (ver docs/RUNBOOK.md, paso c).
+  - {name: Akira, replacement: ActorX, role: actor y familia de ransomware}
+  - {name: BumbleBee, replacement: LoaderX, role: loader}
+  - {name: AdaptixC2, replacement: C2FrameworkX, role: framework de C2 usado por el actor}
+  - {name: Adaptix C2, replacement: C2FrameworkX, role: framework de C2 (grafía con espacio)}
+  - {name: Adaptix, replacement: C2FrameworkX, role: framework de C2 (forma corta)}

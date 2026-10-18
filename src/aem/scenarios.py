@@ -16,7 +16,7 @@ from aem.reports import (
 
 REFERENCE_COLUMNS = ("technique_id", "technique_name", "tactic", "valid_in_v19_2", "v19_2_status",
                      "v19_2_replacement")
-VERSIONS = ("orig", "mut")
+VERSIONS = ("orig", "mut", "anon")
 
 
 @dataclass(frozen=True)
@@ -58,6 +58,18 @@ class Scenario:
         return self._sibling("_mut_log.json")
 
     @property
+    def anon(self) -> Path:
+        return self._sibling("_anon_stripped.txt")
+
+    @property
+    def anon_diff(self) -> Path:
+        return self._sibling("_anon.diff")
+
+    @property
+    def anon_log(self) -> Path:
+        return self._sibling("_anon_log.json")
+
+    @property
     def preparation_log(self) -> Path:
         return self._sibling("_preparation.json")
 
@@ -71,8 +83,8 @@ class Scenario:
 
     def report_for(self, version: str) -> Path:
         if version not in VERSIONS:
-            raise ValueError(f"Versión desconocida: {version!r} (use orig o mut)")
-        return self.stripped if version == "orig" else self.variant
+            raise ValueError(f"Versión desconocida: {version!r} (use orig, mut o anon)")
+        return {"orig": self.stripped, "mut": self.variant, "anon": self.anon}[version]
 
     def relocated(self, data_dir: Path) -> "Scenario":
         return replace(self, data_dir=Path(data_dir))

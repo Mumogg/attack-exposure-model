@@ -158,6 +158,30 @@ Las pruebas usan transportes simulados en lugar de la API. Para que esos resulta
 - si no lo es: las salidas de `aem run` y de cada corrida llevan el prefijo `FAKE_`, las tablas de `aem eval` van a `runs/<corrida>/results_FAKE/` (nunca a `results/`) con prefijo `FAKE_` y un encabezado «FAKE» en `results.md`, y las hojas de revisión llevan el prefijo `FAKE_`; la consola lo avisa;
 - toda fila de toda tabla lleva `llm_source`, `model`, `model_version`, `run_date` y `prompt_templates_sha256` (SHA-256 de `extract_v1.txt` y `summary_v1.txt`).
 
+### D-72. Versión `anon` (nombres de la amenaza anonimizados) — **PENDIENTE DE CONFIRMAR**
+Pedida por Sebas (2026-10-17) para controlar la limitación C2: `mut` conserva los nombres, y el LLM podría reconocer la amenaza por su nombre.
+- `anon` = todo lo de `mut` (D-66) + los nombres propios de la amenaza reemplazados de forma consistente por nombres genéricos, según `data/anon_names.yaml`.
+- **Se reemplazan:**
+  - el actor o grupo y sus alias;
+  - la familia de ransomware;
+  - el malware que nombra el reporte (troyanos, loaders, ladrones de información), incluidas las familias relacionadas que permitirían reconocer la amenaza (Conti en Gunra, Rhysida en Interlock).
+- **No se reemplazan:**
+  - herramientas legítimas o de uso general: PowerShell, RDP, AnyDesk, PsExec, Impacket, RClone, FileZilla y también Cobalt Strike, herramienta comercial de uso amplio;
+  - nombres de técnicas (ClickFix);
+  - CVE, nombres de archivo (`R3ADM3.txt`, `conhost.exe`) y extensiones (`.ENCRT`);
+  - el comportamiento descrito.
+- **Cómo se reemplaza:**
+  - sin distinguir mayúsculas y en todo el texto (prosa, tablas y enlaces); en un enlace, el espacio del nombre también se busca como guion;
+  - nunca dentro de otra palabra: «Conti» no toca «continually»;
+  - si dos nombres se solapan, gana el más largo («Interlock RAT» antes que «Interlock»).
+- **Listas actuales:**
+  - **Gunra:** Gunra → ActorX, Golden Community → ActorY, Conti → RansomwareW. Total: 94 reemplazos.
+  - **Interlock:** Interlock → ActorX, Interlock RAT → RatX, NodeSnake (RAT) → RatY, Rhysida → RansomwareW, Lumma (Stealer) → StealerX, Berserk Stealer → StealerY, SystemBC → MalwareX, DarkGate → MalwareY. Total: 82 reemplazos.
+  - **Akira:** Akira → ActorX, BumbleBee → LoaderX, AdaptixC2 / Adaptix C2 / Adaptix → C2FrameworkX. Esta lista sale **solo del título**, porque el texto no está en el repositorio: Sebas debe completarla al colocar el texto (RUNBOOK, paso c). Que AdaptixC2 se reemplace y Cobalt Strike no es una decisión de criterio: AdaptixC2 aparece en el título y es poco común, mientras que Cobalt Strike es de uso general.
+- **Archivos por escenario:** `<reporte>_anon_stripped.txt`, `<reporte>_anon.diff` (frente al `orig`) y `<reporte>_anon_log.json` (apariciones de cada nombre). Los de Akira quedan ignorados por git (`data/reports/akira_dfir_2026*`).
+- **Verificación:** `check_anon` y `check_variant` hacen fallar `aem make-variants`, indicando la línea, si algún nombre o IoC del original sobrevive. Hay un test por escenario preparado.
+- **Evaluación:** `aem eval` corre `orig`, `mut` y `anon`. El indicador 1, el indicador 3 (modelo, con `persistence_anon_over_orig`) y el indicador 5 incluyen `anon`. El enfoque tradicional se reporta igual que en `mut`: 0 % por construcción.
+
 ### D-69. Material con derechos de autor fuera de git (Akira)
 La caché del LLM guarda el prompt completo, que incluye el texto del reporte, y las salidas de cada corrida guardan citas textuales (`evidence_quote`). Como `runs/` se versiona, para el escenario marcado `copyrighted: true` en `data/scenarios.yaml` (Akira, The DFIR Report):
 - las llamadas del paso 1 usan una caché aparte, `runs/llm_cache_private/` (ignorada por git); los resúmenes del paso 4 (texto de ATT&CK) siguen en la caché pública;

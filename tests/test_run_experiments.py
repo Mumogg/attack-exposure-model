@@ -33,6 +33,7 @@ def setup(tmp_path, mini_attack):
     g.stripped.parent.mkdir(parents=True)
     g.stripped.write_text(ORIG, encoding="utf-8")
     g.variant.write_text(MUT, encoding="utf-8")
+    g.anon.write_text(MUT.replace("The actors", "The ActorX actors"), encoding="utf-8")
     write_reference_csv(g.reference, [ReferenceRow("T1190", "Exploit Public-Facing Application", "Initial Access"),
                                       ReferenceRow("T1059.003", "Windows Command Shell", "Execution")], mini_attack)
     for other in ("interlock", "akira"):  # references exist, texts do not
@@ -65,9 +66,9 @@ def read_csv(path):
 def test_full_experiment(setup):
     t = RoutingTransport(extraction=EXTRACTION)
     res = run_experiment(setup["ctx"](t), setup["scenarios"], setup["run"], setup["sheets"], replicates=2)
-    assert set(res["skipped"]) == {"akira: orig", "akira: mut", "interlock: orig", "interlock: mut"}
-    # 2 versions x 2 replicates extraction calls + 2 summaries (cached per technique)
-    assert len(t.calls) == 4 + 2
+    assert set(res["skipped"]) == {f"{s}: {v}" for s in ("akira", "interlock") for v in ("orig", "mut", "anon")}
+    # 3 versions x 2 replicates extraction calls + 2 summaries (cached per technique)
+    assert len(t.calls) == 6 + 2
     out = setup["run"] / "gunra" / "orig" / "r0"
     assert (out / "gunra_aa26-222a_stripped_exposure.csv").exists() and (out / "global_review.json").exists()
 
@@ -158,7 +159,7 @@ def test_partial_failures_are_reported_both_ways(setup):
     i3 = {(r["scenario"], r["approach"]): r for r in read_csv(results / "indicator3.csv")}
     m = i3[("gunra", "modelo")]
     assert float(m["orig_mean_valid"]) == 100.0 and float(m["orig_mean_fail0"]) == 50.0
-    assert m["failed_runs"] == "orig 1, mut 0"
+    assert m["failed_runs"] == "orig 1, mut 0, anon 0"
     i5 = [r for r in read_csv(results / "indicator5.csv") if r["scenario"] == "gunra" and r["version"] == "orig"]
     assert i5[0]["failed_runs"] == "1" and "violations_mean_fail0" in i5[0]
     md = (results / "results.md").read_text(encoding="utf-8")
@@ -257,3 +258,20 @@ def test_fail0_is_the_primary_mean_for_indicators_1_and_3(setup):
     assert "media principal: `_fail0`" in md
     i5_title = next(line for line in md.splitlines() if line.startswith("## Indicador 5"))
     assert "favorece al modelo" in i5_title
+
+
+def test_anon_version_is_in_every_llm_table(setup):
+    """D-72: anon rows in indicators 1 and 5, anon columns in indicator 3 (model and traditional)."""
+    run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                   setup["sheets"], replicates=1)
+    results = setup["run"] / "results"
+    assert {r["version"] for r in read_csv(results / "indicator1.csv") if r["scenario"] == "gunra"} == \
+        {"orig", "mut", "anon"}
+    assert {r["version"] for r in read_csv(results / "indicator5.csv") if r["scenario"] == "gunra"} == \
+        {"orig", "mut", "anon"}
+    assert {(r["scenario"], r["version"]) for r in read_csv(results / "runs.csv")} >= {("gunra", "anon")}
+    i3 = {(r["scenario"], r["approach"]): r for r in read_csv(results / "indicator3.csv")}
+    m, t = i3[("gunra", "modelo")], i3[("gunra", "tradicional")]
+    assert float(m["anon_mean_fail0"]) == 100.0 and float(m["persistence_anon_over_orig_fail0"]) == 1.0
+    assert m["failed_runs"] == "orig 0, mut 0, anon 0"
+    assert float(t["anon_mean_fail0"]) == 0.0 and t["ioc_matches"] == "orig 1, mut 0, anon 0"

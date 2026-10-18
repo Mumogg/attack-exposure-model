@@ -121,6 +121,7 @@ def test_copyrighted_report_detection():
 
     assert _is_copyrighted(DATA_DIR / "reports" / "akira_dfir_2026_stripped.txt")
     assert _is_copyrighted(DATA_DIR / "reports" / "akira_dfir_2026_mut_stripped.txt")
+    assert _is_copyrighted(DATA_DIR / "reports" / "akira_dfir_2026_anon_stripped.txt")
     assert not _is_copyrighted(DATA_DIR / "reports" / "gunra_aa26-222a_stripped.txt")
 
 

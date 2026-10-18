@@ -7,6 +7,10 @@ URL too; qTox IDs → random characters of the same length; accounts → `acct-`
 random letters. Everything else is left byte-for-byte intact. The
 seed is fixed and recorded with a diff. `check_variant` verifies that no IoC
 of the original survives in the variant (D-66, D-70).
+
+`anon` = `mut` + the threat's own names (actor, ransomware family, malware) replaced
+consistently by generic ones (ActorX, LoaderX…) from `data/anon_names.yaml`;
+`check_anon` verifies that none survives (D-72).
 """
 
 from __future__ import annotations
@@ -17,11 +21,12 @@ import random
 import re
 import string
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
 
-from aem.config import IocConfig, ModelConfig
+from aem.config import ANON_NAMES_FILE, IocConfig, ModelConfig, load_yaml
 from aem.output import write_json
 from eval.baseline_ioc import _HASH, _HASH_TYPES, DOT, Ioc, extract_iocs, refang, scan, select_known_iocs, url_host
 
@@ -230,13 +235,59 @@ def plain_candidates(original: str, variant: str, cfg: IocConfig) -> list[dict]:
     return _find(extra, variant)
 
 
+@dataclass(frozen=True)
+class AnonName:
+    name: str
+    replacement: str
+    role: str = ""
+
+
+def load_anon_names(path: Path = ANON_NAMES_FILE) -> dict[str, list[AnonName]]:
+    return {sc: [AnonName(str(d["name"]), str(d["replacement"]), str(d.get("role", ""))) for d in items or []]
+            for sc, items in load_yaml(path).items()}
+
+
+def _name_pattern(name: str) -> str:
+    """Whole name, case-insensitive, never inside another word; a space also matches a URL-slug hyphen."""
+    body = r"[\s-]+".join(re.escape(w) for w in name.split())
+    return rf"(?<![A-Za-z]){body}(?![A-Za-z])"
+
+
+def anonymize(text: str, names: list[AnonName]) -> tuple[str, list[dict]]:
+    ordered = sorted(names, key=lambda n: -len(n.name))  # longest first: "Interlock RAT" before "Interlock"
+    pattern = re.compile("|".join(f"(?P<n{i}>{_name_pattern(n.name)})" for i, n in enumerate(ordered)),
+                         re.IGNORECASE)
+    counts = {n.name: 0 for n in names}
+
+    def sub(m: re.Match) -> str:
+        n = ordered[int(m.lastgroup[1:])]
+        counts[n.name] += 1
+        return n.replacement
+
+    new = pattern.sub(sub, text) if names else text
+    return new, [{"name": n.name, "replacement": n.replacement, "role": n.role, "occurrences": counts[n.name]}
+                 for n in names]
+
+
+def check_anon(text: str, names: list[AnonName]) -> list[dict]:
+    """Original names still present (first line where each appears)."""
+    leaks = []
+    for n in names:
+        m = re.search(_name_pattern(n.name), text, re.IGNORECASE)
+        if m:
+            leaks.append({"name": n.name, "line": text.count("\n", 0, m.start()) + 1})
+    return sorted(leaks, key=lambda x: (x["line"], x["name"]))
+
+
 def unified_diff(original: str, variant: str, name: str) -> str:
     return "".join(difflib.unified_diff(original.splitlines(keepends=True), variant.splitlines(keepends=True),
                                         fromfile=f"{name} (orig)", tofile=f"{name} (mut)"))
 
 
-def build_variants(scenarios: dict, model_cfg: ModelConfig, known_iocs_path: Path) -> list[dict]:
-    """`mut` variant of every prepared scenario + the organization's generated known IoCs (D-62)."""
+def build_variants(scenarios: dict, model_cfg: ModelConfig, known_iocs_path: Path,
+                   anon_names_path: Path = ANON_NAMES_FILE) -> list[dict]:
+    """`mut` and `anon` versions of every prepared scenario + the organization's generated known IoCs (D-62)."""
+    all_names = load_anon_names(anon_names_path)
     logs, known = [], []
     seed = model_cfg.variants.seed
     for sc in scenarios.values():
@@ -258,6 +309,24 @@ def build_variants(scenarios: dict, model_cfg: ModelConfig, known_iocs_path: Pat
                "unique_replaced": len(mapping), "occurrences_replaced": occurrences, "leak_check": "ok",
                "plain_candidates_kept": candidates, "mapping": mapping}
         write_json(sc.variant_log, log)
+
+        if not all_names.get(sc.name):
+            raise ValueError(f"No hay nombres para la versión anon de {sc.name} en {anon_names_path}")
+        names = all_names[sc.name]
+        anon, name_log = anonymize(variant, names)
+        problems = [f"nombre {x['name']} (línea {x['line']})" for x in check_anon(anon, names)]
+        problems += [f"{x['type']} {x['value']} (línea {x['line']})" for x in check_variant(original, anon, model_cfg.ioc)]
+        if problems:
+            raise VariantLeak(f"La versión anon de {sc.name} aún contiene: " + "; ".join(problems))
+        sc.anon.write_text(anon, encoding="utf-8")
+        sc.anon_diff.write_text(unified_diff(original, anon, sc.stripped.name).replace(" (mut)", " (anon)"),
+                                encoding="utf-8")
+        write_json(sc.anon_log, {"scenario": sc.name, "source": sc.variant.name, "anon": sc.anon.name,
+                                 "names_file": Path(anon_names_path).name, "names": name_log,
+                                 "names_replaced": sum(e["occurrences"] for e in name_log), "leak_check": "ok",
+                                 "ioc_replacements": f"ver {sc.variant_log.name}"})
+        log["anon"] = {"file": sc.anon.name, "names_replaced": sum(e["occurrences"] for e in name_log),
+                       "names_absent": [e["name"] for e in name_log if not e["occurrences"]]}
         logs.append(log)
         known += select_known_iocs(extract_iocs(original, model_cfg.ioc), model_cfg.baseline, scenario=sc.name)
     b = model_cfg.baseline

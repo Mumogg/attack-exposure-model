@@ -1,4 +1,4 @@
-"""Full experiment (CLAUDE.md §8): scenarios × {orig, mut} × N replicates → five indicators.
+"""Full experiment (CLAUDE.md §8): scenarios × {orig, mut, anon} × N replicates → five indicators.
 
 Every run goes through the same pipeline as `aem run` in `--analyst-mode auto`.
 API failures (quota, model, missing key, demo cache miss) stop the experiment
@@ -210,7 +210,7 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
 
         # indicator 3
         row = {"scenario": sc.name, "approach": "modelo", "denominator_techniques": len(gaps),
-               "failed_runs": f"orig {failed_by_version['orig']}, mut {failed_by_version['mut']}"}
+               "failed_runs": ", ".join(f"{v} {failed_by_version[v]}" for v in VERSIONS)}
         means = {}
         for v in VERSIONS:
             both = aggregate_with_failures(persistence[v], failed_by_version[v])
@@ -218,25 +218,30 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
                 means[(v, view)] = a["mean"]
                 row[f"{v}_mean_{view}"] = _pct(a["mean"])
                 row[f"{v}_sd_{view}"] = _pct(a["sd"]) if a["n"] >= 2 else NO_DATA
-        for view in ("fail0", "valid"):
-            o, m = means[("orig", view)], means[("mut", view)]
-            row[f"persistence_mut_over_orig_{view}"] = round(m / o, 4) if o and m is not None else NO_DATA
+        for v in VERSIONS[1:]:
+            for view in ("fail0", "valid"):
+                o, m = means[("orig", view)], means[(v, view)]
+                row[f"persistence_{v}_over_orig_{view}"] = round(m / o, 4) if o and m is not None else NO_DATA
         row["ioc_matches"] = ""
         tables["indicator3"].append(row)
         trad = {"scenario": sc.name, "approach": "tradicional", "denominator_techniques": len(ref),
                 "failed_runs": "no aplica (sin LLM)"}
-        if (sc.name, "orig") in texts and (sc.name, "mut") in texts:
-            rec_o, m_o = baseline_recognizes(texts[(sc.name, "orig")], org.known_iocs, cfg.ioc, cfg.baseline)
-            rec_m, m_m = baseline_recognizes(texts[(sc.name, "mut")], org.known_iocs, cfg.ioc, cfg.baseline)
-            tp = traditional_persistence(rec_o, rec_m)
-            ratio = NO_DATA if tp["ratio"] is None else round(tp["ratio"], 4)
-            values = {"orig": tp["orig"], "mut": tp["mut"]}
+        if all((sc.name, v) in texts for v in VERSIONS):
+            recognized, matches = {}, {}
+            for v in VERSIONS:
+                recognized[v], matches[v] = baseline_recognizes(texts[(sc.name, v)], org.known_iocs, cfg.ioc,
+                                                                cfg.baseline)
+            values = {}
+            for v in VERSIONS[1:]:  # anon is reported exactly like mut (D-72)
+                tp = traditional_persistence(recognized["orig"], recognized[v])
+                values["orig"], values[v] = tp["orig"], tp["mut"]
+                ratio = NO_DATA if tp["ratio"] is None else round(tp["ratio"], 4)
+                trad[f"persistence_{v}_over_orig_fail0"] = trad[f"persistence_{v}_over_orig_valid"] = ratio
             for col in row:
-                if col.startswith(("orig_", "mut_")):
+                if col.startswith(tuple(f"{v}_" for v in VERSIONS)):
                     v = col.split("_", 1)[0]
                     trad[col] = "determinístico" if "_sd_" in col else _pct(values[v])
-            trad.update(persistence_mut_over_orig_valid=ratio, persistence_mut_over_orig_fail0=ratio,
-                        ioc_matches=f"orig {len(m_o)}, mut {len(m_m)}")
+            trad["ioc_matches"] = ", ".join(f"{v} {len(matches[v])}" for v in VERSIONS)
         else:
             trad.update({col: NO_DATA for col in row if col not in trad})
         tables["indicator3"].append({col: trad.get(col, NO_DATA) for col in row})

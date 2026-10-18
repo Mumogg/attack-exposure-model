@@ -1,0 +1,29 @@
+{
+  "scenario": "gunra",
+  "source": "gunra_aa26-222a_mut_stripped.txt",
+  "anon": "gunra_aa26-222a_anon_stripped.txt",
+  "names_file": "anon_names.yaml",
+  "names": [
+    {
+      "name": "Gunra",
+      "replacement": "ActorX",
+      "role": "actor y familia de ransomware",
+      "occurrences": 89
+    },
+    {
+      "name": "Golden Community",
+      "replacement": "ActorY",
+      "role": "alias del actor",
+      "occurrences": 1
+    },
+    {
+      "name": "Conti",
+      "replacement": "RansomwareW",
+      "role": "familia de ransomware de cuyo código deriva",
+      "occurrences": 4
+    }
+  ],
+  "names_replaced": 94,
+  "leak_check": "ok",
+  "ioc_replacements": "ver gunra_aa26-222a_mut_log.json"
+}
