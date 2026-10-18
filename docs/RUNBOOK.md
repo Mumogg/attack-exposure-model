@@ -214,6 +214,12 @@ aem report --html --private --run-id 2026-10-18-main  # además: runs/<run-id>/p
 - **Akira en la página pública:** solo IDs y nombres de ATT&CK, tácticas, cobertura, acciones y agregados; nunca citas. Antes de escribir la página pública, el comando la compara con la copia local del reporte de DFIR (ventanas de 8 palabras seguidas y valores de IoC). Si encuentra algo, no escribe nada. La versión `--private` lleva las citas de Akira y queda en `runs/<run-id>/private/`, que git ignora: no la comparta.
 - `report.html` es un archivo nuevo de la carpeta de resultados. Revíselo en el navegador antes de versionarlo.
 
+### Procedencia: `results/provenance.json`
+
+`aem eval` escribe junto a `results.json` el commit del código, los archivos congelados con cambios sin commit, el modelo, la versión y el SHA-256 de ATT&CK, el SHA-256 de cada archivo congelado (ver «j. Congelamiento del experimento»), y las versiones de Python y de las dependencias principales. `aem report` y `aem report --html` muestran un bloque corto leído de ese archivo.
+
+Para una corrida evaluada antes de que existiera, `aem provenance --run-id <run-id>` lo reconstruye, sin API, con `reconstructed: true`. Lo arma desde `results.json`, `eval_history.json` y `git log`, y en `sources` dice de dónde sale cada dato; lo que no se registró queda como «no registrado». No reemplaza un archivo ya existente. Para `2026-10-18-main` ya está generado.
+
 ### Análisis de sensibilidad: `aem sensitivity` (complemento, D-77)
 
 ```bash
@@ -330,3 +336,49 @@ Hay dos README con el mismo contenido: `README.md` (inglés, el principal) y `RE
 3. Revise la tabla de decisiones `PENDIENTE DE CONFIRMAR` del resumen (D-03, D-62, D-65 y las que se agreguen). Confirme o cambie cada una en `docs/DECISIONS.md`.
 4. Si lo prefiere, pídale a Claude: «actualiza RESUMEN_PARA_TESIS.md con runs/<run-id>/results/results.md y las hojas revisadas».
 5. Haga commit (ver paso g).
+
+## j. Congelamiento del experimento
+
+Los resultados de `2026-10-18-main` valen para una configuración concreta del modelo. Esa configuración queda **congelada**: si cambia cualquiera de estos archivos, los resultados publicados ya no describen el código ni los datos del repositorio.
+
+**Qué está congelado**
+
+| Qué | Archivos |
+|---|---|
+| Pasos 1 a 4 (código) | `src/aem/step1_extract.py`, `step2_coverage.py`, `step3_prioritize.py`, `step4_reference.py`, `pipeline.py`, `llm.py`, `boundaries.py`, `attack_data.py`, `org.py`, `models.py`, `config.py` |
+| Prompts | `src/aem/prompts/extract_v1.txt`, `src/aem/prompts/summary_v1.txt` |
+| Parámetros | `data/model_config.yaml` (umbrales, réplicas, muestra, semillas, IoC), `data/boundary_patterns.yaml` |
+| Tabla SSVC | `data/ssvc_tree.yaml` |
+| Organización ficticia | `data/org/fictional_org.yaml` y `data/org/known_iocs_generated.yaml` (más el archivo privado de IoC conocidos de Akira, que no se versiona) |
+| Nombres de la versión `anon` | `data/anon_names.yaml` |
+| Escenarios, textos y referencias | `data/scenarios.yaml`, `data/reports/*` versionados (textos, `stripped`, `mut`, `anon`), `data/reference_mappings/*.csv`, y la generación de variantes y del enfoque tradicional (`src/aem/reports.py`, `src/aem/scenarios.py`, `eval/make_variants.py`, `eval/baseline_ioc.py`) |
+| ATT&CK | `data/attack/CHECKSUMS.sha256`: v19.2, que `aem fetch-data` solo acepta si coincide el SHA-256 |
+
+No forman parte del congelamiento el código que solo lee o presenta resultados ya calculados: `aem report`, `aem report --html`, `aem sensitivity`, `aem review-check`, `aem check-repo`. Si se cambia el cálculo de los indicadores (`eval/metrics.py`, `eval/run_experiments.py`), las tablas publicadas tienen que salir idénticas: los tests y la comprobación SHA-256 de las tablas lo verifican. Si no salen idénticas, cuenta como un cambio congelado.
+
+**Regla.** Cualquier cambio en un archivo congelado exige:
+1. Regenerar los resultados con un **run-id nuevo**: `aem eval --run-id <fecha>-<nombre>`. Si cambian un prompt o un texto, cambia la clave de la caché y hay llamadas nuevas a la API.
+2. Repetir la **revisión humana**: las hojas del run nuevo salen vacías y se llenan otra vez, y luego se corre `aem review-check`.
+3. Actualizar `docs/RESUMEN_PARA_TESIS.md` y las cifras de la tesis con el run nuevo.
+
+No se edita un run ya publicado para que coincida con el código nuevo.
+
+**Cómo comprobarlo.** El commit de referencia de `2026-10-18-main` es **`2996515`**, el primero que contiene todo el código que usó la ejecución final de `aem eval`. En esa ejecución, HEAD era `a5302a5` y sus cambios aún no estaban en un commit: ver `runs/2026-10-18-main/results/provenance.json`. Desde la raíz del repositorio:
+
+```bash
+git diff --stat 2996515 HEAD -- \
+  src/aem/step1_extract.py src/aem/step2_coverage.py src/aem/step3_prioritize.py src/aem/step4_reference.py \
+  src/aem/pipeline.py src/aem/llm.py src/aem/boundaries.py src/aem/attack_data.py src/aem/org.py \
+  src/aem/models.py src/aem/config.py src/aem/prompts src/aem/reports.py src/aem/scenarios.py \
+  eval/make_variants.py eval/baseline_ioc.py \
+  data/model_config.yaml data/boundary_patterns.yaml data/ssvc_tree.yaml data/org data/anon_names.yaml \
+  data/scenarios.yaml data/reports data/reference_mappings data/attack/CHECKSUMS.sha256
+```
+
+- **Sin salida:** nada congelado cambió.
+- **Con salida:** revise cada archivo con `git diff 2996515 HEAD -- <archivo>`.
+- **Estado al 2026-10-18:** solo aparece `data/org/fictional_org.yaml`, por el comentario de cabecera de `293eea1` (de «BORRADOR» a «CONFIRMADA»). Como datos YAML, el archivo es idéntico.
+
+Para un run evaluado desde ahora, el commit está en `results/provenance.json` (`code.commit`), junto con los archivos congelados que tenían cambios sin commit (`code.uncommitted_changes_in_frozen_files`, que debe ser `[]`) y el SHA-256 de cada archivo congelado. Compare ese commit en lugar de `2996515`.
+
+Antes de entregar o etiquetar una versión, corra este `git diff` y `aem check-repo`.
