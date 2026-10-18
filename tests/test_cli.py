@@ -67,3 +67,22 @@ def test_demo_command_missing_report(files, tmp_path, monkeypatch):
     res = runner.invoke(app, ["demo", "--attack", str(files["attack"]), "--cache-dir", str(files["cache"])])
     assert res.exit_code == 1
     assert "no_existe.txt" in res.output
+
+
+def test_fetch_data_prepares_cisa_reports(tmp_path, monkeypatch, mini_attack):
+    import shutil
+    from test_reports import HTML
+    from aem.config import SCENARIOS_FILE
+
+    data = tmp_path / "data"
+    (data / "reference_mappings").mkdir(parents=True)
+    shutil.copy(SCENARIOS_FILE, data / "scenarios.yaml")
+    monkeypatch.setattr("aem.cli.SCENARIOS_FILE", data / "scenarios.yaml")
+    monkeypatch.setattr("aem.cli._fetch_attack", lambda: mini_attack.bundle_path)
+    monkeypatch.setattr("aem.cli.http_get", lambda url: HTML.encode("utf-8"))
+    res = runner.invoke(app, ["fetch-data"])
+    assert res.exit_code == 0, res.output
+    assert (data / "reports" / "gunra_aa26-222a_stripped.txt").exists()
+    assert (data / "reports" / "interlock_aa25-203a_stripped.txt").exists()
+    assert (data / "reference_mappings" / "gunra.csv").exists()
+    assert "akira_dfir_2026.txt" in res.output.replace("\n", "")  # tells Sebas where to place the DFIR text

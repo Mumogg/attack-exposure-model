@@ -18,7 +18,7 @@ data/attack/*.json
 data/reports/raw/
 
 # DFIR Report content is copyrighted: never commit it
-data/reports/akira_dfir_2026*.txt
+data/reports/akira_dfir_2026*
 
 # OS / editors
 .DS_Store

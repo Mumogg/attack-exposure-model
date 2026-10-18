@@ -1,0 +1,31 @@
+# Catálogo de escenarios de la tesis. Rutas relativas a data/.
+# Cada escenario existe en dos versiones: orig (stripped) y mut (variante con IoC modificados).
+
+gunra:
+  title: "#StopRansomware: Gunra Ransomware"
+  source: cisa
+  advisory: AA26-222A
+  published: 2026-08-10
+  url: https://www.cisa.gov/news-events/cybersecurity-advisories/aa26-222a
+  text: reports/gunra_aa26-222a.txt
+  reference: reference_mappings/gunra.csv
+
+interlock:
+  title: "#StopRansomware: Interlock"
+  source: cisa
+  advisory: AA25-203A
+  published: 2025-07-22
+  url: https://www.cisa.gov/news-events/cybersecurity-advisories/aa25-203a
+  text: reports/interlock_aa25-203a.txt
+  reference: reference_mappings/interlock.csv
+
+akira:
+  # Contenido con derechos de autor: el texto NO se incluye en el repositorio (ver docs/report_preparation.md).
+  title: "From Bing search to ransomware: BumbleBee and AdaptixC2 deliver Akira"
+  source: dfir
+  published: 2026-06-29
+  url: https://thedfirreport.com/2026/06/29/from-bing-search-to-ransomware-bumblebee-and-adaptixc2-deliver-akira-3/
+  text: reports/akira_dfir_2026.txt
+  reference: reference_mappings/akira.csv
+  attack_heading: "MITRE ATT&CK"
+  end_headings: []

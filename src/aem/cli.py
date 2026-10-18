@@ -10,8 +10,9 @@ from rich.console import Console
 from aem import config
 from aem.config import (
     ATTACK_CHECKSUMS, ATTACK_FILE, ATTACK_URL, DATA_DIR, LLM_CACHE_DIR, ORG_FILE, PREVALENCE_FILE, RUNS_DIR,
-    SSVC_TREE_FILE, Settings, load_model_config,
+    SCENARIOS_FILE, SSVC_TREE_FILE, Settings, load_model_config,
 )
+from aem.fetch import http_get
 
 app = typer.Typer(
     help="Prototipo de tesis: evaluación de exposición a técnicas MITRE ATT&CK asistida por IA "
@@ -77,16 +78,68 @@ def _run(report: Path, org: Path, analyst_mode: str, demo: bool, out: Path, atta
     console.print("La salida no afirma que la organización haya sido comprometida.")
 
 
+def _fetch_attack() -> Path:
+    from aem.fetch import fetch_verified
+
+    digest = fetch_verified(ATTACK_URL, ATTACK_FILE, ATTACK_CHECKSUMS)
+    console.print(f"ATT&CK v19.2: {ATTACK_FILE} (SHA-256 {digest})")
+    return ATTACK_FILE
+
+
+def _prepare_reports(attack_path: Path, force: bool, download: bool) -> None:
+    from aem.attack_data import AttackData
+    from aem.reports import AttackSectionNotFound
+    from aem.scenarios import load_reference, load_scenarios, prepare_cisa, prepare_plain
+
+    attack = AttackData.load(attack_path)
+    for sc in load_scenarios(SCENARIOS_FILE).values():
+        if sc.source == "cisa":
+            if sc.stripped.exists() and not force:
+                console.print(f"{sc.name}: ya preparado ({sc.stripped.name}); use --force para regenerar.")
+                continue
+            if download or not sc.raw_html.exists():
+                sc.raw_html.parent.mkdir(parents=True, exist_ok=True)
+                sc.raw_html.write_bytes(http_get(sc.url))
+            log = prepare_cisa(sc, sc.raw_html.read_text(encoding="utf-8"), attack)
+            console.print(f"{sc.name}: {sc.stripped.name} y {sc.reference.name} "
+                          f"({log['reference_techniques']} técnicas de referencia)")
+        else:
+            if not sc.text.exists():
+                console.print(f"[yellow]{sc.name}:[/yellow] falta el texto. Descárguelo de {sc.url} y guárdelo "
+                              f"como {sc.text} (no se sube al repositorio). Luego ejecute `aem prepare-reports`.")
+                continue
+            try:
+                expected = [r.technique_id for r in load_reference(sc.reference)]
+                log = prepare_plain(sc, expected)
+            except AttackSectionNotFound as exc:
+                _fail(f"{sc.name}: {exc}")
+            console.print(f"{sc.name}: {sc.stripped.name}; mapeo de referencia: {log['reference_check']}")
+
+
 @app.command("fetch-data")
-def fetch_data() -> None:
-    """Descarga ATT&CK Enterprise v19.2 (verificando su SHA-256)."""
-    from aem.fetch import ChecksumMismatch, fetch_verified
+def fetch_data(
+    force: bool = typer.Option(False, "--force", help="Volver a descargar y regenerar los boletines de CISA."),
+) -> None:
+    """Descarga ATT&CK Enterprise v19.2 (verificando su SHA-256) y los boletines de CISA, y prepara los textos."""
+    from aem.fetch import ChecksumMismatch
 
     try:
-        digest = fetch_verified(ATTACK_URL, ATTACK_FILE, ATTACK_CHECKSUMS)
+        attack_path = _fetch_attack()
+        _prepare_reports(attack_path, force=force, download=True)
     except (ChecksumMismatch, OSError) as exc:
         _fail(str(exc))
-    console.print(f"ATT&CK v19.2: {ATTACK_FILE} (SHA-256 {digest})")
+
+
+@app.command("prepare-reports")
+def prepare_reports(
+    attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
+    force: bool = typer.Option(False, "--force", help="Regenerar también los textos de CISA ya preparados."),
+) -> None:
+    """Quita el mapeo ATT&CK y todos los IDs de los reportes (incluido el texto de Akira que usted coloque)."""
+    try:
+        _prepare_reports(attack, force=force, download=False)
+    except (FileNotFoundError, OSError) as exc:
+        _fail(str(exc))
 
 
 @app.command("run")

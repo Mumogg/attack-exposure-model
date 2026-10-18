@@ -1,0 +1,67 @@
+{
+  "scenario": "interlock",
+  "source_url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa25-203a",
+  "removed": [
+    {
+      "kind": "section",
+      "heading": "MITRE ATT&CK Tactics and Techniques",
+      "lines": 54
+    },
+    {
+      "kind": "note",
+      "text": "Note: This advisory uses the MITRE ATT&CK® Matrix for Enterprise framework, version 17. See the MITRE ATT&CK Tactics and Techniques section of this advisory for tables mapped to the threat actors’ activity."
+    },
+    {
+      "kind": "ids",
+      "count": 39,
+      "distinct": [
+        "T1007",
+        "T1016",
+        "T1021.001",
+        "T1033",
+        "T1036.005",
+        "T1048",
+        "T1056.001",
+        "T1059.001",
+        "T1070.004",
+        "T1078",
+        "T1078.002",
+        "T1082",
+        "T1105",
+        "T1189",
+        "T1204.004",
+        "T1218.011",
+        "T1219",
+        "T1486",
+        "T1530",
+        "T1547.001",
+        "T1555.003",
+        "T1558.003",
+        "T1567.002",
+        "T1657",
+        "TA0001",
+        "TA0003",
+        "TA0006",
+        "TA0011"
+      ]
+    }
+  ],
+  "reference_techniques": 25,
+  "tactic_rows_excluded": [
+    {
+      "id": "TA0005",
+      "name": "Defense Evasion",
+      "table": "Defense Escalation"
+    },
+    {
+      "id": "TA0006",
+      "name": "Credential Access",
+      "table": "Credential Access"
+    },
+    {
+      "id": "TA0011",
+      "name": "Command and Control",
+      "table": "Command and Control"
+    }
+  ]
+}
