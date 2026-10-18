@@ -10,7 +10,7 @@ Disco externo de la máquina de desarrollo (etiqueta `Info`, 1 TB), carpeta `Git
 ### D-02. Archivo de ATT&CK
 `enterprise-attack-19.2.json` existe en `mitre-attack/attack-stix-data` con ese nombre exacto. Su SHA-256 se guarda en `data/attack/CHECKSUMS.sha256` y `aem fetch-data` lo verifica. Informativa.
 
-### D-03. Campo `data_sources` del paso 4 — **PENDIENTE DE CONFIRMAR (Sebas lo verifica contra la documentación de ATT&CK v19)**
+### D-03. Campo `data_sources` del paso 4 — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 En ATT&CK v18+ las técnicas ya no tienen el campo `x_mitre_data_sources`; la detección se modela como *estrategia de detección → analíticas → componentes de datos*. El campo `data_sources` de la salida lista los **nombres de los componentes de datos** (p. ej. `Process Creation`, `Logon Session Creation`) que alcanzan la técnica por esa cadena. Los objetos `x-mitre-data-source` de v19 están todos deprecados. En el CSV la columna conserva el nombre `data_sources` (instrucción de Sebas, 2026-10-17).
 
 **Verificación contra el bundle (2026-10-17).** Se hizo con un script independiente que lee el JSON sin usar la cadena del código, sobre `data/attack/enterprise-attack-19.2.json` con SHA-256 `dc1639ca…c3d8f4`.
@@ -38,7 +38,7 @@ En ATT&CK v18+ las técnicas ya no tienen el campo `x_mitre_data_sources`; la de
   - `T1059.001` PowerShell: estrategia `DET0455` «Abuse of PowerShell for Arbitrary Execution». Componentes: Command Execution; Module Load; Process Creation; Process Metadata.
   - `T1021.001` Remote Desktop Protocol: estrategia `DET0327` «Multi-event Detection Strategy for RDP-Based Remote Logins and Post-Access Activity». Componentes: Logon Session Creation; Logon Session Metadata; Network Connection Creation; Process Creation.
   - En ambos casos la columna `data_sources` del CSV contiene exactamente esa lista.
-- **Estado:** sigue PENDIENTE hasta que Sebas lo verifique contra la documentación oficial.
+- **Estado:** confirmada por Sebas (2026-10-18). La columna conserva el nombre `data_sources`; la tesis aclara que en v18+ son componentes de datos, porque las *data sources* clásicas están deprecadas.
 
 **Nota sobre DeTT&CT:** el modelo de datos de DeTT&CT, en el que se inspira el YAML de la organización, es anterior a este cambio de ATT&CK (usa las *data sources* clásicas). Por eso el YAML declara sus fuentes con nombres propios (`data_sources[].name`, aquí escritos como componentes de datos de v19 para que sean legibles), que no se cruzan automáticamente con la columna `data_sources` del paso 4: son dos cosas distintas (lo que la organización registra frente a lo que ATT&CK asocia a la técnica).
 
@@ -50,7 +50,7 @@ Paquete `google-genai` 2.x. Se usa `client.models.generate_content` con `Generat
 ### D-10. Limpieza de los reportes antes de dárselos al LLM — **CONFIRMADA (2026-10-17)**
 Los boletines de CISA no solo tienen la sección «MITRE ATT&CK Tactics and Techniques»: también etiquetan cada párrafo en línea (`[T1190]`, `[TA0001]`) y una nota inicial dice qué versión de ATT&CK usan. Si solo se quitara la sección, la extracción copiaría las etiquetas. Por eso el texto `_stripped` elimina: (1) la sección completa del mapeo ATT&CK (y sus tablas); (2) **todo** ID de técnica, sub-técnica o táctica que aparezca en el cuerpo (`T####`, `T####.###`, `TA####`, entre corchetes o no), quitando solo el ID y dejando la oración legible; (3) la nota que remite a la tabla de ATT&CK. Lo mismo se aplica al texto de Akira (The DFIR Report) que coloca Sebas. Un test (`tests/test_reports.py`) falla si algún `*_stripped.txt` contiene `\bT\d{4}(\.\d{3})?\b` o `\bTA\d{4}\b`. El detalle de cada tipo de sección o patrón eliminado está en `docs/report_preparation.md`.
 
-### D-11. Fragmentación de reportes largos — **PENDIENTE DE CONFIRMAR**
+### D-11. Fragmentación de reportes largos — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 Por defecto el reporte se envía completo si tiene ≤ `chunk_max_chars` caracteres (100 000 en `data/model_config.yaml`; los tres reportes están por debajo). Si lo supera, se divide en fragmentos de `chunk_size_chars` con `chunk_overlap_chars` de solapamiento, cortando en saltos de párrafo, y se unifican por `technique_id` conservando la primera cita.
 
 ### D-12. Réplicas y caché
@@ -61,10 +61,10 @@ Además de validar el ID contra ATT&CK, el código comprueba que `evidence_quote
 
 ## Paso 2 — Cobertura
 
-### D-20. Umbrales de cobertura — **PENDIENTE DE CONFIRMAR**
+### D-20. Umbrales de cobertura — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 Adaptación propia de la escala de detección de DeTT&CT: `score` 0 o sin entrada → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. Configurables en `data/model_config.yaml` (`coverage.partial_min`, `coverage.covered_min`).
 
-### D-21. Sub-técnicas sin entrada propia — **PENDIENTE DE CONFIRMAR**
+### D-21. Sub-técnicas sin entrada propia — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 Política `subtechnique_policy` en `data/model_config.yaml`. Por defecto `no_inherit`: una sub-técnica sin entrada propia queda `sin cobertura`, aunque el padre tenga detección. Alternativa `inherit_parent`: toma el puntaje del padre y lo registra como heredado. Una técnica padre **nunca** agrega la cobertura de sus sub-técnicas.
 
 ### D-22. Borrador de la organización ficticia — **CONFIRMADA como verdad de referencia del indicador 2 (2026-10-17): las brechas las define Sebas; el borrador es de Claude**
@@ -72,10 +72,10 @@ Política `subtechnique_policy` en `data/model_config.yaml`. Por defecto `no_inh
 
 ## Paso 3 — Priorización
 
-### D-30. Tabla SSVC adaptada — **PENDIENTE DE CONFIRMAR**
+### D-30. Tabla SSVC adaptada — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 `data/ssvc_tree.yaml` contiene la propuesta inicial de `CLAUDE.md` §5 sin cambios.
 
-### D-31. Activo por defecto en `analyst_context` — **PENDIENTE DE CONFIRMAR**
+### D-31. Activo por defecto en `analyst_context` — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 `analyst_context` tiene `default_asset_id` y una lista `entries` (`technique_id`, `asset_id`). En modo `auto`, una técnica sin entrada propia usa el activo por defecto, y el registro del analista lo indica. Criticidad y exposición se leen del activo.
 
 ### D-32. Revisión global en modo `auto`
@@ -86,7 +86,7 @@ El script nunca responde la pregunta global. En modo `auto`, `global_review.json
 ### D-40. Limpieza de la descripción antes de resumir
 Antes de enviarla al LLM, el código quita de la descripción de ATT&CK las marcas `(Citation: …)` y convierte los enlaces Markdown `[texto](url)` en `texto`. La hoja de revisión del indicador 4 muestra esta descripción limpia como fuente.
 
-### D-41. Filtro de lenguaje evaluativo en resúmenes — **PENDIENTE DE CONFIRMAR**
+### D-41. Filtro de lenguaje evaluativo en resúmenes — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 Si un resumen contiene un patrón evaluativo (lista en `data/boundary_patterns.yaml`) que **no** aparece en la descripción fuente, el CSV muestra `resumen no disponible` y la violación queda registrada (cuenta para el indicador 5). Se compara con la fuente porque algunas descripciones de ATT&CK usan palabras como «critical» de forma descriptiva.
 
 ### D-42. Formato de prevalencia
@@ -120,8 +120,10 @@ Se usan las **38 técnicas** que muestra la sección «MITRE ATT&CK» del report
 ### D-61. Filas de táctica en las tablas de CISA — **CONFIRMADA (2026-10-17)**
 Las tablas de CISA incluyen a veces un ID de táctica (p. ej. `TA0009` Collection) en lugar de una técnica. Esas filas no entran en el mapeo de referencia, porque no son técnicas; se listan en `docs/report_preparation.md`. En concreto, las filas TA0005, TA0006, TA0009 y TA0011 quedan fuera: la comparación es a nivel de técnica/sub-técnica.
 
-### D-62. Enfoque tradicional (IoC) — **PENDIENTE DE CONFIRMAR**
+### D-62. Enfoque tradicional (IoC) — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 `aem make-variants` toma, con semilla fija (`baseline.seed` = 20261017), una fracción `baseline.known_ioc_fraction` (por defecto 0,5, redondeo hacia arriba) de los IoC **únicos** de la versión `orig` (stripped) de cada escenario y los escribe en `data/org/known_iocs_generated.yaml`, que el YAML de la organización referencia con `known_iocs_file`. Los IoC conocidos se comparan contra **todos** los escenarios (la organización «los conoce», sin importar de qué boletín vinieron). Si hay ≥ `baseline.min_matches` (por defecto 1) coincidencias por tipo y valor normalizado, el enfoque tradicional «reconoce» la amenaza y con ella todas las técnicas de referencia del escenario; si no, ninguna. Es una simplificación deliberada y configurable.
+
+Confirmada por Sebas (2026-10-18). La tesis lo presenta como una cota favorable al enfoque tradicional en `orig` (100 %); su 0 % en `mut` y `anon` se da por construcción, no es un hallazgo empírico.
 
 Nota: si Sebas coloca el texto de Akira y ejecuta `aem make-variants`, el archivo generado incluirá IoC de ese reporte (valores de indicadores, no texto del reporte). Sebas decide si se versiona.
 
@@ -138,7 +140,7 @@ Tipos reconocidos (`eval/baseline_ioc.py`): MD5, SHA-1, SHA-256, SHA-512 (hexade
 ### D-64. Indicador 3 del modelo
 Denominador: técnicas de la referencia (válidas en v19.2) cuya cobertura según el paso 2 sobre el YAML es `parcial` o `sin cobertura`. Numerador: las que aparecen con ID exacto en `extracted_raw`. Se reporta el porcentaje en `orig` y en `mut` (media y desviación estándar de las 5 corridas) y la razón de medias mut/orig. Para el enfoque tradicional el denominador son todas las técnicas de referencia y el resultado es 100 % o 0 % (determinístico, D-62).
 
-### D-65. Indicador 5 — **PENDIENTE DE CONFIRMAR**
+### D-65. Indicador 5 — **CONFIRMADA (2026-10-18, decisión de Sebas)**
 Una violación es (a) un campo extra no previsto por el esquema en la salida del LLM (paso 1, o claves distintas de `summary` en el paso 4), o (b) un patrón evaluativo (`data/boundary_patterns.yaml`) en el texto generado que **no** aparece en su fuente: para `evidence_quote` y `technique_name` del paso 1, la fuente es el reporte más el nombre oficial de ATT&CK; para los resúmenes, la descripción de ATT&CK. Se cuenta cada patrón una vez por campo. El paso 1 se resume por escenario × versión (total, media y desviación por corrida); los resúmenes, una vez por técnica (D-44). La revisión manual usa una muestra aleatoria (`experiment.manual_sample_size` = 30, semilla `experiment.sample_seed`) de citas y resúmenes únicos, en `eval/review_sheets/<corrida>_indicator5_sample.csv`.
 
 ### D-66. Variante `mut` (`eval/make_variants.py`) — **CONFIRMADA (2026-10-17)**

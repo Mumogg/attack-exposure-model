@@ -152,20 +152,20 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 |---|---|---|
 | D-01 | Ubicación del repositorio (disco Info, carpeta Github) | Técnica |
 | D-02 | Archivo `enterprise-attack-19.2.json` con checksum | Técnica |
-| D-03 | `data_sources` = componentes de datos alcanzados por las estrategias de detección (v18+); columna conserva el nombre; el YAML usa nombres propios porque DeTT&CT es anterior a este cambio | **PENDIENTE DE CONFIRMAR** (Sebas verifica contra la documentación de v19) |
+| D-03 | `data_sources` = componentes de datos alcanzados por las estrategias de detección (v18+); columna conserva el nombre; el YAML usa nombres propios porque DeTT&CT es anterior a este cambio | **CONFIRMADA** (2026-10-18) |
 | D-04 | SDK `google-genai` y forma de pedir JSON con esquema | Técnica |
 | D-10 | Limpieza de reportes: sección del mapeo, nota de versión y todo ID; test de garantía | **CONFIRMADA** (2026-10-17) |
-| D-11 | Fragmentación de reportes largos | PENDIENTE DE CONFIRMAR |
+| D-11 | Fragmentación de reportes largos | **CONFIRMADA** (2026-10-18) |
 | D-12 | Réplica en la clave de caché | Técnica |
 | D-13 | Validación de la cita textual (advertencia `quote_not_found`) | Técnica |
-| D-20 | Umbrales de cobertura sobre la escala de DeTT&CT | PENDIENTE DE CONFIRMAR |
-| D-21 | Sub-técnicas sin entrada propia: no heredan | PENDIENTE DE CONFIRMAR |
+| D-20 | Umbrales de cobertura sobre la escala de DeTT&CT | **CONFIRMADA** (2026-10-18) |
+| D-21 | Sub-técnicas sin entrada propia: no heredan | **CONFIRMADA** (2026-10-18) |
 | D-22 | Organización ficticia y `coverage_design` como verdad del indicador 2 | **CONFIRMADA** (2026-10-17): las brechas las define Sebas, el borrador es de Claude |
-| D-30 | Tabla SSVC adaptada | PENDIENTE DE CONFIRMAR |
-| D-31 | Activo por defecto en `analyst_context` | PENDIENTE DE CONFIRMAR |
+| D-30 | Tabla SSVC adaptada | **CONFIRMADA** (2026-10-18) |
+| D-31 | Activo por defecto en `analyst_context` | **CONFIRMADA** (2026-10-18) |
 | D-32 | Revisión global sin responder en modo `auto` | Técnica |
 | D-40 | Limpieza de la descripción de ATT&CK antes de resumir | Técnica |
-| D-41 | Filtro de lenguaje evaluativo en resúmenes (comparado con la fuente) | PENDIENTE DE CONFIRMAR |
+| D-41 | Filtro de lenguaje evaluativo en resúmenes (comparado con la fuente) | **CONFIRMADA** (2026-10-18) |
 | D-42 | Formato de prevalencia; sin herencia del padre | Técnica |
 | D-43 | Grupos: solo `intrusion-set` con relación directa | Técnica |
 | D-44 | Un resumen por técnica (caché compartida) | Técnica (pedido de Sebas) |
@@ -175,10 +175,10 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-52 | Archivos de salida de `aem run` | Técnica |
 | D-60 | Akira: 38 técnicas | **CONFIRMADA** (2026-10-17) |
 | D-61 | Filas de táctica (TA0005, TA0006, TA0009, TA0011) fuera de la referencia | **CONFIRMADA** (2026-10-17) |
-| D-62 | Enfoque tradicional: 50 % de IoC conocidos, ≥ 1 coincidencia | PENDIENTE DE CONFIRMAR |
+| D-62 | Enfoque tradicional: 50 % de IoC conocidos, ≥ 1 coincidencia | **CONFIRMADA** (2026-10-18) |
 | D-63 | Reglas de extracción de IoC (defang obligatorio, SHA-512, correos, exclusiones) | **CONFIRMADA** (2026-10-17) |
 | D-64 | Definición del indicador 3 del modelo | Técnica |
-| D-65 | Definición de violación (indicador 5) | PENDIENTE DE CONFIRMAR |
+| D-65 | Definición de violación (indicador 5) | **CONFIRMADA** (2026-10-18) |
 | D-66 | Construcción de la variante `mut` (incluye la parte local de los correos) | **CONFIRMADA** (2026-10-17) |
 | D-67 | Cálculo de métricas (repetidos, corridas fallidas, n−1); media principal `_fail0` en los indicadores 1 y 3 | **CONFIRMADA** (2026-10-17) |
 | D-68 | Chequeo automático del indicador 4 (cifras e IDs como palabras) | **CONFIRMADA** (2026-10-17) |
@@ -219,7 +219,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 
 - Colocar el texto de Akira (`docs/report_preparation.md`), completar sus nombres en `data/anon_names.yaml` y ejecutar `aem prepare-reports` y `aem make-variants`.
 - Llenar `data/prevalence/red_canary_2026.csv`.
-- Revisar `coverage_design` y las decisiones **PENDIENTE DE CONFIRMAR**.
+- Revisar `coverage_design` (`fictional_org.yaml` sigue marcado BORRADOR). Las decisiones de `docs/DECISIONS.md` quedaron todas confirmadas el 2026-10-18.
 - Seguir `docs/RUNBOOK.md`: `aem preflight`, luego `aem eval --run-id <fecha>` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
 - Ejecutar `aem check-repo` antes de subir a GitHub.
 - Confirmar la redacción de la declaración de uso de IA en `README.md` (inglés) y `README.es.md` (español).
