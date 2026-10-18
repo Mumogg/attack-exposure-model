@@ -1,0 +1,808 @@
+{
+  "kind": "indicator4",
+  "columns": [
+    "technique_id",
+    "technique_name",
+    "source_description",
+    "summary",
+    "status",
+    "auto_check",
+    "ok (si/no)",
+    "observación"
+  ],
+  "generated_columns": [
+    "technique_id",
+    "technique_name",
+    "source_description",
+    "summary",
+    "status",
+    "auto_check"
+  ],
+  "review_columns": [
+    "ok (si/no)",
+    "observación"
+  ],
+  "rows": [
+    {
+      "sha256": "5134a379631ecb14fb65c9a3a67ebc0b898d6a5480ea5fd898785466705a9968",
+      "cells": {
+        "technique_id": "f4dc435e572ac01d",
+        "technique_name": "a3c332c9f6907cb5",
+        "source_description": "fec0843a6bf03316",
+        "summary": "1812a0bf0e942be6",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "b23894fed3a03b964287311b7572925c6bfc537cd9020433fadb6be644b4378f",
+      "cells": {
+        "technique_id": "7edec2b95d1edf27",
+        "technique_name": "3e1bea65db4f315d",
+        "source_description": "0bad4dd1d0057128",
+        "summary": "6cc8dd9fbc4fd30e",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "02ad797e29251894bdf2b575a0f3c78c02b735dad8d29e85dac0a4f89de26c49",
+      "cells": {
+        "technique_id": "773a083f63f12452",
+        "technique_name": "f745f8fbd8d284ad",
+        "source_description": "74dbd62fb87194b5",
+        "summary": "44a2ec3f6199d411",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "7e923bf05bf1687c7081c3ccfd96fffbb8a9dff5ba275d2d9899313df81bb573",
+      "cells": {
+        "technique_id": "ac82de2968fd352f",
+        "technique_name": "91b8ac5af6784d44",
+        "source_description": "5788589b3b0ccd93",
+        "summary": "e3842deaedc0574c",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "8a5ae4bd009deedb8acc9f4eeabb83a5bf7ce8be0848718ee4efa15733f3dd01",
+      "cells": {
+        "technique_id": "ebeee593e5d48386",
+        "technique_name": "780f529605179a28",
+        "source_description": "fd6a7849a8c97110",
+        "summary": "00ccede82979b9e3",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "d2aa832c0c2e139d9c2371a20ce3ace4049b298a255d4935025dbe2f34dafced",
+      "cells": {
+        "technique_id": "aa6a8e925687528f",
+        "technique_name": "212ec4805b1d0adf",
+        "source_description": "972a7aa0b21f0f53",
+        "summary": "4912fcecd175b1f6",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "e18b3c819bba5b60b6046c5b5c4fa23635828b2b4119ecae3b61eac0b7aa538f",
+      "cells": {
+        "technique_id": "585e8cc548499769",
+        "technique_name": "18a1f761d4edec09",
+        "source_description": "75208f402aac75bc",
+        "summary": "12a0b4fbe3d04b9b",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "2b8b60dc7db11f7da8ac647cbde06f9dacb40f71033f74cf07746abbc658c6dd",
+      "cells": {
+        "technique_id": "38ef3883516869ac",
+        "technique_name": "01c4d3c21642b217",
+        "source_description": "9014d765b392e350",
+        "summary": "993980fcd3fb4f52",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "3df49b5155f37af9ab814d2c001b08a0be428f0588004a74cffb816674807586",
+      "cells": {
+        "technique_id": "c5f5c65078588b62",
+        "technique_name": "4583f8103cb7dba5",
+        "source_description": "96cee59c3e3eb1ae",
+        "summary": "b2950f39f4229792",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "67d0e8605ccd3cb89df4ed16163d232e0dbf24b9cb0cb98f4fd12d6a6b6f6ecb",
+      "cells": {
+        "technique_id": "ccaa8893a3de6788",
+        "technique_name": "bb96a92840baf621",
+        "source_description": "f23520ab0dba2835",
+        "summary": "073a45831aa412c6",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "c5ac7d9f71b5f70d1d405f13f0c25b77f4711db1550407d8473c9df67310003f",
+      "cells": {
+        "technique_id": "8bbf5fad83c851f4",
+        "technique_name": "2336cc79ab9c2af1",
+        "source_description": "5f5cc7e58d2a785c",
+        "summary": "8021d45020b213b1",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "5b1530cbe843c2ee3e7635fb9c80f4812ed47577f3440ca640f68ac4efeaf2d4",
+      "cells": {
+        "technique_id": "e49fcf0918efe6f8",
+        "technique_name": "48985f5cbf4c6698",
+        "source_description": "f398f4b18bf48c9c",
+        "summary": "d14c72b440250b67",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "cd008a59252675c4c9accb12f88b62fc6b2b5628f86a4ed208fe0c09ea2a956e",
+      "cells": {
+        "technique_id": "14bdc329d3bc46ca",
+        "technique_name": "e4137f9206eaea9d",
+        "source_description": "df9116e43454664b",
+        "summary": "9d404910176689ec",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "87acb7e5d8384617375d0fab024161096713858ed4c60564fe75eb1f0cb061d8",
+      "cells": {
+        "technique_id": "d24bfa136816985f",
+        "technique_name": "4b9eff34883aaa85",
+        "source_description": "4f751114f73746fb",
+        "summary": "9d25225863dacd39",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "a17d3016f647162bf43097def925a30ae34adc8be01da65d770e6ea1fb707573",
+      "cells": {
+        "technique_id": "1a757d3db1a46a4b",
+        "technique_name": "93da2733aafd2ee4",
+        "source_description": "426308defb3e6a24",
+        "summary": "5fec447821fcd6a7",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "0301cdee4b7b76924c01d3b40aaea415a9299d1a25458429b64de3515b60ed7f",
+      "cells": {
+        "technique_id": "820fc77932c28c85",
+        "technique_name": "3cd2c79d18ec3321",
+        "source_description": "0ee98e755259b4ac",
+        "summary": "027a506f794d8987",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "cb0ae769fe33d7dec9c77c006a40511861e807f8dbab1bd33eec11258b8cffc4",
+      "cells": {
+        "technique_id": "590719ae0e4e85d7",
+        "technique_name": "107abf07ddd8fe69",
+        "source_description": "57b905109cc8a609",
+        "summary": "1db2cc8e17ea8ad3",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "15607d5eb4acf0a4c6f4e35760e6a0d060da7a27a1390fa9f92f2ec4a7e2d4d8",
+      "cells": {
+        "technique_id": "382cb7431be5e4d6",
+        "technique_name": "42d3129d2556da25",
+        "source_description": "94d6edee9dde5eb1",
+        "summary": "1da1740c082dbf10",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "d9e186fbede76352617c290958acc716a0e8ecc8fb56a0ec2413df49d0631709",
+      "cells": {
+        "technique_id": "8278c0a8faa424d3",
+        "technique_name": "9bd0674b2fb1be1e",
+        "source_description": "b8498466caa32f50",
+        "summary": "89ee4f8543bf64a6",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "76559923fbcd1e394cbee86462acf28daa250c2a3f3c322cc0e06de92330ba62",
+      "cells": {
+        "technique_id": "6257668afec0fd14",
+        "technique_name": "4013026c5d5779ce",
+        "source_description": "e423a3883c5386de",
+        "summary": "df900c48c946ce4c",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "da911b00b2266622481539fbc75f55d309b6508e6f762f83302f6bd20ae70ead",
+      "cells": {
+        "technique_id": "ea7e7bc9d1ab3097",
+        "technique_name": "e46126a75032d04d",
+        "source_description": "d64d708c7e9ae438",
+        "summary": "9d81e5bf2603ab4a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "7077b3ead9762d81555a623521daca48a6bcf8c58202c8933427d7ced0d2d09d",
+      "cells": {
+        "technique_id": "78e49dc97b7d307c",
+        "technique_name": "55947b6cce205ad3",
+        "source_description": "963703aca4ffc845",
+        "summary": "6a577b34636fd970",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "95f61529a970241d95afeaa16772b982d6ea4b7d482b25f9652021d8c466dc07",
+      "cells": {
+        "technique_id": "3c29e91f2ef65a0e",
+        "technique_name": "d98c0e74f40a26ae",
+        "source_description": "5cafe0f27ef62eb2",
+        "summary": "c25f3c6fe85e5a33",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "db157879525058758d6a2c386a7dfb317e1b6775e6ef5cc4b259598ccd42416b",
+      "cells": {
+        "technique_id": "04b22ee2ad310be3",
+        "technique_name": "6764381c61441c43",
+        "source_description": "c30ee79a80fe1613",
+        "summary": "548bce7a666c8c50",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "8f0cdaad9633373a8dae86a4829539b2ee9d1751541b06bd05504f617812946f",
+      "cells": {
+        "technique_id": "a0c2a3d62a9f0e00",
+        "technique_name": "b13b72bb549894c1",
+        "source_description": "a64a7052ff8fc28f",
+        "summary": "4845e1c718dd7a50",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "2a9ec9ba3f9d1a4bbf65e8ee1b1f19ec6507a8d14c96a25da7c7d2d3a638c68d",
+      "cells": {
+        "technique_id": "d050a5e7136fa88a",
+        "technique_name": "1f00accaa18803c7",
+        "source_description": "b05de813a1b0909c",
+        "summary": "08c7b820145e8350",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "82d042c6f685c54adcb7e07b1a7e716af26e7dafc4d26a3a68638efcfc78061b",
+      "cells": {
+        "technique_id": "560e4204b240369f",
+        "technique_name": "ef940e51dfa5de23",
+        "source_description": "5c48ca4aaec681db",
+        "summary": "6463439baaeb398c",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "5e8232b0342907d2827e37bc41a6b256f1215a4da3fdf4c19b0e7473df5fe7a0",
+      "cells": {
+        "technique_id": "2e119b3941a1e425",
+        "technique_name": "1f7b2187425ce0cf",
+        "source_description": "e464b63d6ba52092",
+        "summary": "3e5b7e29a0cc461a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "ad3df0ee0428509b728b4ab6fa7da59f16cbad73e54364f249c5e1667118f008",
+      "cells": {
+        "technique_id": "e643fff3c5cb9da7",
+        "technique_name": "f8e4ecdc56aabe1f",
+        "source_description": "8c81124d78a1435d",
+        "summary": "4aac0debd770d16a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "dae70cf4b72e6c6d3076048ee49abe0931b1a86f14d79c3a8ac5491949276b30",
+      "cells": {
+        "technique_id": "829f63eb2562f1b7",
+        "technique_name": "82c28f0e45a8076b",
+        "source_description": "84f8ba33611842ab",
+        "summary": "c4715bbdb48307e5",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "191a55f321f9acc33f743936debae930aadb4a3dac04f973c6885a4a9cd01fb3",
+      "cells": {
+        "technique_id": "2a01f56787d8c9ea",
+        "technique_name": "6860830de953efff",
+        "source_description": "24fb4ce2529c52b1",
+        "summary": "a1eacfae1ce441b6",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "3bd950704aed8a2715406dbc639112bc417f9ce500d54eadb1535de8e00a22e3",
+      "cells": {
+        "technique_id": "1f751bbe3b3ab66e",
+        "technique_name": "22cc41e317425076",
+        "source_description": "e3be595d06a5d53e",
+        "summary": "73aabe859a74cd7a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "e5c1cd2e8404492e8957b3eea13561f5947e1b7b2829f9b07d4ddf0e8a034f6f",
+      "cells": {
+        "technique_id": "6c59bdff7efede74",
+        "technique_name": "795c50fa1a473c29",
+        "source_description": "e4889878d4490497",
+        "summary": "503ff70a1b12636f",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "8daee154e5d6182eb16f03eb72d6856888eca237ce7b35ee6b128f7938663f65",
+      "cells": {
+        "technique_id": "b77cc430bcefc5a1",
+        "technique_name": "dbab30e11405b395",
+        "source_description": "00406d28390e32e0",
+        "summary": "d724c9dd62e1c597",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "e85947d0e9ae83aad3d028023a005f0f7b318aa44577fef1981bf345457cd4ab",
+      "cells": {
+        "technique_id": "b43ed3acb74bf2c3",
+        "technique_name": "98413eff6d956d6d",
+        "source_description": "a8d0bf6989f1662d",
+        "summary": "089bb7732976a8b3",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "d8d7e4b3bcf0b3307d4ce7c63354657fd8f009da6d91ad1d6823c5495dc9da0d",
+      "cells": {
+        "technique_id": "9008b2c5aca76d8e",
+        "technique_name": "58526a79d32067c7",
+        "source_description": "e27a2b2e472b81c9",
+        "summary": "8acb0e56f3526ea8",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "2fdc4debd2ace9a498458b68e4c011c7aadf3ec66d8968925e66b50753570c1d",
+      "cells": {
+        "technique_id": "f42c4b40c4ac7264",
+        "technique_name": "2208ff425c6d9f33",
+        "source_description": "4f048a7892798471",
+        "summary": "7d0ddae56ba5f990",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "7c5d348f89975569ad71b4a6cb08f01233e2f757b15dc0f9bef1fab61a2a375a",
+      "cells": {
+        "technique_id": "083006a548c2f6b1",
+        "technique_name": "0dffe234b44793b6",
+        "source_description": "4e7c492f7438482c",
+        "summary": "ff2f1a1b2e4c0e3a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "b323cc5892ae82a272a6255dceaa1434396f1f441d03cb38b3f8537a9e607203",
+      "cells": {
+        "technique_id": "a4a459ef8aae26dd",
+        "technique_name": "6860830de953efff",
+        "source_description": "f9370862170a34dd",
+        "summary": "686184f46393853a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "68a5ddff6dd3268dd4e060e66ac007520710fef96e40b8a688fea019ad411546",
+      "cells": {
+        "technique_id": "36cf5780b4a053ba",
+        "technique_name": "22cc41e317425076",
+        "source_description": "7acd46eb014e7a13",
+        "summary": "0ab1c814e297eefe",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "ffd8ac5f1e1efd224d44b7619db450f57b0c90c5f230735db3c80ece0a0db290",
+      "cells": {
+        "technique_id": "18afa3404aaff866",
+        "technique_name": "f2359d6abb1ea3e7",
+        "source_description": "a8664bca33f24e58",
+        "summary": "4ed0f00250a8cb8a",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "9bec8f888055a038d1cd2a0dbf74838871b4db9cc73ead4a418c6249974cfc83",
+      "cells": {
+        "technique_id": "f467e36f3712565b",
+        "technique_name": "8d0173fb2c533ce3",
+        "source_description": "615f82741fb9dbdc",
+        "summary": "b1a476285d83e647",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "bb38c25a6d959d9d1bba5236256156ab75ec5e3ec74103dce95b84da9345b363",
+      "cells": {
+        "technique_id": "a2f62dddec5a008f",
+        "technique_name": "affef90347bd5430",
+        "source_description": "b7113c0d707f2c49",
+        "summary": "2f938724f684d343",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "3127da1c418d13848057a539b50de104a823972de03109496d041a5cf74597a4",
+      "cells": {
+        "technique_id": "cb6003d686fc4058",
+        "technique_name": "42988e023f907816",
+        "source_description": "467a27255c30b8ca",
+        "summary": "d3950cdc88aa75d2",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "1d80ebd34471fdf0a71574e6e22e0ee81f1a37bb2737f38a49351315b12f987c",
+      "cells": {
+        "technique_id": "d93be85cbcd24e16",
+        "technique_name": "f8206f66335b05f6",
+        "source_description": "dfd335777c60c911",
+        "summary": "1e079fdc1a06629b",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "2ece55ddcb4665fe2362faf53cfdf849e38b1b066e42c74b373a3efebddf5519",
+      "cells": {
+        "technique_id": "6cf7937f65ed1b6c",
+        "technique_name": "04b16f39d0e6daf5",
+        "source_description": "da46930194d9830c",
+        "summary": "aab8ffda21436412",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "022164634d73c6953cafaca63783da537afe2ec32c77c5c58c3262062a5c2dca",
+      "cells": {
+        "technique_id": "1ea2a1fc66083a1e",
+        "technique_name": "2cbd086a3154c025",
+        "source_description": "b30f98e1e1b84482",
+        "summary": "30983c692c142046",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "8131ddb613cfc0d21a55425c7ae1bf46d4c2bc422016bf20007305ed7cc870fd",
+      "cells": {
+        "technique_id": "d11cee1d2cb47837",
+        "technique_name": "d295f89682ed8ea0",
+        "source_description": "7298ac444e43d8c9",
+        "summary": "f114441a03e72438",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "b4e52a9845b9164944cb62970a04ad6ad628312578b5f23ba6a1e76ce0d4cabc",
+      "cells": {
+        "technique_id": "fccb31ae0b49c570",
+        "technique_name": "03287a0bf3c71d39",
+        "source_description": "41c7f188635e17ab",
+        "summary": "ffab5612d51e0792",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "766446e5cb731bc6cfd5125df75b05e169067b2b4d304061cbfa33385bd32c9f",
+      "cells": {
+        "technique_id": "88b99fb72ae70062",
+        "technique_name": "0d7bd6020b3d92b9",
+        "source_description": "7ffbd24c706bf6b5",
+        "summary": "632ae80367e29014",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "937b5deaeedb4196bea6e1ca29d2f2cc74daa5df4ce7295f3597efcc5e75ef65",
+      "cells": {
+        "technique_id": "122ac5d041d5c62d",
+        "technique_name": "84fa6f8f346ee4b4",
+        "source_description": "47f9c5e5c5bbb367",
+        "summary": "3eb65e67a669f7a3",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "92b10b8b935820cd9885ea2f5c75240781c3578e7650a66d8dfbd9eca0c74594",
+      "cells": {
+        "technique_id": "29710ab7422a2179",
+        "technique_name": "35cf6e637c77ce4a",
+        "source_description": "25fc99e30bcdfd5e",
+        "summary": "875964a6aba45089",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "17bf9950c35280b0a1393b7e2b57f263f26c1bfd99e9afe09615ae781a5675f0",
+      "cells": {
+        "technique_id": "e46001c870bd3a1a",
+        "technique_name": "b3b1af312cb2fe4f",
+        "source_description": "a4874ab47ad17c34",
+        "summary": "da17fd4f2aae4ab8",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "5fbaa80c81617429636754461afd9e783623fc38b5e76d900ea466a87af89a7a",
+      "cells": {
+        "technique_id": "4dbd601e1b7073f6",
+        "technique_name": "9798a89c38662088",
+        "source_description": "6286641a1de3d027",
+        "summary": "622af0fcff9ab8e3",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "8a6be2b8363f78c8c07ec8972863319ad335b9e1976688b23bb23c286b0b45f8",
+      "cells": {
+        "technique_id": "b442ac9026d19b39",
+        "technique_name": "61c67d09cdc6c381",
+        "source_description": "ad8b6ca17c4551b3",
+        "summary": "07e1291d3f2b291e",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "e2a8717535d78fe316683a8677402601ae4388d5711788cf1ba1a5b91b504606",
+      "cells": {
+        "technique_id": "1a039db4b2f3f147",
+        "technique_name": "84c5f94ec222090a",
+        "source_description": "d27090f4fb4f9b0a",
+        "summary": "3e03e33dcc2b80cd",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "eaa1664b1c04109186a636251b264eefb1cff63d8875920edf13f311c572cf18",
+      "cells": {
+        "technique_id": "3a03a1854c08bc20",
+        "technique_name": "994a6b2e0b8deafe",
+        "source_description": "be36636d606f8b69",
+        "summary": "9a158b723b0ce114",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "f530b3d1606aa2e48f74a822fcd29e0ab2507dbb46f4c96514d224c199734a43",
+      "cells": {
+        "technique_id": "051e3bf428e9ae9b",
+        "technique_name": "c1cbd1d55ee3f1d4",
+        "source_description": "48105d1eeb9d2324",
+        "summary": "531156bd01f9af89",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "de3eb13af7f68314a4e1e83cfb5b94ee6b85bfb6892d83f8a66c9347860bfde0",
+      "cells": {
+        "technique_id": "a0cfbb29198cc911",
+        "technique_name": "044ca6fd5ebe50e2",
+        "source_description": "891b5925709afdd6",
+        "summary": "1073fb85f1b69cdd",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "31c21d6a0d75fa37a57414cd53278de5ea133d1a7ce4bb68a0c66e985fd78ab0",
+      "cells": {
+        "technique_id": "b012598644f87d33",
+        "technique_name": "4cbe136bcd2772e7",
+        "source_description": "84b4e64764ee85ee",
+        "summary": "aed1f84a33aa22b8",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "f22592b0c7462faf18ce46a3470a54479a594c9c4a025cbe42c3684ea6b6734f",
+      "cells": {
+        "technique_id": "9fa119bd13fde4fe",
+        "technique_name": "ebe623fc14526d7f",
+        "source_description": "5b38c0ea00f5c4f1",
+        "summary": "6f0c4fd3969633f4",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "78b9e60341d822ceb82ccf52b1c10b023d8fe68aecbac676e617d0017fe1d7ff",
+      "cells": {
+        "technique_id": "9127ef082b4497eb",
+        "technique_name": "674acc923da38b84",
+        "source_description": "1990aecc9baec9ed",
+        "summary": "c08e99daf48bec51",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "e493aa483dbee4921d434f578c32132cdee8aa0cbaa6a755661fffbc24dd7763",
+      "cells": {
+        "technique_id": "8cf2d0c116c2087e",
+        "technique_name": "a17ca1e7ae7c6ff3",
+        "source_description": "359aa2b94ff5f332",
+        "summary": "0bfd9dd52a75f126",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "c8037d6fd78a32828607b1c58a4299338537f0b0a737593fb1cbf6f6c32dd057",
+      "cells": {
+        "technique_id": "3cf5adba2b059907",
+        "technique_name": "bbc0122349eb223b",
+        "source_description": "fa387389f83b8dd6",
+        "summary": "c1680f722bc82f30",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "987d052f121c49faa96c60816d25f79b20fa0b7d4992f6563c0a7e377e820e5c",
+      "cells": {
+        "technique_id": "daa096fac48b959f",
+        "technique_name": "bb0681d217dfd6ee",
+        "source_description": "5b90cf02da3ca588",
+        "summary": "f79d2818c82e74ea",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "33f7d52b993428b1a99033424dcbd0b4f97478b90a298b47a23a5fa3218650e6",
+      "cells": {
+        "technique_id": "4d6fb05315f1c66b",
+        "technique_name": "87338709bfb938fb",
+        "source_description": "8959969ceb955f38",
+        "summary": "4dbb5ff87bce6530",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "21972b36549a92b9f362f0d53f59e72ed29cdc4f14c0565eb217612d20f54e62",
+      "cells": {
+        "technique_id": "7694362be8856eaf",
+        "technique_name": "8232b2ac74613ec0",
+        "source_description": "618975e6637b0327",
+        "summary": "87e5e2a238af237d",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "23db19bab4d89aec82c5c3b91eb9e658b776457873f980458567b496473a5a04",
+      "cells": {
+        "technique_id": "5f1fdea06851b422",
+        "technique_name": "9b1f256049ae3722",
+        "source_description": "bf87f57b24b5b34f",
+        "summary": "3da427ec62437149",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "268e61ab0856ceed693c457703a90109ab9c47c4eeed50678c1b21f4af7ea826",
+      "cells": {
+        "technique_id": "5695bea4fa52ea17",
+        "technique_name": "be49eb143791926d",
+        "source_description": "7126826f7040003f",
+        "summary": "553998a66b7c35d8",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "c63c095fe2072d42a53bc5bf2169eeb3a5dae5f4a30746b145a97ec60b862ef3",
+      "cells": {
+        "technique_id": "5cc3ccac2a495626",
+        "technique_name": "a0b77351758c1c3f",
+        "source_description": "5d352b3a52039424",
+        "summary": "042b2d3ba6619b75",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    },
+    {
+      "sha256": "3e7538c44bf1631b5c2d7d055ce4e6865d77d1316e528fbb8688ffacc1b20f42",
+      "cells": {
+        "technique_id": "f8f7bf14f36335d0",
+        "technique_name": "db7dac272fa67207",
+        "source_description": "c994c463d7b214af",
+        "summary": "87e613dbc3ebb978",
+        "status": "2689367b205c16ce",
+        "auto_check": "2689367b205c16ce"
+      }
+    }
+  ]
+}

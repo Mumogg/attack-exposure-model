@@ -204,3 +204,26 @@ def test_complete_run_is_not_marked_partial(tmp_path):
     write_results(run, tmp_path / "sheets", computed, dict(_meta(), partial=False, escenarios_omitidos=[]))
     md = build_report(run, tmp_path / "out")["markdown"].read_text(encoding="utf-8")
     assert "RESULTADO PARCIAL" not in md and "escenarios_omitidos: ninguno" in md
+
+
+def test_manual_review_without_sheets_has_no_percentage(tmp_path):
+    md = build_report(_write(tmp_path), tmp_path / "out", tmp_path / "sheets")["markdown"].read_text(encoding="utf-8")
+    manual = md.split("## Indicadores 4 y 5 — Revisión manual", 1)[1].split("\n## ", 1)[0]
+    assert "Revisión manual de los resúmenes" in manual and "Revisión manual de la muestra" in manual
+    assert ND in manual and "%)" not in manual
+
+
+def test_manual_review_of_complete_sheets_is_in_the_report(tmp_path):
+    from eval import review
+
+    run = _write(tmp_path)
+    rows = [{"technique_id": f"T100{i}", "technique_name": "x", "source_description": "d", "summary": "s",
+             "status": "ok", "auto_check": "ok", "ok (si/no)": "", "observación": ""} for i in range(4)]
+    sheet = review.sheet_path(tmp_path / "sheets", "2099-01-02", review.IND4)
+    review.write_sheet(sheet, rows, review.IND4)
+    for i, r in enumerate(rows):
+        r["ok (si/no)"], r["observación"] = ("no", "omite una condición") if i == 3 else ("SÍ", "")
+    review._write_csv(sheet, list(rows[0]), rows)
+    md = build_report(run, tmp_path / "out", tmp_path / "sheets")["markdown"].read_text(encoding="utf-8")
+    assert "Resúmenes fieles («si»): 3 de 4 (75.0 %)" in md
+    assert "omite una condición" in md

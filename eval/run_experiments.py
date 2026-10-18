@@ -30,6 +30,7 @@ from aem.scenarios import (
     OMITTED_NO_PRIVATE_CACHE, VERSIONS, Scenario, format_omitted, load_reference, omitted_before_run,
 )
 from eval.baseline_ioc import baseline_recognizes
+from eval import review
 from eval.metrics import (
     aggregate, aggregate_with_failures, boundary_violations_extraction, coverage_correctness, extraction_scores, gap_techniques,
     model_persistence, summary_auto_check, traditional_persistence,
@@ -300,6 +301,45 @@ def compute(runs: list[dict], scenarios: dict[str, Scenario], ctx: PipelineConte
             "private_sample_sheet": [r for r in sample_sheet if r["scenario"] in private]}
 
 
+# --- manual review (indicators 4 and 5) ---------------------------------------------------------
+
+
+def manual_indicator4_columns(ind4: dict) -> dict:
+    """A percentage only when the whole sheet is reviewed without errors; otherwise the state («revisión
+    incompleta: N de M filas»)."""
+    return {"manual_reviewed": ind4["reviewed"], "manual_total": ind4["total"], "manual_ok": ind4["ok"],
+            "manual_ok_pct": ind4["ok_pct"], "manual_review": ind4["status_text"]}
+
+
+def manual_indicator5_rows(ind5: dict) -> list[dict]:
+    complete = ind5["status"] == "completa"
+    rows = []
+    for sc, c in ind5["by_scenario"].items():
+        rows.append({"scenario": sc if sc != "-" else "todos (resúmenes del paso 4)", "sample_rows": c["total"],
+                     "reviewed": c["reviewed"],
+                     "with_valuation": c["with_valuation"] if complete else NO_DATA,
+                     "with_valuation_pct": round(100 * c["with_valuation"] / c["total"], 2)
+                     if complete and c["total"] else NO_DATA,
+                     "manual_review": ind5["status_text"]})
+    rows.append({"scenario": "total", "sample_rows": ind5["total"], "reviewed": ind5["reviewed"],
+                 "with_valuation": ind5["with_valuation"], "with_valuation_pct": ind5["with_valuation_pct"],
+                 "manual_review": ind5["status_text"]})
+    return rows
+
+
+def manual_negative_rows_md(manual: dict, indicator: str) -> str:
+    """Rows marked as a problem, with the reviewer's observation. Only public sheets: the rows of the private
+    sheet (copyrighted text) are counted in the table, never listed (D-69)."""
+    if indicator == "indicator4":
+        rows = manual["indicator4"]["not_ok"]
+        head = "Resúmenes marcados «no» en la revisión manual (con su observación):\n"
+    else:
+        rows = manual["indicator5"]["flagged"]
+        head = ("Textos marcados «si» (contienen valoración) en la muestra pública, con su observación. Las filas "
+                "de la hoja privada solo se cuentan en la tabla:\n")
+    return head + "\n" + (md_table(rows) if rows else "_ninguno_\n")
+
+
 # --- report -------------------------------------------------------------------------------------
 
 _TITLES = {
@@ -310,9 +350,11 @@ _TITLES = {
     "indicator3": "Indicador 3 — Persistencia en el reconocimiento de la exposición (%). Denominador: técnicas "
                   "de referencia con brecha (modelo) o todas las técnicas de referencia (tradicional); media principal del "
                   "modelo: `_fail0`",
-    "indicator4": "Indicador 4 — Fidelidad de los resúmenes (chequeo automático; la revisión manual está en la hoja)",
+    "indicator4": "Indicador 4 — Fidelidad de los resúmenes (chequeo automático y revisión manual de la hoja)",
     "indicator5": "Indicador 5 — Cumplimiento de los límites (violaciones; `_fail0` y `_valid` con el mismo peso. "
                   "Aviso: contar una corrida fallida como 0 violaciones favorece al modelo)",
+    "indicator5_manual": "Indicador 5 — Revisión manual de la muestra (textos con valoración; cifra separada del "
+                         "conteo automático de arriba)",
     "indicator1_detail": "Anexo — Indicador 1: técnicas omitidas y erróneas (en cuántas corridas)",
 }
 
@@ -339,16 +381,28 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
     tables = {name: [{**prov, **r} for r in rows] for name, rows in computed["tables"].items()}
     paths = {}
     for name, rows in tables.items():
+        if name == "indicator4":
+            continue  # written below, with the manual review
         paths[name] = results / f"{pre}{name}.csv"
         write_table(paths[name], rows)
     run_id = run_dir.name
-    paths["indicator4_sheet"] = sheets_dir / f"{pre}{run_id}_indicator4_summaries.csv"
-    write_table(paths["indicator4_sheet"], computed["summary_sheet"])
-    paths["indicator5_sheet"] = sheets_dir / f"{pre}{run_id}_indicator5_sample.csv"
-    write_table(paths["indicator5_sheet"], computed["sample_sheet"])
+    # sheets first: a sheet that already has a review is kept, or the run stops before any table is written
+    paths["indicator4_sheet"] = review.sheet_path(sheets_dir, run_id, review.IND4, pre)
+    review.write_sheet(paths["indicator4_sheet"], computed["summary_sheet"], review.IND4)
+    paths["indicator5_sheet"] = review.sheet_path(sheets_dir, run_id, review.IND5, pre)
+    review.write_sheet(paths["indicator5_sheet"], computed["sample_sheet"], review.IND5)
     if computed["private_sample_sheet"]:  # quotes from copyrighted text: git-ignored folder
-        paths["indicator5_private_sheet"] = sheets_dir / "private" / f"{pre}{run_id}_indicator5_sample_private.csv"
-        write_table(paths["indicator5_private_sheet"], computed["private_sample_sheet"])
+        paths["indicator5_private_sheet"] = review.sheet_path(sheets_dir, run_id, review.IND5_PRIVATE, pre)
+        review.write_sheet(paths["indicator5_private_sheet"], computed["private_sample_sheet"], review.IND5_PRIVATE)
+    manual = review.manual_results(sheets_dir, run_id, pre, write_private_summary=True)
+    computed["tables"]["indicator4"] = [dict(r, **manual_indicator4_columns(manual["indicator4"]))
+                                        for r in computed["tables"]["indicator4"]]
+    computed["tables"]["indicator5_manual"] = manual_indicator5_rows(manual["indicator5"])
+    for name, rows in (("indicator4", computed["tables"]["indicator4"]),
+                       ("indicator5_manual", computed["tables"]["indicator5_manual"])):
+        tables[name] = [{**prov, **r} for r in rows]
+        paths[name] = results / f"{pre}{name}.csv"
+        write_table(paths[name], tables[name])
 
     md = []
     if meta["fake"]:
@@ -375,6 +429,8 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
              f"prompts {prov['prompt_templates_sha256']}_\n")
     for name in _TITLES:
         md += [f"## {'FAKE — ' if meta['fake'] else ''}{_TITLES[name]}\n", stamp, md_table(computed["tables"][name])]
+        if name in ("indicator4", "indicator5_manual"):
+            md.append(manual_negative_rows_md(manual, name))
     md.append(f"Hojas de revisión manual: `{paths['indicator4_sheet'].name}`, `{paths['indicator5_sheet'].name}` "
               f"(carpeta `eval/review_sheets/`).\n")
     paths["markdown"] = results / f"{pre}results.md"

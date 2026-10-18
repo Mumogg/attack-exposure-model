@@ -375,6 +375,7 @@ def eval_cmd(
 
     from aem.llm import LLMError
     from aem.scenarios import format_omitted, load_scenarios, omitted_before_run
+    from eval.review import ReviewSheetConflict
     from eval.run_experiments import PARTIAL_LINE, run_experiment
 
     from aem.preflight import has_blocker
@@ -394,7 +395,7 @@ def eval_cmd(
         ctx.client.event_log = run_dir / "api_events.jsonl"  # every failed API attempt, appended on resume
         n = replicates or ctx.model_cfg.experiment.replicates
         result = run_experiment(ctx, scenarios, run_dir, REVIEW_SHEETS_DIR, n, console=console)
-    except (LLMError, FileNotFoundError, ValueError) as exc:
+    except (LLMError, FileNotFoundError, ValueError, ReviewSheetConflict) as exc:
         if "ctx" in locals():
             _print_api_events(ctx.client)
         _fail(f"{exc}\nLas respuestas ya obtenidas quedan en la caché: al repetir el comando se reutilizan.")
@@ -416,6 +417,47 @@ def eval_cmd(
 
 
 
+@app.command("review-check", cls=SpanishCommand)
+def review_check_cmd(
+    run_id: str = typer.Option(..., "--run-id", help="Corrida cuyas hojas de revisión se validan."),
+    init_manifest: bool = typer.Option(False, "--init-manifest", help="Crear el manifiesto de una hoja generada "
+                                                                      "antes de que existieran (solo si aún no tiene "
+                                                                      "ninguna revisión)."),
+) -> None:
+    """Valida las hojas de revisión manual de los indicadores 4 y 5 (sin llamar a la API)."""
+    from eval import review
+
+    for kind in review.KINDS:
+        path = review.sheet_path(REVIEW_SHEETS_DIR, run_id, kind)
+        if init_manifest and path.exists() and not review.manifest_path(path).exists():
+            try:
+                console.print(f"Manifiesto creado: {review.init_manifest(path, kind).name}")
+            except ValueError as exc:
+                _fail(str(exc))
+    manual = review.manual_results(REVIEW_SHEETS_DIR, run_id, write_private_summary=True)
+    all_complete = True
+    for rv in manual["reviews"]:
+        if not rv.exists and rv.kind.private:
+            console.print(f"{rv.kind.name}: hoja privada no presente en esta máquina (se usa el resumen agregado "
+                          "si existe).")
+            continue
+        all_complete &= rv.status == "completa"
+        console.print(f"[bold]{rv.path.name}[/bold]: {rv.status_text()}", highlight=False)
+        for row, key, reason in rv.errors:
+            where = "hoja" if row == 0 else f"fila {row} ({key})"
+            console.print(f"  [red]{where}[/red]: {reason}", highlight=False)
+        empty = [str(row) for row, _, reason in rv.problems if reason.startswith("sin valor")]
+        if empty:
+            console.print(f"  filas sin valor en «{rv.kind.verdict}»: {', '.join(empty)}", highlight=False)
+    ind4, ind5 = manual["indicator4"], manual["indicator5"]
+    console.print(f"Indicador 4: {ind4['status_text']}; fieles: {ind4['ok']} de {ind4['total']} "
+                  f"({ind4['ok_pct']}).", highlight=False)
+    console.print(f"Indicador 5 (manual): {ind5['status_text']}; con valoración: {ind5['with_valuation']} de "
+                  f"{ind5['total']} ({ind5['with_valuation_pct']}).", highlight=False)
+    if not all_complete:
+        raise typer.Exit(1)
+
+
 @app.command("report", cls=SpanishCommand)
 def report_cmd(
     run_id: str = typer.Option(..., "--run-id", help="Carpeta de runs/ con resultados reales (results/, no results_FAKE/)."),
@@ -424,7 +466,7 @@ def report_cmd(
     from eval.report import ReportError, build_report
 
     try:
-        paths = build_report(RUNS_DIR / run_id, RESULTS_DOCS_DIR / run_id)
+        paths = build_report(RUNS_DIR / run_id, RESULTS_DOCS_DIR / run_id, REVIEW_SHEETS_DIR)
     except ReportError as exc:
         _fail(str(exc))
     console.print(f"[green]Listo.[/green] {paths['markdown']}")

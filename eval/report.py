@@ -12,7 +12,10 @@ import json
 from pathlib import Path
 
 from aem.scenarios import format_omitted
-from eval.run_experiments import NO_DATA, PARTIAL_LINE
+from eval import review
+from eval.run_experiments import (
+    NO_DATA, PARTIAL_LINE, manual_indicator4_columns, manual_indicator5_rows, manual_negative_rows_md, md_table,
+)
 
 VERSIONS = ("orig", "mut", "anon")
 # grey levels and hatches: the series never depend on colour alone
@@ -35,7 +38,7 @@ LIMITS = """## Lo que estos números permiten y no permiten afirmar
 - La razón `mut/orig` o `anon/orig` no muestra los niveles absolutos: las medias absolutas están en la tabla del indicador 3.
 - La desviación estándar es muestral (n−1) sobre las corridas de cada escenario × versión; con menos de 2 valores figura «sin dato disponible».
 - Los números describen estos escenarios, este modelo (versión y fecha indicadas arriba) y estas plantillas de prompt. No describen otros reportes, otros modelos ni otras versiones del mismo modelo.
-- No hay indicador para el paso 3 ni para la revisión global (criterio del analista). Los indicadores 4 y 5 tienen además una revisión manual, cuyo resultado no está en este resumen.
+- No hay indicador para el paso 3 ni para la revisión global (criterio del analista). Los indicadores 4 y 5 tienen además una revisión manual (hojas de `eval/review_sheets/`); mientras una hoja no esté completa y sin errores, no se informa ningún porcentaje.
 """
 
 
@@ -220,7 +223,25 @@ def _per_run_outputs(run_dir: Path) -> list[str]:
 # --- report -------------------------------------------------------------------------------------
 
 
-def build_report(run_dir: Path, out_dir: Path) -> dict:
+def manual_review_md(sheets_dir: Path | None, run_id: str) -> list[str]:
+    """Manual review as the sheets are now (a review filled after `aem eval` counts without re-running it)."""
+    if sheets_dir is None:
+        return [f"- Revisión manual de los indicadores 4 y 5: {NO_DATA} (no se indicó la carpeta de las hojas).\n"]
+    manual = review.manual_results(Path(sheets_dir), run_id)
+    ind4 = manual_indicator4_columns(manual["indicator4"])
+    return [
+        "### Indicador 4 — Revisión manual de los resúmenes\n",
+        f"Estado: {ind4['manual_review']}. Resúmenes fieles («si»): {ind4['manual_ok']} de {ind4['manual_total']} "
+        f"({ind4['manual_ok_pct']}{'' if ind4['manual_ok_pct'] == NO_DATA else ' %'}).\n",
+        manual_negative_rows_md(manual, "indicator4"),
+        "### Indicador 5 — Revisión manual de la muestra\n",
+        "Cifra separada del conteo automático de violaciones (tabla anterior); no se suman.\n",
+        md_table(manual_indicator5_rows(manual["indicator5"])),
+        manual_negative_rows_md(manual, "indicator5_manual"),
+    ]
+
+
+def build_report(run_dir: Path, out_dir: Path, sheets_dir: Path | None = None) -> dict:
     run_dir, out_dir = Path(run_dir), Path(out_dir)
     data = load_results(run_dir)
     tables = data["tables"]
@@ -265,6 +286,8 @@ def build_report(run_dir: Path, out_dir: Path) -> dict:
           "## Indicador 4 — Fidelidad de los resúmenes (chequeo automático)\n", _table(tables.get("indicator4", []), IND4_COLS),
           "## Indicador 5 — Cumplimiento de los límites (violaciones)\n",
           "`_fail0` y `_valid` con el mismo peso (D-67).\n", _table(tables.get("indicator5", []), IND5_COLS),
+          "## Indicadores 4 y 5 — Revisión manual (hojas de revisión)\n",
+          *manual_review_md(sheets_dir, data.get("run_id", run_dir.name)),
           "## Escenarios omitidos\n",
           f"- escenarios_omitidos: {format_omitted(omitted)}",
           f"- Resultado parcial: {'sí' if data.get('partial') else 'no'}. Las tablas del LLM no tienen corridas de "
@@ -276,8 +299,7 @@ def build_report(run_dir: Path, out_dir: Path) -> dict:
     md.append("- Escenarios o versiones no evaluados: " + (", ".join(skipped) if skipped else "ninguno") + ".")
     md += _missing_cells(tables) or [f"- Ninguna celda de las tablas tiene «{NO_DATA}»."]
     md += _per_run_outputs(run_dir)
-    md += ["- Revisión manual de los indicadores 4 y 5: no está en `results.json`; ver las hojas en "
-           "`eval/review_sheets/`.\n", LIMITS]
+    md += ["", LIMITS]
     path = out_dir / "resumen.md"
     path.write_text("\n".join(md), encoding="utf-8")
     return {"markdown": path, "charts": charts}

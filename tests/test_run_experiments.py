@@ -381,3 +381,37 @@ def test_interrupted_eval_is_recorded_in_history(setup):
                    setup["sheets"], replicates=2)
     history = json.loads((setup["run"] / "eval_history.json").read_text(encoding="utf-8"))
     assert [h["status"] for h in history] == ["interrumpida", "completa"]
+
+
+def test_rerun_keeps_a_filled_review_and_reports_it(setup):
+    """`aem eval` used to overwrite the sheets; a review must survive a re-run and reach the tables."""
+    from eval import review
+
+    run = lambda: run_experiment(setup["ctx"](RoutingTransport(extraction=EXTRACTION)), setup["scenarios"],
+                                 setup["run"], setup["sheets"], replicates=1)
+    run()
+    sheet = setup["sheets"] / "r1_indicator4_summaries.csv"
+    assert review.manifest_path(sheet).exists()
+    ind4 = read_csv(setup["run"] / "results" / "indicator4.csv")[0]
+    assert ind4["manual_ok_pct"] == "sin dato disponible"
+    assert ind4["manual_review"] == f"revisión incompleta: 0 de {ind4['manual_total']} filas"
+
+    columns, rows = review.read_sheet(sheet)
+    for i, r in enumerate(rows):
+        r["ok (si/no)"], r["observación"] = ("No", "OBSERVACION-SINTETICA") if i == 0 else ("Sí", "")
+    with sheet.open("w", encoding="utf-8-sig", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=columns)
+        w.writeheader()
+        w.writerows(rows)
+    before = sheet.read_bytes()
+    run()
+    assert sheet.read_bytes() == before
+    ind4 = read_csv(setup["run"] / "results" / "indicator4.csv")[0]
+    assert ind4["manual_review"] == "revisión completa"
+    assert ind4["manual_ok"] == str(len(rows) - 1)
+    assert float(ind4["manual_ok_pct"]) == round(100 * (len(rows) - 1) / len(rows), 2)
+    md = (setup["run"] / "results" / "results.md").read_text(encoding="utf-8")
+    assert "OBSERVACION-SINTETICA" in md
+    data = json.loads((setup["run"] / "results" / "results.json").read_text(encoding="utf-8"))
+    assert data["tables"]["indicator4"][0]["manual_review"] == "revisión completa"
+    assert data["tables"]["indicator5_manual"][-1]["scenario"] == "total"

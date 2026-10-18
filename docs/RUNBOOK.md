@@ -209,13 +209,23 @@ Están en `eval/review_sheets/`; la parte de Akira, en `eval/review_sheets/priva
 - `contiene_valoracion (si/no)`: `si` si el texto valora, prioriza o recomienda (p. ej. «critical», «should patch», «urgent») más allá de lo que dice la fuente.
 - `observación`: el fragmento que lo justifica.
 
-Conteo rápido, cuando estén llenas:
+Las celdas `si`/`no` aceptan mayúsculas y tildes («Sí», «SÍ», «No» valen lo mismo). La `observación` es **obligatoria** en la respuesta que señala un problema: `no` en el indicador 4 y `si` en el indicador 5.
 
-```bash
-python -c "import csv,sys; r=list(csv.DictReader(open(sys.argv[1],encoding='utf-8-sig'))); c=sys.argv[2]; print(sum(x[c].strip().lower()=='si' for x in r),'de',len(r))" eval/review_sheets/2026-10-20_indicator4_summaries.csv "ok (si/no)"
-```
+**Validar las hojas: `aem review-check --run-id <run-id>`** (sin API). Por cada hoja informa:
+- «revisión completa», «revisión incompleta: N de M filas» o «revisión con errores»;
+- cada error con su fila y su motivo: valor distinto de si/no, `no` (ind. 4) o `si` (ind. 5) sin observación, o una columna generada que cambió (p. ej. `fila 12 (T1059): columna «summary» modificada respecto de la hoja generada`);
+- las filas que siguen vacías.
 
-(Para el indicador 5, cambie el archivo y la columna por `contiene_valoracion (si/no)`.)
+Termina con código 1 mientras alguna hoja no esté completa y sin errores. Ningún porcentaje se informa antes de eso.
+
+Cómo detecta una columna modificada: `aem eval` guarda junto a cada hoja un manifiesto (`<hoja>.manifest.json`) con el SHA-256 de cada fila y de cada celda de las columnas generadas. Los cambios de fin de línea o de espacios al inicio o al final, que introducen las hojas de cálculo, no cuentan. Las hojas de `2026-10-18-main` se generaron antes de que existieran los manifiestos: se crearon el 2026-10-18 con `aem review-check --run-id 2026-10-18-main --init-manifest`, que se niega si la hoja ya tiene alguna revisión o si el manifiesto ya existe.
+
+**Dónde aparecen los resultados.**
+- `aem report --run-id <run-id>` lee las hojas tal como están, sin volver a correr `aem eval`. Agrega a `resumen.md` el indicador 4 (resúmenes fieles / revisados, con el conteo) y el indicador 5 manual, como cifra separada del conteo automático de violaciones. Lista las filas marcadas, con su observación.
+- `aem eval` hace lo mismo en `results.md` y en las tablas: columnas `manual_*` en `indicator4.csv`, y una tabla nueva, `indicator5_manual.csv`.
+- **Volver a correr `aem eval` nunca borra una revisión.** Si la hoja ya tiene revisión y su contenido generado no cambió, se conserva tal cual. Si cambió, el comando se detiene sin escribir tablas.
+
+**La hoja privada (Akira) no sale de `private/`.** Sus filas nunca se listan. Solo sus conteos (total, revisadas, con valoración) se guardan en `eval/review_sheets/<run-id>_indicator5_private_summary.json`, que no contiene texto (D-69). Así, un clon sin `private/` conserva la cifra agregada.
 
 ## g. Qué se versiona y qué no
 
