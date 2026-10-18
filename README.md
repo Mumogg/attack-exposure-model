@@ -109,7 +109,7 @@ aem eval --demo                   # full experiment from the cache
 
 Requests built with the Akira text (copyrighted) are stored in `runs/llm_cache_private/`, which is **not** published: whoever clones the repository reproduces Gunra and Interlock, and Akira appears as «sin caché privada» (D-69).
 
-> [PENDING: Sebas] The cache of the final runs is generated with the real API key (`aem eval`) and committed to the repository. As long as no real `aem eval` results are published in `runs/llm_cache/`, `aem demo` and `aem eval --demo` end with the notice «Modo demo: no hay respuesta guardada…»: this is expected, not an installation error.
+The public cache `runs/llm_cache/` contains the real responses of the run `2026-10-18-main` (Gunra and Interlock), so `aem demo` and `aem eval --demo` work without an API key. The Akira scenario is not in the public cache: its text is from The DFIR Report and is not redistributed. Without that text, demo mode uses Gunra and Interlock, and `aem eval --demo` marks Akira as an omitted scenario (partial result, D-73).
 
 ## Usage
 

@@ -21,7 +21,7 @@ def test_each_links_to_the_other():
 def test_same_pending_marks():
     en = re.findall(r"\[PENDING: ([^\]]+)\]", _outside_bibtex(EN))
     es = re.findall(r"\[PENDIENTE: ([^\]]+)\]", _outside_bibtex(ES))
-    assert en == es and en
+    assert en == es  # may be empty once every pending item is resolved
     assert "[PENDIENTE" not in _outside_bibtex(EN) and "[PENDING" not in ES
 
 
