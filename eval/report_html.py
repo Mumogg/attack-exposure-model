@@ -20,7 +20,7 @@ from html import escape, unescape
 from pathlib import Path
 
 from aem.scenarios import VERSIONS, Scenario, load_reference
-from eval import review
+from eval import provenance, review
 from eval.report import ReportError, load_results
 from eval.run_experiments import NO_DATA, PARTIAL_LINE
 
@@ -120,11 +120,13 @@ def collect(run_dir: Path, sheets_dir: Path | None, scenarios: dict[str, Scenari
         if not found_any:
             missing_outputs.append(sc.name)
     manual = review.manual_results(Path(sheets_dir), data.get("run_id", run_dir.name)) if sheets_dir else None
+    prov_path = run_dir / "results" / "provenance.json"
+    prov = json.loads(prov_path.read_text(encoding="utf-8")) if prov_path.exists() else None
     sens_path = run_dir / "results" / "sensitivity" / "sensitivity.json"
     sensitivity = json.loads(sens_path.read_text(encoding="utf-8")) if sens_path.exists() else None
     return {"results": data, "techniques": techniques, "actions": actions, "coverage": coverage,
             "valid_runs": valid_runs, "reference": reference, "manual": manual, "sensitivity": sensitivity,
-            "missing_outputs": missing_outputs, "private": private,
+            "missing_outputs": missing_outputs, "private": private, "provenance": prov,
             "copyrighted": {sc.name for sc in scenarios.values() if sc.copyrighted}}
 
 
@@ -223,6 +225,24 @@ def _mean_sd(row: dict, prefix: str, view: str = "fail0") -> str:
 # --- sections ---------------------------------------------------------------------------------
 
 
+PROVENANCE_EN = {"Procedencia": "Provenance", "Código": "Code", "Modelo": "Model", "ATT&CK": "ATT&amp;CK",
+                 "Python": "Python", "Dependencias": "Dependencies", "Archivos congelados": "Frozen files"}
+
+
+def _provenance(d: dict) -> str:
+    title = t("Provenance", "Procedencia")
+    if not d.get("provenance"):
+        return (f'<details class="prov"><summary>{title}</summary><p>'
+                + t("no data available", "sin dato disponible") + " (<code>results/provenance.json</code>)</p></details>")
+    rows = []
+    for label, value in provenance.summary_lines(d["provenance"]):
+        v = escape(value).replace(escape(provenance.NOT_RECORDED), t("not recorded", "no registrado"))
+        rows.append(f"<dt>{t(PROVENANCE_EN.get(label, escape(label)), escape(label))}</dt><dd>{v}</dd>")
+    return (f'<details class="prov" open><summary>{title}</summary><dl class="facts">{"".join(rows)}</dl>'
+            '<p class="muted">' + t("Read from <code>results/provenance.json</code>.",
+                                    "Leída de <code>results/provenance.json</code>.") + "</p></details>")
+
+
 def _header(d: dict) -> str:
     res = d["results"]
     first = next((r for rows in res["tables"].values() for r in rows), {})
@@ -246,7 +266,7 @@ def _header(d: dict) -> str:
     dl = "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in facts)
     return ('<header id="summary"><h1>' + t("AI-assisted exposure model based on MITRE ATT&amp;CK — results",
                               "Modelo de exposición asistido por IA basado en MITRE ATT&amp;CK — resultados") + '</h1>'
-            f'{banner}{private}<dl class="facts">{dl}</dl>'
+            f'{banner}{private}<dl class="facts">{dl}</dl>{_provenance(d)}'
             '<p class="muted">' + t("Means are sample means over the runs; error bars are ± sample SD (n−1). "
                                    "<code>_fail0</code> counts a failed run as 0 (primary mean for indicators 1 and 3); "
                                    "<code>_valid</code> uses only valid runs (D-67).",
@@ -544,7 +564,7 @@ h1{font-size:1.6rem;line-height:1.25;margin:1.2rem 0 .6rem}h2{font-size:1.3rem;m
 h3{font-size:1.1rem;margin-top:1.6rem}a{color:var(--accent)}code{font-size:.85em;word-break:break-all}
 .muted{color:var(--muted)}.note{border-left:4px solid var(--accent);padding:.3rem .8rem;margin:.6rem 0}
 .banner{background:var(--warn-bg);color:var(--warn);border:2px solid currentColor;padding:.6rem .8rem;font-weight:600}
-.facts{display:grid;grid-template-columns:max-content 1fr;gap:.2rem 1rem;margin:.8rem 0}.facts dt{font-weight:600}.facts dd{margin:0}
+.facts{display:grid;grid-template-columns:max-content 1fr;gap:.2rem 1rem;margin:.8rem 0}.facts dt{font-weight:600}.prov summary{font-weight:600;cursor:pointer}.facts dd{margin:0}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.6rem 0}
 table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border:1px solid var(--line);padding:.3rem .45rem;text-align:left;vertical-align:top}
 thead th{background:color-mix(in srgb,var(--line) 35%,var(--paper))}

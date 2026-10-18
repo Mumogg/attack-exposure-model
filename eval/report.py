@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 
 from aem.scenarios import format_omitted
-from eval import review
+from eval import provenance, review
 from eval.run_experiments import (
     NO_DATA, PARTIAL_LINE, manual_indicator4_columns, manual_indicator5_rows, manual_negative_rows_md, md_table,
 )
@@ -241,6 +241,16 @@ def manual_review_md(sheets_dir: Path | None, run_id: str) -> list[str]:
     ]
 
 
+def provenance_md(run_dir: Path) -> list[str]:
+    path = Path(run_dir) / "results" / "provenance.json"
+    if not path.exists():
+        return ["## Procedencia\n", f"{NO_DATA} (no existe `results/provenance.json`; `aem provenance --run-id "
+                                    f"{Path(run_dir).name}` la reconstruye).\n"]
+    data = json.loads(path.read_text(encoding="utf-8"))
+    lines = [f"- {label}: {value}" for label, value in provenance.summary_lines(data)]
+    return ["## Procedencia\n", "Leída de `results/provenance.json`.\n", *lines, ""]
+
+
 def build_report(run_dir: Path, out_dir: Path, sheets_dir: Path | None = None) -> dict:
     run_dir, out_dir = Path(run_dir), Path(out_dir)
     data = load_results(run_dir)
@@ -268,6 +278,7 @@ def build_report(run_dir: Path, out_dir: Path, sheets_dir: Path | None = None) -
           f" · ATT&CK {data.get('attack_version', NO_DATA)} · {data.get('replicates', NO_DATA)} corridas por "
           "escenario × versión",
           f"- Porcentajes en %. «{NO_DATA}»: el archivo no tiene el valor (sin corridas o valor no definido).\n",
+          *provenance_md(run_dir),
           "## Corridas\n", _table(tables.get("runs", []), RUNS_COLS),
           "## Indicador 1 — Precisión y exhaustividad del paso 1 (%)\n",
           "Media principal: `_fail0`; `_valid` es secundaria (D-67). DE: desviación estándar muestral.\n",

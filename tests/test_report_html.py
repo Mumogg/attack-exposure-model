@@ -111,3 +111,16 @@ def test_main_run_public_page_has_no_dfir_text_or_iocs(tmp_path):
     assert leak_findings(html, text, iocs) == []
     assert copied_windows(visible_text(html), text) == []
     assert str(REPO_ROOT) not in html
+
+
+def test_provenance_block_in_the_page(run, tmp_path):
+    from eval import provenance
+
+    (run["run"] / "results" / "provenance.json").unlink()  # aem eval wrote one
+    assert "sin dato disponible" in _build(run, tmp_path).split('class="prov"', 1)[1][:400]
+    data = provenance.live(REPO_ROOT, json.loads((run["run"] / "results" / "results.json").read_text(encoding="utf-8")))
+    provenance.write(run["run"] / "results", data)
+    html = _build(run, tmp_path)
+    block = html.split('class="prov"', 1)[1].split("</details>", 1)[0]
+    assert "Provenance" in block and "Procedencia" in block and data["code"]["commit"][:12] in block
+    assert str(REPO_ROOT) not in html

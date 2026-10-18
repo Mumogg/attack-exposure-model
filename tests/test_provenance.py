@@ -28,7 +28,8 @@ def test_eval_writes_provenance_next_to_results(setup):  # noqa: F811
     assert data["reconstructed"] is False and data["written_by"] == "aem eval"
     head = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout
     assert data["code"]["commit"] == head.strip()
-    assert isinstance(data["code"]["uncommitted_changes_in_frozen_files"], list)
+    dirty = data["code"]["uncommitted_changes_in_frozen_files"]
+    assert isinstance(dirty, list) and all((REPO_ROOT / f).exists() for f in dirty)  # full paths, nothing cut
     assert data["model"]["name"] == "gemini-3.8-flash"
     assert data["python"] == platform.python_version()
     assert set(data["dependencies"]) == set(provenance.MAIN_DEPENDENCIES)

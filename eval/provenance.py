@@ -47,7 +47,8 @@ def _git(repo: Path, *args: str) -> str | None:
         res = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, timeout=120)
     except (OSError, subprocess.TimeoutExpired):
         return None
-    return res.stdout.decode("utf-8", errors="replace").strip() if res.returncode == 0 else None
+    # only the final newline: `git status --porcelain` lines start with a significant space
+    return res.stdout.decode("utf-8", errors="replace").rstrip("\n") if res.returncode == 0 else None
 
 
 def _git_blob(repo: Path, commit: str, path: str) -> bytes | None:

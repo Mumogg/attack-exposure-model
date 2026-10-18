@@ -227,3 +227,17 @@ def test_manual_review_of_complete_sheets_is_in_the_report(tmp_path):
     md = build_report(run, tmp_path / "out", tmp_path / "sheets")["markdown"].read_text(encoding="utf-8")
     assert "Resúmenes fieles («si»): 3 de 4 (75.0 %)" in md
     assert "omite una condición" in md
+
+
+def test_provenance_block_is_read_from_the_file(tmp_path):
+    run = _write(tmp_path)
+    md = build_report(run, tmp_path / "out")["markdown"].read_text(encoding="utf-8")
+    assert "## Procedencia" in md and "no existe `results/provenance.json`" in md
+    (run / "results" / "provenance.json").write_text(
+        '{"reconstructed": true, "code": {"invocations": [{"head_commit_before_start": {"commit": "abcdef1234"},'
+        ' "code_commits_after_start_until_results_commit": []}]}, "model": {"name": "modelo-sintetico",'
+        ' "versions_reported_by_api": ["v1"]}, "attack": {"version": "19.2", "sha256": "dc16", "matches_expected": true},'
+        ' "python": "no registrado", "dependencies": "no registrado", "frozen_files_sha256": {}}', encoding="utf-8")
+    md = build_report(run, tmp_path / "out")["markdown"].read_text(encoding="utf-8")
+    block = md.split("## Procedencia", 1)[1].split("\n## ", 1)[0]
+    assert "reconstruida" in block and "abcdef1" in block and "- Python: no registrado" in block
