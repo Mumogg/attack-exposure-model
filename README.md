@@ -53,7 +53,7 @@ Requisitos: **Python 3.11 o superior** y `git`.
 **Linux / macOS**
 
 ```bash
-git clone https://github.com/Mumogg/attack-exposure-model.git   # [PENDIENTE: confirmar URL]
+git clone https://github.com/Mumogg/attack-exposure-model.git
 cd attack-exposure-model
 python3 -m venv .venv
 source .venv/bin/activate
@@ -63,7 +63,7 @@ pip install -e ".[dev]"
 **Windows (PowerShell)**
 
 ```powershell
-git clone https://github.com/Mumogg/attack-exposure-model.git   # [PENDIENTE: confirmar URL]
+git clone https://github.com/Mumogg/attack-exposure-model.git
 cd attack-exposure-model
 py -3.11 -m venv .venv
 .venv\Scripts\Activate.ps1
@@ -219,7 +219,7 @@ MIT (ver `LICENSE`). Los datos de terceros conservan sus propias condiciones (AT
   year    = {2026},
   version = {0.1.0},
   url     = {https://github.com/Mumogg/attack-exposure-model},
-  note    = {Trabajo Final de Graduación, Universidad Fidélitas. [PENDIENTE: confirmar URL y versión publicada]}
+  note    = {Trabajo Final de Graduación, Universidad Fidélitas. [PENDIENTE: versión publicada]}
 }
 ```
 
