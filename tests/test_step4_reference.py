@@ -127,3 +127,23 @@ def test_llm_summarizer_success_and_failure(tmp_path):
     assert "Adversaries may use RDP" in prompt and "3" in prompt and "do not add" in prompt.lower()
     bad = s.summarize("T1190", "Other description.")
     assert bad.text is None and "400" in bad.error
+
+
+def test_quota_error_in_a_summary_stops_instead_of_degrading(tmp_path):
+    """D-74: a daily-quota 429 must stop the run, not become «resumen no disponible»."""
+    import pytest
+
+    from aem.config import Settings
+    from aem.llm import DailyQuotaExhausted, GeminiClient, LLMCache, TransportError
+    from aem.step4_reference import LLMSummarizer
+    from fakes import FakeClock, FakeTransport
+
+    body = {"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "quota", "details": [
+        {"@type": "type.googleapis.com/google.rpc.QuotaFailure",
+         "violations": [{"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier", "quotaValue": "20"}]}]}}
+    clock = FakeClock()
+    client = GeminiClient(Settings("k", "gemini-3.8-flash", "gemini-3.5-flash-lite", 600, 3), LLMCache(tmp_path),
+                          transport=FakeTransport([TransportError(429, "q", body)]), sleep=clock.sleep,
+                          clock=clock.now)
+    with pytest.raises(DailyQuotaExhausted):
+        LLMSummarizer(client).summarize("T1190", "Adversaries may exploit a public-facing application.")

@@ -328,3 +328,25 @@ def test_partial_run_is_completed_later_from_the_cache(setup):
     assert strip(gunra_after) == strip(gunra_before)
     history = json.loads((setup["run"] / "eval_history.json").read_text(encoding="utf-8"))
     assert [any(o["scenario"] == "akira" for o in h["escenarios_omitidos"]) for h in history] == [True, False]
+
+
+def test_daily_quota_in_a_summary_stops_the_experiment(setup):
+    """D-74: no run is written with «resumen no disponible» because of an exhausted quota."""
+    from aem.llm import DailyQuotaExhausted
+
+    body = {"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "quota", "details": [
+        {"@type": "type.googleapis.com/google.rpc.QuotaFailure",
+         "violations": [{"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier", "quotaValue": "20"}]}]}}
+
+    class QuotaOnSummary(RoutingTransport):
+        def generate(self, model, prompt, schema, temperature):
+            if "extracting MITRE ATT&CK" not in prompt:
+                self.calls.append(prompt)
+                raise TransportError(429, "q", body)
+            return super().generate(model, prompt, schema, temperature)
+
+    with pytest.raises(DailyQuotaExhausted):
+        run_experiment(setup["ctx"](QuotaOnSummary(extraction=EXTRACTION)), setup["scenarios"], setup["run"],
+                       setup["sheets"], replicates=1)
+    assert not (setup["run"] / "gunra" / "orig" / "r0" / "gunra_aa26-222a_stripped_exposure.csv").exists()
+    assert not (setup["run"] / "results").exists()

@@ -49,8 +49,16 @@ class ApiError(LLMError):
     """The API call itself failed (after retries for 429/5xx)."""
 
 
-class DailyQuotaExhausted(ApiError):
+class QuotaError(ApiError):
+    """HTTP 429 that must stop the whole run, not degrade one output (D-74): nothing is retried after it."""
+
+
+class DailyQuotaExhausted(QuotaError):
     """HTTP 429 whose quota is per day: retrying cannot help today, so the run stops (cache stays intact)."""
+
+
+class UnexpectedQuota(QuotaError):
+    """HTTP 429 naming quotas, none of them per minute (e.g. tokens or a paid-tier limit): logged and stopped."""
 
 
 class InvalidResponse(LLMError):
@@ -70,7 +78,7 @@ API_KEY_PATTERN = re.compile(r"AIza[0-9A-Za-z_\-]{20,}")
 
 def redact(text: str, api_key: str | None = None) -> str:
     """Error bodies must never carry the key into a log."""
-    if api_key:
+    if api_key and len(api_key) >= 8:  # a too-short value would mangle unrelated text
         text = text.replace(api_key, "[CLAVE OCULTA]")
     return API_KEY_PATTERN.sub("[CLAVE OCULTA]", text)
 
@@ -316,6 +324,18 @@ class GeminiClient:
                     raise DailyQuotaExhausted(
                         f"Cuota DIARIA de la API de Gemini agotada ({quotas}). No se reintenta: espere a que se "
                         "renueve la cuota y repita el mismo comando; lo ya obtenido sigue en la caché.") from exc
+                quota_ids = [str(v.get("quotaId", "")) for v in info["violations"]]
+                if exc.code == 429 and quota_ids and not any("perminute" in q.lower() for q in quota_ids):
+                    event["action"] = "detenido: 429 con cuota que no es por minuto"
+                    self._record_event(event)
+                    raise UnexpectedQuota(
+                        f"HTTP 429 por una cuota que no es por minuto ({', '.join(quota_ids)}). No se reintenta; "
+                        "el cuerpo completo quedó en api_events.jsonl y lo ya obtenido sigue en la caché.") from exc
+                if exc.code == 429 and attempt >= self.settings.gemini_max_retries:
+                    event["action"] = "detenido: 429 persistente tras los reintentos"
+                    self._record_event(event)
+                    raise QuotaError(f"HTTP 429 persistente tras {attempt + 1} intento(s): "
+                                     f"{redact(str(exc), key)}") from exc
                 if exc.code not in RETRYABLE or attempt >= self.settings.gemini_max_retries:
                     event["action"] = "error final"
                     self._record_event(event)

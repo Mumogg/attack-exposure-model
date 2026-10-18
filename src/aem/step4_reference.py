@@ -103,12 +103,14 @@ class LLMSummarizer:
         self.template = resources.files("aem.prompts").joinpath(SUMMARY_PROMPT).read_text(encoding="utf-8")
 
     def summarize(self, technique_id: str, description: str) -> SummaryOutcome:
-        from aem.llm import LLMError
+        from aem.llm import LLMError, QuotaError
 
         prompt = self.template.format(max_sentences=self.max_sentences, description=description)
         try:
             res = self.client.generate_json(prompt, SUMMARY_SCHEMA, purpose=f"step4_summary[{technique_id}]",
                                             replicate=self.replicate)
+        except QuotaError:
+            raise  # quota exhausted: stop the run instead of writing «resumen no disponible» (D-74)
         except LLMError as exc:
             return SummaryOutcome(text=None, error=str(exc))
         text = res.data.get("summary") if isinstance(res.data, dict) else None

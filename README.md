@@ -85,7 +85,7 @@ Pasos para correr los experimentos reales (API key, Akira, prevalencia, `aem eva
 
 Solo hace falta para correr el modelo con reportes nuevos o para regenerar las respuestas del LLM.
 
-1. Cree una clave gratuita en Google AI Studio (https://aistudio.google.com/).
+1. Cree una clave en Google AI Studio (https://aistudio.google.com/). **La capa gratuita no alcanza para el experimento completo**: el 2026-10-18 la API informó, para `gemini-3.8-flash`, una cuota de 20 solicitudes por día y por proyecto (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`), y `aem eval` necesita más de 80. Las corridas de la tesis se hicieron con la facturación activada en el proyecto (D-75). El modo demo no necesita clave.
 2. Copie `.env.example` como `.env` y complete `GEMINI_API_KEY=`.
 3. Opcional: `GEMINI_MODEL` (por defecto `gemini-3.8-flash`; alternativo `gemini-3.5-flash-lite`) y `GEMINI_RPM` (solicitudes por minuto; por defecto 10, valor aproximado, no oficial).
 
@@ -202,7 +202,7 @@ Antes de dárselo al LLM, de cada reporte se elimina la sección del mapeo ATT&C
 - Los resúmenes del paso 4 se generan **una vez por técnica** (caché compartida entre escenarios y corridas); los indicadores 4 y 5 los evalúan una vez por técnica.
 - El chequeo automático de los resúmenes y la lista de patrones evaluativos son aproximaciones; la revisión manual de una muestra es parte del método.
 - En ATT&CK v18+ las fuentes de datos se modelan como componentes de datos de las estrategias de detección; la columna `data_sources` lista esos componentes (D-03, pendiente de confirmar).
-- Los límites de la capa gratuita de Gemini no son cifras oficiales.
+- Los límites de Gemini (`GEMINI_RPM` y las cuotas diarias) no son cifras oficiales del proyecto y pueden cambiar. Las corridas de la tesis usan la capa de pago (D-75). Cada 429 queda registrado con su cuota en `runs/<run-id>/api_events.jsonl` (D-74).
 - **C1 — El enfoque tradicional da 0 % por construcción:** en `mut` y `anon` ningún IoC del original sobrevive (lo verifica el código), así que el enfoque tradicional siempre da 0 %. Es un punto de referencia, **no una medición independiente**.
 - **C2 — Reconocimiento por el nombre:** `mut` conserva los nombres del actor y del malware, así que parte de la persistencia del modelo en `mut` podría deberse a que el LLM reconoce la amenaza por su nombre y no por el comportamiento. La versión `anon`, que reemplaza esos nombres, sirve para controlarlo (D-72).
 - **C3 — Datos de entrenamiento:** el modelo de lenguaje pudo conocer estos reportes (públicos) durante su entrenamiento; ni `mut` ni `anon` eliminan ese efecto.

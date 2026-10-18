@@ -62,7 +62,7 @@ No hay indicador para el paso 3 ni para la revisión global: son criterio del an
 
 | Parámetro | Valor |
 |---|---|
-| Proveedor | Google Gemini, capa gratuita |
+| Proveedor | Google Gemini, capa de pago (facturación activada; la gratuita permitía 20 solicitudes diarias, D-75) |
 | SDK | `google-genai` 2.31.0, `client.models.generate_content` |
 | Modelo por defecto | `gemini-3.8-flash` (variable `GEMINI_MODEL`) |
 | Modelo alternativo | `gemini-3.5-flash-lite` |
@@ -187,6 +187,8 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 | D-71 | Resultados con LLM simulado marcados FAKE y separados | Técnica |
 | D-72 | Versión `anon` y criterio de nombres reemplazados (lista de Akira provisional) | **CONFIRMADA** (2026-10-17) |
 | D-73 | Escenario con derechos de autor sin texto local: se omite y la corrida queda marcada como parcial; se completa con el mismo run-id desde la caché | **CONFIRMADA** (2026-10-18) |
+| D-74 | Registro de errores de la API, `retryDelay` y detención por cuota (también en el paso 4) | **PENDIENTE DE CONFIRMAR** |
+| D-75 | Capa de pago de Gemini para las corridas de la tesis | **CONFIRMADA** (2026-10-18, decisión de Sebas) |
 
 ---
 
@@ -204,7 +206,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 10. **Fuentes de datos (D-03):** en v19 se derivan de las estrategias de detección; no se cruzan automáticamente con las fuentes declaradas en el YAML.
 11. **Prevalencia:** la plantilla de Red Canary 2026 está vacía hasta que Sebas la complete; mientras tanto la columna dice `sin dato disponible`.
 12. **Reproducibilidad de Akira:** su caché no se publica (derechos de autor); quien clone el repositorio reproduce Gunra e Interlock en modo demo, no Akira.
-13. **Capa gratuita de Gemini:** los límites no son oficiales y pueden cambiar.
+13. **Límites de Gemini:** los límites por minuto y por día no son cifras fijas y pueden cambiar. La capa gratuita no alcanzaba (20 solicitudes diarias para `gemini-3.8-flash`, informadas por la API el 2026-10-18), así que las corridas usan la capa de pago (D-75). Esto no cambia el modelo, los parámetros ni los prompts.
 14. **Reportes de CISA en línea:** el sitio puede cambiar; el repositorio conserva el texto convertido usado en la tesis.
 15. **C2 — Reconocimiento por el nombre:** `mut` conserva los nombres del actor y del malware, así que parte de la persistencia del modelo en `mut` podría deberse a que el LLM reconoce la amenaza por su nombre. La versión `anon`, que reemplaza esos nombres, sirve para controlarlo: la diferencia entre `mut` y `anon` estima ese efecto (D-72; `docs/REVISION_EVAL.md` C2).
 16. **C3 — Datos de entrenamiento:** el modelo de lenguaje pudo conocer estos reportes (públicos) durante su entrenamiento. Ni `mut` ni `anon` eliminan ese efecto: el comportamiento descrito sigue siendo el mismo texto.

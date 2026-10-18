@@ -298,3 +298,28 @@ def test_genai_transport_keeps_the_error_body():
     with pytest.raises(TransportError) as err:
         tr._wrap(boom)
     assert err.value.code == 429 and err.value.details == body
+
+
+def test_429_with_a_quota_that_is_not_per_minute_stops(tmp_path):
+    from aem.llm import QuotaError, UnexpectedQuota
+
+    body = _quota_body("GenerateContentInputTokensPerModelPerDayOrSomethingElse-Paid".replace("PerDay", "Per"),
+                       "generativelanguage.googleapis.com/some_other_quota", retry_delay="5s")
+    t = FakeTransport([TransportError(429, "q", body), {"x": 1}])
+    c, clock = client(tmp_path, t, rpm=600)
+    with pytest.raises(UnexpectedQuota, match="no es por minuto") as err:
+        c.generate_json("hola", SCHEMA, purpose="test")
+    assert isinstance(err.value, QuotaError) and len(t.calls) == 1
+    assert c.api_events[0]["action"].startswith("detenido") and c.api_events[0]["body"] == body
+
+
+def test_per_minute_429_is_retried_and_persistent_one_is_a_quota_error(tmp_path):
+    from aem.llm import QuotaError
+
+    body = _quota_body(*PER_MINUTE)
+    t = FakeTransport([TransportError(429, "q", body)] * 3)
+    c, _ = client(tmp_path, t, rpm=600, retries=2)
+    with pytest.raises(QuotaError, match="persistente"):
+        c.generate_json("hola", SCHEMA, purpose="test")
+    assert len(t.calls) == 3
+    assert c.event_counts() == {"http_429": 3, "retries": 2, "errors_total": 3}
