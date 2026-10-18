@@ -238,6 +238,45 @@ def demo_cmd(
     _run(DEMO_REPORT, ORG_FILE, "auto", True, out, attack, cache_dir)
 
 
+_STATUS_STYLE = {"OK": "green", "FALTA": "bold red", "AVISO": "yellow", "INFO": "cyan"}
+
+
+def _preflight_checks(demo: bool, replicates: int, attack: Path) -> list:
+    from aem.preflight import run_preflight
+    from aem.scenarios import load_scenarios
+
+    _load_env()
+    cfg = load_model_config()
+    return run_preflight(settings=Settings.from_env(load_dotenv_file=False), demo=demo, attack_path=attack,
+                         checksums_path=ATTACK_CHECKSUMS, scenarios=load_scenarios(SCENARIOS_FILE),
+                         prevalence_path=PREVALENCE_FILE, repo_root=config.REPO_ROOT, model_cfg=cfg,
+                         replicates=replicates or cfg.experiment.replicates)
+
+
+def _print_checks(checks: list) -> None:
+    for c in checks:
+        style = _STATUS_STYLE.get(c.status, "")
+        console.print(f"[{style}]{c.status:<5}[/{style}] {c.item}" + (f" — {c.detail}" if c.detail else ""),
+                      highlight=False)
+
+
+@app.command("preflight", cls=SpanishCommand)
+def preflight_cmd(
+    demo: bool = typer.Option(False, "--demo", help="Comprobar para `aem eval --demo` (sin API key)."),
+    replicates: int = typer.Option(0, "--replicates", help="Corridas por escenario × versión para la estimación "
+                                                            "(0 = valor de data/model_config.yaml)."),
+    attack: Path = typer.Option(ATTACK_FILE, "--attack", help="Archivo STIX de ATT&CK v19.2."),
+) -> None:
+    """Comprueba que todo está listo antes de gastar llamadas a la API (OK / FALTA / AVISO)."""
+    from aem.preflight import has_blocker
+
+    checks = _preflight_checks(demo, replicates, attack)
+    _print_checks(checks)
+    if has_blocker(checks):
+        _fail("hay al menos un FALTA: corríjalo antes de ejecutar `aem eval`.")
+    console.print("[green]Listo para `aem eval`.[/green]")
+
+
 @app.command("eval", cls=SpanishCommand)
 def eval_cmd(
     demo: bool = typer.Option(False, "--demo", help="Usar solo respuestas guardadas en la caché (sin API key)."),
@@ -255,6 +294,13 @@ def eval_cmd(
     from aem.scenarios import load_scenarios
     from eval.run_experiments import run_experiment
 
+    from aem.preflight import has_blocker
+
+    checks = _preflight_checks(demo, replicates, attack)
+    _print_checks(checks)
+    if has_blocker(checks):
+        _fail("el preflight encontró al menos un FALTA (arriba); `aem eval` no se ejecuta. "
+              "Corríjalo y vuelva a intentar (`aem preflight` repite solo la comprobación).")
     run_dir = RUNS_DIR / (run_id or date.today().isoformat())
     try:
         ctx = _build_context(org, attack, cache_dir, demo)

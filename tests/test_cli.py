@@ -107,6 +107,7 @@ def test_make_variants_command(tmp_path, monkeypatch):
 
 
 def test_eval_demo_without_cache_fails_clearly(files, tmp_path, monkeypatch):
+    monkeypatch.setattr("aem.cli._preflight_checks", lambda demo, replicates, attack: [])  # tested on its own
     monkeypatch.setattr("aem.cli.RUNS_DIR", tmp_path / "runs")
     monkeypatch.setattr("aem.cli.REVIEW_SHEETS_DIR", tmp_path / "sheets")
     res = runner.invoke(app, ["eval", "--demo", "--attack", str(files["attack"]), "--cache-dir", str(files["cache"]),
@@ -174,3 +175,21 @@ def test_make_variants_leak_is_a_clear_error(tmp_path, monkeypatch):
     assert res.exit_code == 1 and "Traceback" not in res.output
     out = res.output.replace("\n", "")
     assert "45.61.136.10" in out and "línea 2" in out
+
+
+def test_preflight_command_reports_falta_without_key(files):
+    res = runner.invoke(app, ["preflight"])  # no GEMINI_API_KEY in the test environment: no network call
+    out = res.output.replace("\n", " ")
+    assert res.exit_code == 1 and "FALTA" in out and "GEMINI_API_KEY" in out and "Estimación" in out
+
+
+def test_eval_refuses_to_start_when_preflight_has_falta(files, tmp_path, monkeypatch):
+    from aem.preflight import Check
+    called = []
+    monkeypatch.setattr("aem.cli._preflight_checks",
+                        lambda demo, replicates, attack: [Check("FALTA", "Versiones de akira", "faltan anon")])
+    monkeypatch.setattr("eval.run_experiments.run_experiment", lambda *a, **k: called.append(1))
+    monkeypatch.setattr("aem.cli.RUNS_DIR", tmp_path / "runs")
+    res = runner.invoke(app, ["eval", "--run-id", "x", "--attack", str(files["attack"]), "--org", str(files["org"])])
+    assert res.exit_code == 1 and not called
+    assert "preflight" in res.output and "Versiones de akira" in res.output.replace("\n", " ")
