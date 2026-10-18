@@ -277,6 +277,36 @@ def preflight_cmd(
     console.print("[green]Listo para `aem eval`.[/green]")
 
 
+@app.command("check-repo", cls=SpanishCommand)
+def check_repo_cmd(
+    repo: Path = typer.Option(config.REPO_ROOT, "--repo", help="Repositorio git a revisar."),
+    dfir_text: Path = typer.Option(DATA_DIR / "reports" / "akira_dfir_2026.txt", "--dfir-text",
+                                   help="Copia local del reporte de DFIR (para buscar sus frases)."),
+) -> None:
+    """Busca .env, API keys, texto del reporte de DFIR y archivos private/ en los archivos versionados y en todo
+    el historial de git. Termina con código 1 si encuentra algo."""
+    from aem.repo_check import check_repo, distinctive_phrases
+
+    phrases = []
+    if Path(dfir_text).exists():
+        phrases = distinctive_phrases(Path(dfir_text).read_text(encoding="utf-8"))
+    else:
+        console.print(f"[yellow]AVISO[/yellow] no existe {dfir_text}: no se buscó texto del reporte de DFIR "
+                      "(solo .env, API keys y carpetas private/).", highlight=False)
+    try:
+        result = check_repo(repo, phrases)
+    except ValueError as exc:
+        _fail(str(exc))
+    console.print(f"Revisados {result['commits']} commits y el índice; {result['phrases']} frases del reporte "
+                  "de DFIR.", highlight=False)
+    if result["findings"]:
+        for f in result["findings"]:
+            console.print(f"[bold red]ENCONTRADO[/bold red] {f['kind']}: {f['where']}", highlight=False)
+        _fail(f"{len(result['findings'])} hallazgo(s). No suba el repositorio: si está en el historial, hay que "
+              "reescribirlo (p. ej. git filter-repo) antes de publicarlo.")
+    console.print("[green]OK[/green] nada sensible en los archivos versionados ni en el historial.")
+
+
 @app.command("eval", cls=SpanishCommand)
 def eval_cmd(
     demo: bool = typer.Option(False, "--demo", help="Usar solo respuestas guardadas en la caché (sin API key)."),
