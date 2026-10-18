@@ -79,6 +79,8 @@ pytest              # ninguna prueba llama a la API real
 
 `aem --help` y `aem <comando> --help` muestran la ayuda en español.
 
+Pasos para correr los experimentos reales (API key, Akira, prevalencia, `aem eval`, revisión manual, qué versionar): `docs/RUNBOOK.md`.
+
 ## API key de Gemini
 
 Solo hace falta para correr el modelo con reportes nuevos o para regenerar las respuestas del LLM.
