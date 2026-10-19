@@ -301,8 +301,9 @@ SECTIONS = (("run", "1. Run data and provenance", "1. Datos de la corrida y proc
 
 
 def toc() -> str:
-    items = "".join(f'<li><a href="#{sid}">{t(en, es)}</a></li>' for sid, en, es in SECTIONS)
-    return f'<nav class="toc" aria-label="Contents / Contenido"><ol>{items}</ol></nav>\n'
+    # one link per line in the source, so the text of two links never runs together
+    items = "\n".join(f'<li><a href="#{sid}">{t(en, es)}</a></li>' for sid, en, es in SECTIONS)
+    return f'<nav class="toc" aria-label="Contents / Contenido"><ol>\n{items}\n</ol></nav>\n'
 
 
 # --- sections ---------------------------------------------------------------------------------
@@ -706,7 +707,7 @@ h1{font-size:1.6rem;line-height:1.25;margin:1.2rem 0 .6rem}h2{font-size:1.3rem;m
 section{margin-top:1.2rem;border-bottom:2px solid var(--line);padding-bottom:.6rem;scroll-margin-top:.5rem}
 summary{cursor:pointer;padding:.3rem 0}summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 h3{font-size:1.1rem;margin-top:1.4rem}a{color:var(--accent)}code{font-size:.85em;word-break:break-all}
-.toc ol{display:flex;flex-wrap:wrap;gap:.2rem 1.2rem;padding-left:1.2rem;margin:.4rem 0 0}
+.toc ol{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;padding:0;margin:.6rem 0 0}.toc a{display:inline-block;padding:.15rem 0}
 .muted{color:var(--muted)}.note{border-left:4px solid var(--accent);padding:.3rem .8rem;margin:.6rem 0}
 .banner{background:var(--warn-bg);color:var(--warn);border:2px solid currentColor;padding:.6rem .8rem;font-weight:600}
 .facts{display:grid;grid-template-columns:max-content 1fr;gap:.2rem 1rem;margin:.8rem 0}.facts dt{font-weight:600}.facts dd{margin:0}
@@ -731,7 +732,7 @@ button{cursor:pointer}button:focus-visible,select:focus-visible,a:focus-visible{
 .top{display:flex;justify-content:flex-end;max-width:72rem;margin:0 auto;padding:.6rem 16px 0}
 html[data-lang=en] [lang=es],html[data-lang=es] [lang=en]{display:none}
 q{quotes:"“" "”"}footer{max-width:72rem;margin:2rem auto;padding:0 16px;font-size:.85rem;color:var(--muted)}
-@media (max-width:600px){h1{font-size:1.3rem}.facts{grid-template-columns:1fr}.facts dd{margin-bottom:.4rem}}
+@media (max-width:600px){h1{font-size:1.3rem}.toc ol{flex-direction:column;gap:.35rem}.facts{grid-template-columns:1fr}.facts dd{margin-bottom:.4rem}}
 """
 
 JS = """

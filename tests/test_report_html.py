@@ -251,3 +251,36 @@ def test_navigation_folding_and_show_more(run, tmp_path):
     assert '<button id="more" type="button" aria-controls="tech" aria-expanded="false" data-limit="25">' in table
     assert table.count("<tr data-scenario=") == 30 and " hidden" not in table  # without JS every row is visible
     assert "sels.every" in report_html.JS and "'#tech tbody tr'" in report_html.JS
+
+
+def test_table_of_contents_has_no_list_markers_and_separate_links(run, tmp_path):
+    from eval import report_html
+
+    html = _build(run, tmp_path)
+    css = re.search(r"\.toc ol\{([^}]*)\}", report_html.CSS)[1]
+    assert "list-style:none" in css and "display:flex" in css and "flex-wrap:wrap" in css and "gap:" in css
+    assert re.search(r"@media \(max-width:600px\)\{[^@]*\.toc ol\{flex-direction:column", report_html.CSS)
+    nav = html.split('<nav class="toc"', 1)[1].split("</nav>", 1)[0]
+    assert 'aria-label="Contents / Contenido"' in html and len(re.findall(r'<a href="#\w+">', nav)) == 6
+
+    class Text(HTMLParser):  # like the DOM's textContent: no space added between elements
+        def __init__(self, lang):
+            super().__init__()
+            self.lang, self.stack, self.out = lang, [], ""
+
+        def handle_starttag(self, tag, attrs):
+            self.stack.append(dict(attrs).get("lang") not in (None, self.lang))
+
+        def handle_endtag(self, tag):
+            self.stack.pop()
+
+        def handle_data(self, data):
+            if not any(self.stack):
+                self.out += data
+
+    for lang in ("en", "es"):
+        parser = Text(lang)
+        parser.feed("<nav" + nav + "</nav>")
+        text = parser.out
+        for n in range(2, 7):
+            assert re.search(rf"\s{n}\. ", text), (lang, text)  # each title starts after whitespace
