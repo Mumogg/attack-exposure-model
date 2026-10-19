@@ -259,6 +259,20 @@ Cómo detecta una columna modificada: `aem eval` guarda junto a cada hoja un man
 **Dónde aparecen los resultados.**
 - `aem report --run-id <run-id>` lee las hojas tal como están, sin volver a correr `aem eval`. Agrega a `resumen.md` el indicador 4 (resúmenes fieles / revisados, con el conteo) y el indicador 5 manual, como cifra separada del conteo automático de violaciones. Lista las filas marcadas, con su observación.
 - `aem eval` hace lo mismo en `results.md` y en las tablas: columnas `manual_*` en `indicator4.csv`, y una tabla nueva, `indicator5_manual.csv`.
+
+**Integrar la revisión en una corrida ya evaluada: `aem integrate-review --run-id <run-id>`** (sin `aem eval`, sin preflight, 0 llamadas a la API). Es el camino para `2026-10-18-main`:
+
+```bash
+aem review-check --run-id 2026-10-18-main      # todas las hojas completas y sin errores
+aem integrate-review --run-id 2026-10-18-main
+aem report --html --run-id 2026-10-18-main     # y, si quiere la versión con citas de Akira, --private
+```
+
+- **Qué reescribe:** las columnas `manual_*` de `results/indicator4.csv`, `results/indicator5_manual.csv`, esas dos tablas dentro de `results/results.json`, `results/results.md` y `docs/resultados/<run-id>/resumen.md` (el mismo `aem report`; los gráficos PNG salen idénticos).
+- **Qué no toca:** los archivos por corrida, `provenance.json`, la sensibilidad y las tablas de los indicadores 1, 2, 3 y 5 (conteo automático), ni los metadatos de `results.json` (fechas, modelo, corridas). Los tests lo comprueban por SHA-256 sobre una copia de `2026-10-18-main`.
+- **Registro:** agrega a `eval_history.json` una entrada con `status: "integración de revisión humana"`, la fecha, `api_calls: 0`, el estado de cada indicador y el SHA-256 de cada hoja leída (también la privada, solo su hash, y el resumen agregado).
+- **Se niega sin escribir nada** si alguna hoja tiene errores o si la revisión no está completa. `--allow-incomplete` permite registrar un estado parcial; las tablas dicen entonces «revisión incompleta: N de M filas», sin porcentaje.
+- Repetirla con las mismas hojas no cambia ninguna tabla; solo agrega otra entrada al historial.
 - **Volver a correr `aem eval` nunca borra una revisión.** Si la hoja ya tiene revisión y su contenido generado no cambió, se conserva tal cual. Si cambió, el comando se detiene sin escribir tablas.
 
 **La hoja privada (Akira) no sale de `private/`.** Sus filas nunca se listan. Solo sus conteos (total, revisadas, con valoración) se guardan en `eval/review_sheets/<run-id>_indicator5_private_summary.json`, que no contiene texto (D-69). Así, un clon sin `private/` conserva la cifra agregada.
@@ -354,7 +368,7 @@ Los resultados de `2026-10-18-main` valen para una configuración concreta del m
 | Escenarios, textos y referencias | `data/scenarios.yaml`, `data/reports/*` versionados (textos, `stripped`, `mut`, `anon`), `data/reference_mappings/*.csv`, y la generación de variantes y del enfoque tradicional (`src/aem/reports.py`, `src/aem/scenarios.py`, `eval/make_variants.py`, `eval/baseline_ioc.py`) |
 | ATT&CK | `data/attack/CHECKSUMS.sha256`: v19.2, que `aem fetch-data` solo acepta si coincide el SHA-256 |
 
-No forman parte del congelamiento el código que solo lee o presenta resultados ya calculados: `aem report`, `aem report --html`, `aem sensitivity`, `aem review-check`, `aem check-repo`. Si se cambia el cálculo de los indicadores (`eval/metrics.py`, `eval/run_experiments.py`), las tablas publicadas tienen que salir idénticas: los tests y la comprobación SHA-256 de las tablas lo verifican. Si no salen idénticas, cuenta como un cambio congelado.
+No forman parte del congelamiento el código que solo lee o presenta resultados ya calculados: `aem report`, `aem report --html`, `aem sensitivity`, `aem review-check`, `aem integrate-review`, `aem check-repo`. Si se cambia el cálculo de los indicadores (`eval/metrics.py`, `eval/run_experiments.py`), las tablas publicadas tienen que salir idénticas: los tests y la comprobación SHA-256 de las tablas lo verifican. Si no salen idénticas, cuenta como un cambio congelado.
 
 **Regla.** Cualquier cambio en un archivo congelado exige:
 1. Regenerar los resultados con un **run-id nuevo**: `aem eval --run-id <fecha>-<nombre>`. Si cambian un prompt o un texto, cambia la clave de la caché y hay llamadas nuevas a la API.
@@ -380,5 +394,7 @@ git diff --stat 2996515 HEAD -- \
 - **Estado al 2026-10-18:** solo aparece `data/org/fictional_org.yaml`, por el comentario de cabecera de `293eea1` (de «BORRADOR» a «CONFIRMADA»). Como datos YAML, el archivo es idéntico.
 
 Para un run evaluado desde ahora, el commit está en `results/provenance.json` (`code.commit`), junto con los archivos congelados que tenían cambios sin commit (`code.uncommitted_changes_in_frozen_files`, que debe ser `[]`) y el SHA-256 de cada archivo congelado. Compare ese commit en lugar de `2996515`.
+
+**La revisión humana no es parte del congelamiento.** Integrarla con `aem integrate-review` (§f) no vuelve a ejecutar los pasos 1 a 4 ni cambia ningún archivo congelado: solo recalcula el indicador 4 (revisión manual) y la parte manual del indicador 5 a partir de las hojas, y lo registra en `eval_history.json` con el SHA-256 de cada hoja. Por eso no exige un run-id nuevo. Después de integrarla, la comprobación es: los archivos por corrida, `provenance.json`, la sensibilidad y las tablas de los indicadores 1, 2, 3 y 5 (conteo automático) idénticos por SHA-256; solo cambian `indicator4.csv`, `indicator5_manual.csv`, `results.json` (esas dos tablas), `results.md`, `resumen.md`, `eval_history.json` y el informe HTML. No se usa `aem eval` para esto: reescribiría las fechas de cada corrida y `provenance.json`, y su preflight llama a la API.
 
 Antes de entregar o etiquetar una versión, corra este `git diff` y `aem check-repo`.

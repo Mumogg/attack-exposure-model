@@ -543,6 +543,28 @@ def provenance_cmd(
                   "«no registrado»).")
 
 
+@app.command("integrate-review", cls=SpanishCommand)
+def integrate_review_cmd(
+    run_id: str = typer.Option(..., "--run-id", help="Corrida ya evaluada (runs/<id>/results/)."),
+    allow_incomplete: bool = typer.Option(False, "--allow-incomplete", help="Integrar aunque la revisión no esté "
+                                                                            "completa (queda registrado su estado)."),
+) -> None:
+    """Integra las hojas de revisión (indicadores 4 y 5) en una corrida evaluada, sin `aem eval` y sin API."""
+    from eval.integrate_review import IntegrationError, integrate_review
+
+    try:
+        result = integrate_review(RUNS_DIR / run_id, REVIEW_SHEETS_DIR, RESULTS_DOCS_DIR / run_id, allow_incomplete)
+    except IntegrationError as exc:
+        _fail(str(exc))
+    entry = result["entry"]
+    console.print(f"[green]Listo.[/green] Indicador 4: {entry['review']['indicator4']}; indicador 5 (manual): "
+                  f"{entry['review']['indicator5']}. 0 llamadas a la API.", highlight=False)
+    for path in result["paths"].values():
+        console.print(f"  {path}")
+    console.print("  registrado en eval_history.json (hojas: "
+                  + ", ".join(f"{s['file']} {s['sha256'][:12]}" for s in entry["sheets"]) + ")", highlight=False)
+
+
 @app.command("report", cls=SpanishCommand)
 def report_cmd(
     run_id: str = typer.Option(..., "--run-id", help="Carpeta de runs/ con resultados reales (results/, no results_FAKE/)."),

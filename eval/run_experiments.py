@@ -383,6 +383,43 @@ def provenance_columns(meta: dict) -> dict:
             "escenarios_omitidos": format_omitted(meta.get("escenarios_omitidos") or [])}
 
 
+def results_markdown(meta: dict, tables: dict, manual: dict, sheets: tuple[str, str]) -> str:
+    """results.md from the run metadata, the tables (without the provenance columns) and the manual review;
+    shared by `aem eval` and `aem integrate-review`."""
+    run_id = meta["run_id"]
+    prov = provenance_columns(meta)
+    md = []
+    if meta["fake"]:
+        md += [f"# FAKE — resultados con un LLM simulado, no válidos para la tesis (corrida `{run_id}`)\n",
+               f"> Origen de las respuestas: {prov['llm_source']}. Estas tablas no provienen de la API real de "
+               "Gemini y no deben citarse.\n"]
+    md.append(f"# Resultados de la evaluación — corrida `{run_id}`\n")
+    if meta.get("partial"):
+        md.append(f"**{PARTIAL_LINE}** — ESCENARIOS OMITIDOS: {prov['escenarios_omitidos']}\n")
+    md += [
+          f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
+          f"{meta['replicates']} corridas por escenario × versión · modo demo: {'sí' if meta['demo'] else 'no'}",
+          f"- Media y desviación estándar muestral (n−1). «{NO_DATA}»: no hay corridas o el valor no está definido.",
+          "- Cada media se informa dos veces (D-67): `_fail0` cuenta cada corrida fallida (`failed_runs`) como 0 y "
+          "`_valid` usa solo las corridas válidas. Indicadores 1 y 3 (modelo): media principal: `_fail0`; `_valid` "
+          "es secundaria. Indicador 5: ambas con el mismo peso; contar una falla como 0 violaciones favorece al "
+          "modelo.",
+          f"- Origen: {prov['llm_source']} · versión del modelo: {prov['model_version']} · fecha: {prov['run_date']} · "
+          f"hash SHA-256 de las plantillas de prompt: {prov['prompt_templates_sha256']}",
+          "- No hay indicador para el paso 3 ni para la revisión global (criterio del analista).\n"]
+    if meta["skipped"]:
+        md.append("Escenarios/versiones sin texto (no evaluados): " + ", ".join(meta["skipped"]) + "\n")
+    stamp = (f"_{prov['llm_source']} · modelo `{prov['model']}` ({prov['model_version']}) · {prov['run_date']} · "
+             f"prompts {prov['prompt_templates_sha256']}_\n")
+    for name in _TITLES:
+        md += [f"## {'FAKE — ' if meta['fake'] else ''}{_TITLES[name]}\n", stamp, md_table(tables[name])]
+        if name in ("indicator4", "indicator5_manual"):
+            md.append(manual_negative_rows_md(manual, name))
+    md.append(f"Hojas de revisión manual: `{sheets[0]}`, `{sheets[1]}` "
+              f"(carpeta `eval/review_sheets/`).\n")
+    return "\n".join(md)
+
+
 def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -> dict[str, Path]:
     pre = output_prefix(meta["fake"])
     results = run_dir / ("results_FAKE" if meta["fake"] else "results")
@@ -413,37 +450,9 @@ def write_results(run_dir: Path, sheets_dir: Path, computed: dict, meta: dict) -
         paths[name] = results / f"{pre}{name}.csv"
         write_table(paths[name], tables[name])
 
-    md = []
-    if meta["fake"]:
-        md += [f"# FAKE — resultados con un LLM simulado, no válidos para la tesis (corrida `{run_id}`)\n",
-               f"> Origen de las respuestas: {prov['llm_source']}. Estas tablas no provienen de la API real de "
-               "Gemini y no deben citarse.\n"]
-    md.append(f"# Resultados de la evaluación — corrida `{run_id}`\n")
-    if meta.get("partial"):
-        md.append(f"**{PARTIAL_LINE}** — ESCENARIOS OMITIDOS: {prov['escenarios_omitidos']}\n")
-    md += [
-          f"- Modelo: `{meta['model']}` · temperatura {meta['temperature']} · ATT&CK {meta['attack_version']} · "
-          f"{meta['replicates']} corridas por escenario × versión · modo demo: {'sí' if meta['demo'] else 'no'}",
-          f"- Media y desviación estándar muestral (n−1). «{NO_DATA}»: no hay corridas o el valor no está definido.",
-          "- Cada media se informa dos veces (D-67): `_fail0` cuenta cada corrida fallida (`failed_runs`) como 0 y "
-          "`_valid` usa solo las corridas válidas. Indicadores 1 y 3 (modelo): media principal: `_fail0`; `_valid` "
-          "es secundaria. Indicador 5: ambas con el mismo peso; contar una falla como 0 violaciones favorece al "
-          "modelo.",
-          f"- Origen: {prov['llm_source']} · versión del modelo: {prov['model_version']} · fecha: {prov['run_date']} · "
-          f"hash SHA-256 de las plantillas de prompt: {prov['prompt_templates_sha256']}",
-          "- No hay indicador para el paso 3 ni para la revisión global (criterio del analista).\n"]
-    if meta["skipped"]:
-        md.append("Escenarios/versiones sin texto (no evaluados): " + ", ".join(meta["skipped"]) + "\n")
-    stamp = (f"_{prov['llm_source']} · modelo `{prov['model']}` ({prov['model_version']}) · {prov['run_date']} · "
-             f"prompts {prov['prompt_templates_sha256']}_\n")
-    for name in _TITLES:
-        md += [f"## {'FAKE — ' if meta['fake'] else ''}{_TITLES[name]}\n", stamp, md_table(computed["tables"][name])]
-        if name in ("indicator4", "indicator5_manual"):
-            md.append(manual_negative_rows_md(manual, name))
-    md.append(f"Hojas de revisión manual: `{paths['indicator4_sheet'].name}`, `{paths['indicator5_sheet'].name}` "
-              f"(carpeta `eval/review_sheets/`).\n")
+    sheets = (paths["indicator4_sheet"].name, paths["indicator5_sheet"].name)
     paths["markdown"] = results / f"{pre}results.md"
-    paths["markdown"].write_text("\n".join(md), encoding="utf-8")
+    paths["markdown"].write_text(results_markdown(meta, computed["tables"], manual, sheets), encoding="utf-8")
     paths["json"] = results / f"{pre}results.json"
     write_json(paths["json"], dict(meta, tables=tables))
     return paths
