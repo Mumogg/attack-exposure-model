@@ -154,6 +154,9 @@ def test_main_run_copy_keeps_everything_else_identical(tmp_path, monkeypatch):
     shutil.copytree(cli.REVIEW_SHEETS_DIR, sheets)
     before = _hashes(run_dir)
     old_md = (run_dir / "results" / "results.md").read_text(encoding="utf-8")
+    from eval.report import build_report
+
+    build_report(run_dir, tmp_path / "docs_before", sheets)
     integrate_review(run_dir, sheets, tmp_path / "docs", allow_incomplete=True)
     after = _hashes(run_dir)
     changed = {p for p in after if before.get(p) != after[p]}
@@ -162,7 +165,7 @@ def test_main_run_copy_keeps_everything_else_identical(tmp_path, monkeypatch):
     new_md = (run_dir / "results" / "results.md").read_text(encoding="utf-8")
     section = lambda md: md.split("## Corridas", 1)[1].split("## Indicador 4", 1)[0]  # runs, indicators 1-3
     assert section(new_md) == section(old_md)
+    # the charts of indicators 1 and 3 come out the same as before the integration (same machine: PNG bytes
+    # depend on the installed fonts)
     for name in ("indicador1_precision.png", "indicador1_exhaustividad.png", "indicador3_persistencia.png"):
-        tracked = cli.RESULTS_DOCS_DIR / MAIN_RUN.name / name
-        if tracked.exists():
-            assert (tmp_path / "docs" / name).read_bytes() == tracked.read_bytes()
+        assert (tmp_path / "docs" / name).read_bytes() == (tmp_path / "docs_before" / name).read_bytes()
