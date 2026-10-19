@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from html.parser import HTMLParser
 
 import pytest
@@ -214,8 +215,11 @@ def test_main_run_page_language_labels_and_axis(tmp_path):
     # the model appears once in the run facts; numbering starts at 1
     assert '<dd><span translate="no">gemini-3.8-flash</span></dd>' in html
     assert re.search(r'<section id="run"[^>]*><details><summary><h2[^>]*><span lang="en">1\. ', html)
-    # frozen file whose YAML data did not change
-    assert "data/org/fictional_org.yaml</code> (<span lang=\"en\">comments only; data identical" in html
+    # frozen file whose YAML data did not change (needs the run's commit: not in a shallow clone)
+    shallow = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "--is-shallow-repository"],
+                             capture_output=True, text=True).stdout.strip() == "true"
+    status = "changed; not verifiable" if shallow else "comments only; data identical"
+    assert f'data/org/fictional_org.yaml</code> (<span lang="en">{status}' in html
 
 
 def test_violation_axis_uses_integers():

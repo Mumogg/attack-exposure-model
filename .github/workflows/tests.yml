@@ -19,6 +19,8 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # provenance compares frozen files with the run's commit
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
@@ -43,6 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # provenance compares frozen files with the run's commit
       - uses: actions/setup-python@v6
         with:
           python-version: "3.14.7"
