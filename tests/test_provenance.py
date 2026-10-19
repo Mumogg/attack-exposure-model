@@ -123,3 +123,23 @@ def test_main_run_provenance_is_reconstructed_and_consistent():
     assert data["prompt_templates_sha256"] == results["prompt_templates_sha256"]
     assert data["python"] == NOT_RECORDED
     assert len(data["code"]["invocations"]) == len(json.loads((MAIN_RUN / "eval_history.json").read_text()))
+
+
+def test_frozen_files_changed_only_in_comments_are_told_apart(old_run):
+    repo, run = old_run
+    data = reconstruct(run, repo)
+    assert provenance.frozen_file_status(data, repo) == []
+    (repo / "data/model_config.yaml").write_text("# header comment\nk: 1  # same value\n", encoding="utf-8")
+    assert provenance.frozen_file_status(data, repo) == [("data/model_config.yaml", "comments_only")]
+    assert "data/model_config.yaml (solo comentarios; datos idénticos)" in dict(summary_lines(data, repo))[
+        "Archivos congelados"]
+    (repo / "data/model_config.yaml").write_text("# header comment\nk: 2\n", encoding="utf-8")
+    assert provenance.frozen_file_status(data, repo) == [("data/model_config.yaml", "data_changed")]
+    assert "datos cambiados" in dict(summary_lines(data, repo))["Archivos congelados"]
+
+
+def test_summary_shows_the_model_once_when_the_api_reports_the_same_name():
+    base = {"reconstructed": False, "code": {"commit": "a" * 40}, "attack": {}}
+    same = provenance.summary(dict(base, model={"name": "m-1", "versions_reported_by_api": ["m-1"]}), REPO_ROOT)
+    other = provenance.summary(dict(base, model={"name": "m-1", "versions_reported_by_api": ["m-1-001"]}), REPO_ROOT)
+    assert same["model"] == "m-1" and other["model"] == "m-1 (m-1-001)"

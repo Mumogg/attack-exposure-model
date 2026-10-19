@@ -236,8 +236,57 @@ def _local(when: str, like: str) -> str:
     return t.astimezone(timezone(off)).isoformat(timespec="seconds")
 
 
-def summary_lines(data: dict) -> list[tuple[str, str]]:
-    """Short block for `aem report` and the HTML page: (label, value)."""
+def _parsed(path: str, content: bytes):
+    """File content as data, so that comments and layout do not count as changes. None if not parseable."""
+    import csv
+    import io
+
+    import yaml
+
+    text = content.decode("utf-8-sig", errors="replace")
+    try:
+        if path.endswith((".yaml", ".yml")):
+            return ("yaml", yaml.safe_load(text))
+        if path.endswith(".json"):
+            return ("json", json.loads(text))
+        if path.endswith(".csv"):
+            return ("csv", list(csv.reader(io.StringIO(text))))
+    except (ValueError, yaml.YAMLError):
+        return None
+    return None
+
+
+def frozen_file_status(data: dict, repo: Path) -> list[tuple[str, str]]:
+    """Frozen files whose current content differs from the run's reference, with a status:
+    «comments_only» (YAML/JSON/CSV data identical), «data_changed», or «not_verifiable» (reference content not
+    in git). Reference: the results commit (reconstructed) or the code commit (recorded by `aem eval`)."""
+    repo = Path(repo)
+    files = data.get("frozen_files_sha256") or {}
+    code = data.get("code") or {}
+    if data.get("reconstructed"):
+        commits = code.get("results_commits") or []
+        ref_commit = commits[0]["commit"] if commits else None
+    else:
+        ref_commit = code.get("commit") if code.get("commit") != NOT_RECORDED else None
+    out = []
+    for path, h in files.items():
+        ref_hash = h.get("at_results_commit") if isinstance(h, dict) else h
+        if ref_hash in (None, NOT_RECORDED, "no existe"):
+            continue
+        current = repo / path
+        if current.exists() and _sha(current.read_bytes()) == ref_hash:
+            continue
+        ref = _git_blob(repo, ref_commit, path) if ref_commit else None
+        if ref is None or _sha(ref) != ref_hash or not current.exists():
+            out.append((path, "not_verifiable" if current.exists() else "data_changed"))
+            continue
+        a, b = _parsed(path, ref), _parsed(path, current.read_bytes())
+        out.append((path, "comments_only" if a is not None and a == b else "data_changed"))
+    return out
+
+
+def summary(data: dict, repo: Path) -> dict:
+    """Language-neutral facts for the short provenance block of `aem report` and the HTML page."""
     code = data.get("code", {})
     if data.get("reconstructed"):
         commits = []
@@ -246,25 +295,69 @@ def summary_lines(data: dict) -> list[tuple[str, str]]:
             if isinstance(head, dict):
                 commits.append(head["commit"][:7])
             commits += [c["commit"][:7] for c in inv.get("code_commits_after_start_until_results_commit", [])]
-        code_text = (f"no registrado; reconstruido de git: {', '.join(dict.fromkeys(commits)) or NOT_RECORDED}")
+        commit, dirty = None, None
+        commits = list(dict.fromkeys(commits))
     else:
+        commit = code.get("commit") if code.get("commit") != NOT_RECORDED else None
         dirty = code.get("uncommitted_changes_in_frozen_files")
-        code_text = f"{str(code.get('commit', NOT_RECORDED))[:12]}" + (
-            f" (con cambios sin commit: {', '.join(dirty)})" if isinstance(dirty, list) and dirty else "")
+        dirty = dirty if isinstance(dirty, list) else None
+        commits = []
     model = data.get("model", {})
+    versions = model.get("versions_reported_by_api")
+    versions = versions if isinstance(versions, list) else None
+    name = model.get("name", NOT_RECORDED)
     attack = data.get("attack", {})
+    matches = attack.get("matches_expected")
     deps = data.get("dependencies")
-    files = data.get("frozen_files_sha256", {})
-    changed = [p for p, h in files.items() if isinstance(h, dict) and h.get("at_results_commit") != h.get("current")]
+    python = data.get("python")
+    return {
+        "reconstructed": bool(data.get("reconstructed")), "commit": commit, "dirty": dirty,
+        "reconstructed_commits": commits,
+        # shown once when the configured name and the one reported by the API are the same
+        "model": name if versions in (None, [], [name]) else f"{name} ({'; '.join(versions)})",
+        "model_versions_recorded": versions is not None,
+        "attack_version": attack.get("version", NOT_RECORDED),
+        "attack_sha": str(attack.get("sha256", NOT_RECORDED))[:16],
+        "attack_matches": matches if isinstance(matches, bool) else None,
+        "python": python if python and python != NOT_RECORDED else None,
+        "dependencies": deps if isinstance(deps, dict) else None,
+        "frozen_total": len(data.get("frozen_files_sha256") or {}),
+        "frozen_changes": frozen_file_status(data, repo),
+    }
+
+
+FROZEN_STATUS_ES = {"comments_only": "solo comentarios; datos idénticos", "data_changed": "datos cambiados",
+                    "not_verifiable": "cambió; no verificable"}
+FROZEN_STATUS_EN = {"comments_only": "comments only; data identical", "data_changed": "data changed",
+                    "not_verifiable": "changed; not verifiable"}
+
+
+def summary_lines(data: dict, repo: Path | None = None) -> list[tuple[str, str]]:
+    """Short block for `aem report` (Spanish): (label, value)."""
+    from aem.config import REPO_ROOT
+
+    s = summary(data, repo or REPO_ROOT)
+    if s["reconstructed"]:
+        code_text = f"no registrado; reconstruido de git: {', '.join(s['reconstructed_commits']) or NOT_RECORDED}"
+    else:
+        code_text = (s["commit"] or NOT_RECORDED)[:12] + (
+            f" (con cambios sin commit: {', '.join(s['dirty'])})" if s["dirty"] else "")
+    matches = {True: "sí", False: "no", None: NOT_RECORDED}[s["attack_matches"]]
+    files = NOT_RECORDED
+    if s["frozen_total"]:
+        files = f"{s['frozen_total']} con SHA-256"
+        if s["frozen_changes"]:
+            files += "; cambiaron después de la corrida: " + ", ".join(
+                f"{p} ({FROZEN_STATUS_ES[st]})" for p, st in s["frozen_changes"])
+        else:
+            files += "; ninguno cambió"
     return [
-        ("Procedencia", "reconstruida (`aem provenance`)" if data.get("reconstructed") else "registrada por `aem eval`"),
+        ("Procedencia", "reconstruida (`aem provenance`)" if s["reconstructed"] else "registrada por `aem eval`"),
         ("Código", code_text),
-        ("Modelo", f"{model.get('name', NOT_RECORDED)} ({'; '.join(model.get('versions_reported_by_api') or []) if isinstance(model.get('versions_reported_by_api'), list) else NOT_RECORDED})"),
-        ("ATT&CK", f"{attack.get('version', NOT_RECORDED)} · SHA-256 {str(attack.get('sha256', NOT_RECORDED))[:16]}… "
-                   f"(coincide con el esperado: {attack.get('matches_expected', NOT_RECORDED)})"),
-        ("Python", str(data.get("python", NOT_RECORDED))),
-        ("Dependencias", ", ".join(f"{k} {v}" for k, v in deps.items()) if isinstance(deps, dict) else str(deps)),
-        ("Archivos congelados", (f"{len(files)} con SHA-256" + (f"; cambiaron después del commit de resultados: "
-                                                                 f"{', '.join(changed)}" if changed else ""))
-         if files else NOT_RECORDED),
+        ("Modelo", s["model"]),
+        ("ATT&CK", f"{s['attack_version']} · SHA-256 {s['attack_sha']}… (coincide con el esperado: {matches})"),
+        ("Python", s["python"] or NOT_RECORDED),
+        ("Dependencias", ", ".join(f"{k} {v}" for k, v in s["dependencies"].items()) if s["dependencies"]
+         else NOT_RECORDED),
+        ("Archivos congelados", files),
     ]
