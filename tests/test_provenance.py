@@ -13,6 +13,7 @@ from typer.testing import CliRunner
 from aem import cli
 from aem.config import REPO_ROOT, RUNS_DIR
 from eval import provenance
+from eval.integrate_review import STATUS as INTEGRATION_STATUS
 from eval.provenance import FROZEN_FILES, NOT_RECORDED, reconstruct, summary_lines
 from eval.run_experiments import run_experiment
 from test_pipeline import RoutingTransport
@@ -122,7 +123,10 @@ def test_main_run_provenance_is_reconstructed_and_consistent():
     assert data["model"]["name"] == results["model"]
     assert data["prompt_templates_sha256"] == results["prompt_templates_sha256"]
     assert data["python"] == NOT_RECORDED
-    assert len(data["code"]["invocations"]) == len(json.loads((MAIN_RUN / "eval_history.json").read_text()))
+    # integrate-review appends to eval_history.json but is not an `aem eval` invocation
+    history = json.loads((MAIN_RUN / "eval_history.json").read_text(encoding="utf-8"))
+    evals = [e for e in history if e.get("status") != INTEGRATION_STATUS]
+    assert len(data["code"]["invocations"]) == len(evals)
 
 
 def test_frozen_files_changed_only_in_comments_are_told_apart(old_run):
