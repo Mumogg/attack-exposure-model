@@ -235,6 +235,8 @@ aem sensitivity --run-id 2026-10-18-main
 
 Están en `eval/review_sheets/`; la parte de Akira, en `eval/review_sheets/private/`. Ábralas con LibreOffice o Excel, llene **solo** las columnas vacías, no cambie los nombres de columna y guarde como CSV UTF-8.
 
+> **No ordene ni filtre las hojas.** Llénelas en el orden en que vienen, fila por fila. Ordenar en LibreOffice o Excel puede mover una sola columna (la seleccionada) y dejar cada `summary` junto a otra técnica; un filtro puede ocultar o perder filas. La validación compara cada fila con el manifiesto y rechaza la hoja: `hoja: las filas no coinciden con el original (columnas movidas: …). No ordene ni filtre la hoja: …`. Si pasó, restaure la hoja con `git checkout -- eval/review_sheets/<hoja>` (la privada, desde su copia) y vuelva a llenarla; guarde antes, fuera del repositorio, lo que ya haya llenado.
+
 **Indicador 4: `<run-id>_indicator4_summaries.csv`.** Una fila por técnica resumida.
 - Compare `summary` con `source_description` (la descripción de ATT&CK de la que salió).
 - `ok (si/no)`: `si` si el resumen es fiel. Eso significa que no agrega nada que no esté en la descripción, no omite lo esencial y no valora urgencia ni recomienda acciones.
@@ -250,6 +252,7 @@ Las celdas `si`/`no` aceptan mayúsculas y tildes («Sí», «SÍ», «No» vale
 **Validar las hojas: `aem review-check --run-id <run-id>`** (sin API). Por cada hoja informa:
 - «revisión completa», «revisión incompleta: N de M filas» o «revisión con errores»;
 - cada error con su fila y su motivo: valor distinto de si/no, `no` (ind. 4) o `si` (ind. 5) sin observación, o una columna generada que cambió (p. ej. `fila 12 (T1059): columna «summary» modificada respecto de la hoja generada`);
+- un solo error para toda la hoja si se ordenó o filtró: celdas generadas que no coinciden con su fila del manifiesto pero sí con otra fila (filas o una columna movidas), o una cantidad de filas distinta;
 - las filas que siguen vacías.
 
 Termina con código 1 mientras alguna hoja no esté completa y sin errores. Ningún porcentaje se informa antes de eso.

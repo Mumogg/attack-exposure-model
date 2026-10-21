@@ -106,6 +106,51 @@ def test_added_column_or_row_is_an_error(sheet4):
     assert rv.status == "con errores" and rv.errors[0][0] == 0 and "columnas" in rv.errors[0][2]
 
 
+def _rewrite(path, transform):
+    columns, rows = review.read_sheet(path)
+    review._write_csv(path, columns, transform(rows))
+
+
+def test_sorted_rows_are_one_sheet_error_not_a_cell_per_column(sheet4):
+    """Sorting the whole sheet in a spreadsheet keeps every row intact but moves it: rejected as a whole."""
+    _fill(sheet4, {0: ("si", ""), 1: ("si", ""), 2: ("si", "")})
+    _rewrite(sheet4, lambda rows: rows[::-1])
+    rv = review.validate_sheet(sheet4, IND4)
+    assert rv.status == "con errores" and rv.valid == 1  # the middle row did not move
+    assert len(rv.errors) == 1
+    row, key, reason = rv.errors[0]
+    assert row == 0 and reason.startswith(review.ROWS_MISMATCH) and review.ROWS_HINT in reason
+    assert "technique_id" in reason and "summary" in reason and "2 de 3 filas" in reason
+
+
+def test_one_sorted_column_is_detected(sheet4):
+    """Sorting only the selected column (the other columns stay): each summary lands next to another technique."""
+    def swap_summaries(rows):
+        rows[0]["summary"], rows[1]["summary"] = rows[1]["summary"], rows[0]["summary"]
+        return rows
+    _rewrite(sheet4, swap_summaries)
+    rv = review.validate_sheet(sheet4, IND4)
+    assert [(row, reason) for row, _, reason in rv.errors] == [
+        (0, f"{review.ROWS_MISMATCH} (columnas movidas: summary; 2 de 3 filas afectadas). {review.ROWS_HINT}")]
+
+
+def test_moved_rows_and_an_edited_cell_are_both_reported(sheet4):
+    def edit_and_swap(rows):
+        rows[0], rows[1] = rows[1], rows[0]
+        rows[2]["summary"] = "Resumen corregido."
+        return rows
+    _rewrite(sheet4, edit_and_swap)
+    errors = review.validate_sheet(sheet4, IND4).errors
+    assert errors[0][0] == 0 and errors[0][2].startswith(review.ROWS_MISMATCH)
+    assert errors[1:] == [(3, "T1002", "columna «summary» modificada respecto de la hoja generada")]
+
+
+def test_filtered_sheet_with_fewer_rows_says_not_to_filter(sheet4):
+    _rewrite(sheet4, lambda rows: rows[:2])
+    reason = review.validate_sheet(sheet4, IND4).errors[0][2]
+    assert "se agregaron o quitaron filas" in reason and review.ROWS_HINT in reason
+
+
 @pytest.mark.parametrize("value", ["Si", "SÍ", "sí", " si ", "NO", "No"])
 def test_verdicts_ignore_case_and_accents(value):
     assert review.normalize_verdict(value) in ("si", "no")
@@ -220,6 +265,17 @@ def test_review_check_reports_rows_and_exit_code(tmp_path, monkeypatch, sheet4):
     assert "filas sin valor en «ok (si/no)»: 3" in res.output
     assert "revisión incompleta: 0 de 2 filas" in res.output
     assert "%" not in res.output
+
+
+def test_review_check_rejects_a_sorted_sheet(tmp_path, monkeypatch, sheet4):
+    monkeypatch.setattr("aem.cli.REVIEW_SHEETS_DIR", tmp_path)
+    _fill(sheet4, {0: ("si", ""), 1: ("si", ""), 2: ("si", "")})
+    _ind5_sheets(tmp_path)
+    _rewrite(sheet4, lambda rows: sorted(rows, key=lambda r: r["summary"], reverse=True))
+    res = CliRunner().invoke(cli.app, ["review-check", "--run-id", "r1"], env={"COLUMNS": "300"})
+    assert res.exit_code == 1
+    assert f"hoja: {review.ROWS_MISMATCH}" in res.output and review.ROWS_HINT in res.output
+    assert "modificada respecto" not in res.output
 
 
 def test_review_check_passes_on_complete_sheets(tmp_path, monkeypatch, sheet4):

@@ -26,6 +26,9 @@ from aem.output import write_json
 
 NO_DATA = "sin dato disponible"
 OBSERVATION = "observación"
+ROWS_MISMATCH = "las filas no coinciden con el original"
+ROWS_HINT = ("No ordene ni filtre la hoja: restáurela (`git checkout -- <hoja>`) y llénela en el orden en que se "
+             "generó.")
 
 
 @dataclass(frozen=True)
@@ -200,6 +203,20 @@ def _row_key(row: dict) -> str:
     return _cell(row.get("technique_id")) or "-"
 
 
+def _moved_cells(rows: list[dict], manifest: dict) -> set[tuple[int, str]]:
+    """(row number, column) of generated cells that differ from their own row in the manifest but equal that
+    column in another row: the sheet (or one column of it) was sorted or filtered, not edited."""
+    moved = set()
+    for c in manifest["generated_columns"]:
+        column = [r["cells"][c] for r in manifest["rows"]]
+        others = set(column)
+        for i, row in enumerate(rows, 1):
+            h = _sha(_cell(row.get(c)))[:16]
+            if h != column[i - 1] and h in others:
+                moved.add((i, c))
+    return moved
+
+
 def validate_sheet(path: Path, kind: SheetKind) -> SheetReview:
     path = Path(path)
     review = SheetReview(kind=kind, path=path, exists=path.exists())
@@ -218,8 +235,13 @@ def validate_sheet(path: Path, kind: SheetKind) -> SheetReview:
         manifest = None
     elif len(rows) != len(manifest["rows"]):
         review.problems.append((0, "-", f"la hoja tiene {len(rows)} filas y la generada tenía "
-                                        f"{len(manifest['rows'])} (se agregaron o quitaron filas)"))
+                                        f"{len(manifest['rows'])} (se agregaron o quitaron filas). {ROWS_HINT}"))
         manifest = None
+    moved = _moved_cells(rows, manifest) if manifest is not None else set()
+    if moved:
+        columns_moved = [c for c in manifest["generated_columns"] if any(m[1] == c for m in moved)]
+        review.problems.append((0, "-", f"{ROWS_MISMATCH} (columnas movidas: {', '.join(columns_moved)}; "
+                                        f"{len({m[0] for m in moved})} de {len(rows)} filas afectadas). {ROWS_HINT}"))
     for i, row in enumerate(rows, 1):
         key = _row_key(row)
         altered = []
@@ -227,7 +249,8 @@ def validate_sheet(path: Path, kind: SheetKind) -> SheetReview:
             expected = manifest["rows"][i - 1]["cells"]
             altered = [c for c in manifest["generated_columns"] if _sha(_cell(row.get(c)))[:16] != expected[c]]
             for c in altered:
-                review.problems.append((i, key, f"columna «{c}» modificada respecto de la hoja generada"))
+                if (i, c) not in moved:  # moved cells are already reported once for the whole sheet
+                    review.problems.append((i, key, f"columna «{c}» modificada respecto de la hoja generada"))
         verdict = normalize_verdict(row.get(kind.verdict))
         row = dict(row, _verdict=verdict)
         review.rows.append(row)
