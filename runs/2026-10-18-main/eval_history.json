@@ -94,5 +94,40 @@
       "retries": 0,
       "errors_total": 0
     }
+  },
+  {
+    "started": "2026-10-21T23:57:12+00:00",
+    "finished": "2026-10-21T23:57:14+00:00",
+    "status": "integración de revisión humana",
+    "api_calls": 0,
+    "review": {
+      "indicator4": "revisión completa",
+      "indicator5": "revisión completa"
+    },
+    "sheets": [
+      {
+        "file": "2026-10-18-main_indicator4_summaries.csv",
+        "sha256": "7b316ff98160a146fa0add5853d996ed45fb69aee54d9e2bd2150e9d94d47d21"
+      },
+      {
+        "file": "2026-10-18-main_indicator5_sample.csv",
+        "sha256": "3105d089bab2c8d85ab35a6578e2dba15e5badaadfc8df906c216107f7c8bfe5"
+      },
+      {
+        "file": "2026-10-18-main_indicator5_sample_private.csv",
+        "sha256": "5d682f0928941c0bf66e1faac41b85b2eb9f3b827c53f20d7276a13348cba6c7"
+      },
+      {
+        "file": "2026-10-18-main_indicator5_private_summary.json",
+        "sha256": "280ef3387b1f162ad570a1069b84be731094e6307369f75875eed6c69a14ea3e"
+      }
+    ],
+    "rewritten": [
+      "results/indicator4.csv",
+      "results/indicator5_manual.csv",
+      "results/results.md",
+      "results/results.json",
+      "resumen.md"
+    ]
   }
 ]

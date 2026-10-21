@@ -9,6 +9,18 @@ Generado con `aem report` a partir de `runs/2026-10-18-main/results/results.json
 - Origen de las respuestas: gemini-api · temperatura 0 · ATT&CK 19.2 · 5 corridas por escenario × versión
 - Porcentajes en %. «sin dato disponible»: el archivo no tiene el valor (sin corridas o valor no definido).
 
+## Procedencia
+
+Leída de `results/provenance.json`.
+
+- Procedencia: reconstruida (`aem provenance`)
+- Código: no registrado; reconstruido de git: 58803fc, 37e0e27, 1a862fa, fda24fc, a5302a5, 2996515
+- Modelo: gemini-3.8-flash
+- ATT&CK: 19.2 · SHA-256 dc1639caa5501d72… (coincide con el esperado: sí)
+- Python: no registrado
+- Dependencias: no registrado
+- Archivos congelados: 13 con SHA-256; cambiaron después de la corrida: data/org/fictional_org.yaml (solo comentarios; datos idénticos)
+
 ## Corridas
 
 | Escenario | Versión | Corridas totales | Corridas válidas | Corridas fallidas | Corridas vacías |
@@ -119,7 +131,7 @@ El gráfico muestra solo el enfoque del modelo; la fila del enfoque tradicional 
 
 | Técnicas resumidas | Fallos del LLM | Chequeo automático ok | Chequeo automático ok (%) | Revisión manual |
 |---|---|---|---|---|
-| 71 | 0 | 71 | 100.0 | pendiente (hoja de revisión) |
+| 71 | 0 | 71 | 100.0 | revisión completa |
 
 ## Indicador 5 — Cumplimiento de los límites (violaciones)
 
@@ -138,6 +150,32 @@ El gráfico muestra solo el enfoque del modelo; la fila del enfoque tradicional 
 | akira | anon | paso 1 (extracción) | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 | 0 | 5 | 5 | 0 |
 | todos | - | paso 4 (resúmenes, uno por técnica) | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 | 0 | 71 | 71 | ver indicador 4 (llm_failures) |
 
+## Indicadores 4 y 5 — Revisión manual (hojas de revisión)
+
+### Indicador 4 — Revisión manual de los resúmenes
+
+Estado: revisión completa. Resúmenes fieles («si»): 71 de 71 (100.0 %).
+
+Resúmenes marcados «no» en la revisión manual (con su observación):
+
+_ninguno_
+
+### Indicador 5 — Revisión manual de la muestra
+
+Cifra separada del conteo automático de violaciones (tabla anterior); no se suman.
+
+| scenario | sample_rows | reviewed | with_valuation | with_valuation_pct | manual_review |
+|---|---|---|---|---|---|
+| gunra | 5 | 5 | 0 | 0.0 | revisión completa |
+| interlock | 6 | 6 | 0 | 0.0 | revisión completa |
+| todos (resúmenes del paso 4) | 4 | 4 | 0 | 0.0 | revisión completa |
+| akira | 15 | 15 | 0 | 0.0 | revisión completa |
+| total | 30 | 30 | 0 | 0.0 | revisión completa |
+
+Textos marcados «si» (contienen valoración) en la muestra pública, con su observación. Las filas de la hoja privada solo se cuentan en la tabla:
+
+_ninguno_
+
 ## Escenarios omitidos
 
 - escenarios_omitidos: ninguno
@@ -149,7 +187,6 @@ El gráfico muestra solo el enfoque del modelo; la fila del enfoque tradicional 
 - Indicador 5: 4 celda(s) con «sin dato disponible» — `violations_mean_valid` (1), `violations_sd_valid` (1), `violations_mean_fail0` (1), `violations_sd_fail0` (1).
 - Columna `data_sources` de las salidas por corrida: 0 de 879 filas con «sin dato disponible» (45 archivos `*_exposure.csv`).
 - Columna `prevalence` de las salidas por corrida: 879 de 879 filas con «sin dato disponible» (45 archivos `*_exposure.csv`).
-- Revisión manual de los indicadores 4 y 5: no está en `results.json`; ver las hojas en `eval/review_sheets/`.
 
 ## Lo que estos números permiten y no permiten afirmar
 
@@ -162,4 +199,4 @@ El gráfico muestra solo el enfoque del modelo; la fila del enfoque tradicional 
 - La razón `mut/orig` o `anon/orig` no muestra los niveles absolutos: las medias absolutas están en la tabla del indicador 3.
 - La desviación estándar es muestral (n−1) sobre las corridas de cada escenario × versión; con menos de 2 valores figura «sin dato disponible».
 - Los números describen estos escenarios, este modelo (versión y fecha indicadas arriba) y estas plantillas de prompt. No describen otros reportes, otros modelos ni otras versiones del mismo modelo.
-- No hay indicador para el paso 3 ni para la revisión global (criterio del analista). Los indicadores 4 y 5 tienen además una revisión manual, cuyo resultado no está en este resumen.
+- No hay indicador para el paso 3 ni para la revisión global (criterio del analista). Los indicadores 4 y 5 tienen además una revisión manual (hojas de `eval/review_sheets/`); mientras una hoja no esté completa y sin errores, no se informa ningún porcentaje.

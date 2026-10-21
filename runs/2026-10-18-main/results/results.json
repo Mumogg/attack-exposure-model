@@ -7024,7 +7024,11 @@
         "llm_failures": 0,
         "auto_check_ok": 71,
         "auto_check_ok_pct": 100.0,
-        "manual_review": "pendiente (hoja de revisión)"
+        "manual_review": "revisión completa",
+        "manual_reviewed": 71,
+        "manual_total": 71,
+        "manual_ok": 71,
+        "manual_ok_pct": 100.0
       }
     ],
     "indicator5": [
@@ -7247,6 +7251,83 @@
         "violations_sd_fail0": "sin dato disponible",
         "extra_fields": 0,
         "evaluative_text": 0
+      }
+    ],
+    "indicator5_manual": [
+      {
+        "llm_source": "gemini-api",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "run_date": "2026-10-18",
+        "prompt_templates_sha256": "extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+        "resultado_parcial": "no",
+        "escenarios_omitidos": "ninguno",
+        "scenario": "gunra",
+        "sample_rows": 5,
+        "reviewed": 5,
+        "with_valuation": 0,
+        "with_valuation_pct": 0.0,
+        "manual_review": "revisión completa"
+      },
+      {
+        "llm_source": "gemini-api",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "run_date": "2026-10-18",
+        "prompt_templates_sha256": "extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+        "resultado_parcial": "no",
+        "escenarios_omitidos": "ninguno",
+        "scenario": "interlock",
+        "sample_rows": 6,
+        "reviewed": 6,
+        "with_valuation": 0,
+        "with_valuation_pct": 0.0,
+        "manual_review": "revisión completa"
+      },
+      {
+        "llm_source": "gemini-api",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "run_date": "2026-10-18",
+        "prompt_templates_sha256": "extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+        "resultado_parcial": "no",
+        "escenarios_omitidos": "ninguno",
+        "scenario": "todos (resúmenes del paso 4)",
+        "sample_rows": 4,
+        "reviewed": 4,
+        "with_valuation": 0,
+        "with_valuation_pct": 0.0,
+        "manual_review": "revisión completa"
+      },
+      {
+        "llm_source": "gemini-api",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "run_date": "2026-10-18",
+        "prompt_templates_sha256": "extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+        "resultado_parcial": "no",
+        "escenarios_omitidos": "ninguno",
+        "scenario": "akira",
+        "sample_rows": 15,
+        "reviewed": 15,
+        "with_valuation": 0,
+        "with_valuation_pct": 0.0,
+        "manual_review": "revisión completa"
+      },
+      {
+        "llm_source": "gemini-api",
+        "model": "gemini-3.8-flash",
+        "model_version": "gemini-3.8-flash",
+        "run_date": "2026-10-18",
+        "prompt_templates_sha256": "extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b",
+        "resultado_parcial": "no",
+        "escenarios_omitidos": "ninguno",
+        "scenario": "total",
+        "sample_rows": 30,
+        "reviewed": 30,
+        "with_valuation": 0,
+        "with_valuation_pct": 0.0,
+        "manual_review": "revisión completa"
       }
     ]
   }

@@ -70,13 +70,17 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | akira | modelo | 25 | orig 0, mut 0, anon 0 | 38.4 | 3.58 | 38.4 | 3.58 | 36.0 | 6.32 | 36.0 | 6.32 | 40.0 | 5.66 | 40.0 | 5.66 | 0.9375 | 0.9375 | 1.0417 | 1.0417 |  |
 | akira | tradicional | 38 | no aplica (sin LLM) | 100.0 | determinístico | 100.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | determinístico | 0.0 | 0.0 | 0.0 | 0.0 | orig 22, mut 0, anon 0 |
 
-## Indicador 4 — Fidelidad de los resúmenes (chequeo automático; la revisión manual está en la hoja)
+## Indicador 4 — Fidelidad de los resúmenes (chequeo automático y revisión manual de la hoja)
 
 _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · prompts extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b_
 
-| techniques_summarized | llm_failures | auto_check_ok | auto_check_ok_pct | manual_review |
-|---|---|---|---|---|
-| 71 | 0 | 71 | 100.0 | pendiente (hoja de revisión) |
+| techniques_summarized | llm_failures | auto_check_ok | auto_check_ok_pct | manual_review | manual_reviewed | manual_total | manual_ok | manual_ok_pct |
+|---|---|---|---|---|---|---|---|---|
+| 71 | 0 | 71 | 100.0 | revisión completa | 71 | 71 | 71 | 100.0 |
+
+Resúmenes marcados «no» en la revisión manual (con su observación):
+
+_ninguno_
 
 ## Indicador 5 — Cumplimiento de los límites (violaciones; `_fail0` y `_valid` con el mismo peso. Aviso: contar una corrida fallida como 0 violaciones favorece al modelo)
 
@@ -94,6 +98,22 @@ _gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · pro
 | akira | mut | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
 | akira | anon | paso 1 (extracción) | 5 | 5 | 0 | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0 | 0 |
 | todos | - | paso 4 (resúmenes, uno por técnica) | 71 | 71 | ver indicador 4 (llm_failures) | 0 | sin dato disponible | sin dato disponible | sin dato disponible | sin dato disponible | 0 | 0 |
+
+## Indicador 5 — Revisión manual de la muestra (textos con valoración; cifra separada del conteo automático de arriba)
+
+_gemini-api · modelo `gemini-3.8-flash` (gemini-3.8-flash) · 2026-10-18 · prompts extract_v1.txt=950aafbfbcae093c37aa822069fbc6adae83b13631344bcd9603363c9acb6ec3; summary_v1.txt=8f199eae921a1064b44f197842a26489edd0ca4b36c2710f514fd668500cea1b_
+
+| scenario | sample_rows | reviewed | with_valuation | with_valuation_pct | manual_review |
+|---|---|---|---|---|---|
+| gunra | 5 | 5 | 0 | 0.0 | revisión completa |
+| interlock | 6 | 6 | 0 | 0.0 | revisión completa |
+| todos (resúmenes del paso 4) | 4 | 4 | 0 | 0.0 | revisión completa |
+| akira | 15 | 15 | 0 | 0.0 | revisión completa |
+| total | 30 | 30 | 0 | 0.0 | revisión completa |
+
+Textos marcados «si» (contienen valoración) en la muestra pública, con su observación. Las filas de la hoja privada solo se cuentan en la tabla:
+
+_ninguno_
 
 ## Anexo — Indicador 1: técnicas omitidas y erróneas (en cuántas corridas)
 

@@ -1,14 +1,14 @@
 {
   "sheet": "2026-10-18-main_indicator5_sample_private.csv",
-  "status": "incompleta",
-  "status_text": "revisión incompleta: 0 de 15 filas",
+  "status": "completa",
+  "status_text": "revisión completa",
   "total": 15,
-  "valid": 0,
+  "valid": 15,
   "with_valuation": 0,
   "by_scenario": {
     "akira": {
       "total": 15,
-      "reviewed": 0,
+      "reviewed": 15,
       "with_valuation": 0
     }
   }
