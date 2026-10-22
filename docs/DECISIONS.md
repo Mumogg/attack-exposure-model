@@ -270,3 +270,10 @@ Pedida por Sebas (2026-10-18) al colocar el texto de Akira. Completa la lista pr
 - No se repite el enfoque tradicional, que no depende de estos parámetros (D-62). El paso 3 se informa como conteo de acciones, y de cuántas cambian respecto de la configuración actual: no tiene indicador.
 - En un clon sin `private/`, Akira solo muestra el número de brechas (sus salidas por corrida no están).
 
+
+### D-78. Prevalencia de Red Canary como contexto, fuera del experimento — **CONFIRMADA (2026-10-21, decisión de Sebas)**
+La plantilla `data/prevalence/red_canary_2026.csv`, que lee el paso 4, queda vacía como se congeló (RUNBOOK §j): llenarla cambiaría las salidas del pipeline y exigiría un run-id nuevo. Los rankings reales van en `data/prevalence/context/`, que ningún código lee (test), y se usan solo en la discusión.
+- **Fuente verificada (2026-10-21):** `redcanaryco/public-research`, `technique_prevalence/`, commit `9542012a`. Trae solo `ranking_2019` y `ranking_2020` (ediciones del *Threat Detection Report*), 614 registros, 121 con algún puesto. Licencia MIT: el aviso acompaña a la tabla.
+- **IDs:** se guardan los originales (ATT&CK anterior a las subtécnicas) y, aparte, el ID vigente en v19.2 según el bundle: el mismo (56), el reemplazo `revoked-by` (57) o `sin dato` (8, obsoletos o inexistentes).
+- **Nombre del archivo:** `red_canary_2019_2020.csv`, por los años de edición que trae la fuente; no se llama 2026.
+- **Top 10 de 2026** (datos de 2025): archivo aparte, sin mezclar, solo puesto, ID y nombre (la página no tiene licencia abierta). La página escribe «T1059:003»; se usa `T1059.003` y se anota.

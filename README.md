@@ -189,7 +189,7 @@ There is no indicator for step 3 or for the global review: they are the analyst'
 │   ├── org/              fictional organization (draft) and generated known IoCs
 │   ├── reports/          CISA advisories (text, stripped, mut variant, diff)
 │   ├── reference_mappings/  reference techniques per scenario
-│   ├── prevalence/       Red Canary prevalence template (filled in by Sebas)
+│   ├── prevalence/       Red Canary prevalence template (empty, frozen) and context/ tables
 │   ├── scenarios.yaml  ssvc_tree.yaml  model_config.yaml  boundary_patterns.yaml
 ├── runs/                 LLM responses (cache) and run results
 ├── docs/                 PLAN, DECISIONS, report_preparation, RESUMEN_PARA_TESIS, lab_notes
@@ -201,7 +201,7 @@ There is no indicator for step 3 or for the global review: they are the analyst'
 - **MITRE ATT&CK Enterprise v19.2** (`enterprise-attack-19.2.json`, https://github.com/mitre-attack/attack-stix-data). Not versioned; `aem fetch-data` downloads it and verifies its SHA-256.
 - **CISA advisories** #StopRansomware **AA26-222A** (Gunra, 10/08/2026) and **AA25-203A** (Interlock, 22/07/2025). They are U.S. government documents and **are included** in the repository (converted text and version without the ATT&CK mapping).
 - **The DFIR Report**, «From Bing search to ransomware: BumbleBee and AdaptixC2 deliver Akira» (29/06/2026). **Not included**: it is copyrighted. The repository contains only the link, the instructions to place the text (`docs/report_preparation.md`) and the reference mapping (technique IDs and names only).
-- **Red Canary (2026), *2026 Threat Detection Report***: the template `data/prevalence/red_canary_2026.csv` is empty until Sebas fills it in; meanwhile, prevalence reads `sin dato disponible`.
+- **Red Canary prevalence**: the template `data/prevalence/red_canary_2026.csv`, read by step 4, stayed empty when the experiment was frozen, so the `prevalence` column of the experiment reads `sin dato disponible`. The real rankings are in `data/prevalence/context/` and are used **only as context for the discussion**; no code reads them: the 2019 and 2020 *Threat Detection Report* editions from Red Canary's public repository (`redcanaryco/public-research`, MIT license, 121 ranked techniques, with their ATT&CK v19.2 ID) and the 2026 report's top 10 (2025 data). They are published rankings, not rates (`data/prevalence/context/README.md`).
 - The organization `data/org/fictional_org.yaml` is **fictional**.
 
 Before giving it to the LLM, the ATT&CK mapping section and **every** technique or tactic **ID** in the body are removed from each report; a test fails if any remains (`docs/report_preparation.md`).

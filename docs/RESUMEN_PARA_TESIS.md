@@ -205,7 +205,7 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 8. **Resúmenes una vez por técnica:** los indicadores 4 y 5 los evalúan una vez, no cinco; el chequeo automático de fidelidad es aproximado y la revisión manual es la medida principal.
 9. **Lista de patrones evaluativos** finita (español e inglés); se complementa con revisión manual de una muestra.
 10. **Fuentes de datos (D-03):** en v19 se derivan de las estrategias de detección; no se cruzan automáticamente con las fuentes declaradas en el YAML.
-11. **Prevalencia:** la plantilla de Red Canary 2026 está vacía hasta que Sebas la complete; mientras tanto la columna dice `sin dato disponible`.
+11. **Prevalencia:** la plantilla de Red Canary que lee el paso 4 quedó vacía al congelar el experimento, así que la columna dice `sin dato disponible`. Los rankings reales (ediciones 2019 y 2020 del repositorio público de Red Canary, y el top 10 de 2026) están en `data/prevalence/context/` solo como contexto para la discusión (D-78).
 12. **Reproducibilidad de Akira:** su caché no se publica (derechos de autor); quien clone el repositorio reproduce Gunra e Interlock en modo demo, no Akira.
 13. **Límites de Gemini:** los límites por minuto y por día no son cifras fijas y pueden cambiar. La capa gratuita no alcanzaba (20 solicitudes diarias para `gemini-3.8-flash`, informadas por la API el 2026-10-18), así que las corridas usan la capa de pago (D-75). Esto no cambia el modelo, los parámetros ni los prompts.
 14. **Reportes de CISA en línea:** el sitio puede cambiar; el repositorio conserva el texto convertido usado en la tesis.
@@ -218,7 +218,6 @@ En total, 78 técnicas distintas. El boletín de Interlock usaba ATT&CK v17; sus
 ## 6. Pendientes de Sebas antes de la corrida final
 
 - Colocar el texto de Akira (`docs/report_preparation.md`), completar sus nombres en `data/anon_names.yaml` y ejecutar `aem prepare-reports` y `aem make-variants`.
-- Llenar `data/prevalence/red_canary_2026.csv`.
 - `fictional_org.yaml` (con `coverage_design`) quedó confirmada por Sebas el 2026-10-18. Las decisiones de `docs/DECISIONS.md` quedaron todas confirmadas el 2026-10-18.
 - Seguir `docs/RUNBOOK.md`: `aem preflight`, luego `aem eval --run-id <fecha>` con la API key, completar las hojas de `eval/review_sheets/` y subir `runs/` (sin `runs/llm_cache_private/` ni `runs/*/private/`, que git ya ignora).
 - Ejecutar `aem check-repo` antes de subir a GitHub.

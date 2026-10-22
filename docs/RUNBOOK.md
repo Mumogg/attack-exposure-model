@@ -50,7 +50,7 @@ Revise la salida en `runs/prueba/gunra/`:
 2. Abra `gunra_aa26-222a_stripped_exposure.csv` con LibreOffice Calc o Excel. Está en UTF-8 con BOM, así que los acentos se ven bien. Columnas: `technique_id, technique_name, tactics, coverage_validated, criticality, exposure, action, summary, source_link, mitigations, data_sources, groups, prevalence`. Compruebe que:
    - las filas vengan agrupadas por `action` (Act, Attend, Track*, Track);
    - `summary` sean como máximo 3 oraciones en inglés, sin urgencia ni recomendaciones (si el filtro descartó uno, dice `resumen no disponible`);
-   - `prevalence` diga `sin dato disponible` mientras no llene el CSV del paso d.
+   - `prevalence` diga `sin dato disponible` (la plantilla del paso d quedó vacía al congelar el experimento).
 3. En `run_record.json`, `meta.llm_sources` debe ser `["gemini-api"]` y `meta.model_versions` muestra la versión exacta del modelo.
 
 La carpeta `runs/prueba/` se puede borrar o versionar; lo que importa conservar es la caché.
@@ -115,33 +115,19 @@ La carpeta `runs/prueba/` se puede borrar o versionar; lo que importa conservar 
 
    `aem make-variants` reescribe `data/org/known_iocs_generated.yaml` (solo Gunra e Interlock) y los `*_mut*`/`*_anon*` de CISA, que **sí** se versionan. Los IoC conocidos de Akira van a `data/reports/private/known_iocs_private.yaml`, que **no** se versiona (D-76).
 
-## d. CSV de prevalencia (Red Canary 2026)
+## d. Prevalencia (Red Canary)
 
-Archivo: `data/prevalence/red_canary_2026.csv`. Ya tiene la fila de encabezado; agregue una fila por técnica que figure en el *2026 Threat Detection Report* de Red Canary.
+**La plantilla del experimento queda vacía.** `data/prevalence/red_canary_2026.csv` es la que lee el paso 4 (`src/aem/config.py`, `PREVALENCE_FILE`). Quedó vacía al congelar el experimento (§j), así que la columna `prevalence` de las salidas de `2026-10-18-main` dice `sin dato disponible` en todas las filas. No la llene: cambiaría las salidas del pipeline y exigiría un run-id nuevo. La prevalencia no cambia ninguna llamada al LLM ni ningún indicador.
 
-| Columna | Contenido | Reglas |
-|---|---|---|
-| `technique_id` | ID de ATT&CK tal como aparece en el informe | `T####` o `T####.###`; un ID mal formado detiene el programa con un error |
-| `rank` | puesto en la clasificación del informe | entero sin decimales |
-| `source_note` | referencia opcional | p. ej. página o tabla; puede ir vacía |
+**Los rankings reales son solo contexto para la discusión.** Están en `data/prevalence/context/` y ningún código del pipeline, de la evaluación ni del reporte los lee (lo comprueba `tests/test_prevalence_context.py`):
 
-Formato de ejemplo. **EJEMPLO, valores inventados: no copie estas filas.**
+| Archivo | Contenido |
+|---|---|
+| `red_canary_2019_2020.csv` | Repositorio público de Red Canary (`redcanaryco/public-research`, licencia MIT, aviso en `LICENSE-red-canary-public-research.txt`): `ranking_2019` y `ranking_2020`, ediciones 2019 y 2020 del *Threat Detection Report*. Las 121 técnicas con puesto, con los IDs originales (ATT&CK anterior a las subtécnicas) y su ID vigente en v19.2 (`attack_v19_2_id`, de las relaciones `revoked-by` del bundle). `sin dato` donde la fuente no da puesto |
+| `red_canary_2026_top10.csv` | Top 10 del *2026 Threat Detection Report* (datos de 2025), tomado de la página de técnicas de Red Canary. Solo puesto, ID y nombre |
 
-```csv
-technique_id,rank,source_note
-T0000,999,EJEMPLO - valor inventado
-T0000.000,998,EJEMPLO - valor inventado
-```
-
-- Solo técnicas que el informe lista. No complete huecos con la técnica padre: si una técnica no figura, la salida dirá `sin dato disponible`.
-- Si edita en Excel, guarde como **CSV UTF-8 (delimitado por comas)**. LibreOffice: juego de caracteres UTF-8, separador coma.
-- Verifique que se lee bien:
-
-  ```bash
-  python -c "from aem.step4_reference import load_prevalence as l; d=l('data/prevalence/red_canary_2026.csv'); print(len(d), 'técnicas'); print(list(d.items())[:3])"
-  ```
-
-La prevalencia no cambia ninguna llamada al LLM ni ningún indicador; solo aparece en el CSV de `aem run`.
+- Son **puestos en un ranking publicado por el proveedor**, no tasas ni porcentajes. No mezcle las dos tablas: son ediciones, metodologías y versiones de ATT&CK distintas.
+- Fuente, commit, fecha de consulta y SHA-256 de lo descargado: `data/prevalence/context/README.md`. La descarga es manual; no es parte de `aem` ni llama a la API.
 
 ## e. `aem preflight` y `aem eval` completo
 
