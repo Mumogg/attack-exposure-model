@@ -22,6 +22,11 @@ El modelo **no detecta si una organización fue comprometida**. Evalúa **para q
 - La IA hace **solo dos cosas**: (1) extraer y mapear técnicas ATT&CK desde el texto de un reporte; (2) condensar la descripción larga de una técnica en un resumen breve.
 - La IA **nunca** asigna prioridades, urgencia ni recomienda acciones. Esto se garantiza **por arquitectura** (campos de salida fijos, ninguno evaluativo; la priorización ocurre en un paso donde la IA no participa), **no por instrucciones en el prompt**. El prompt además lo prohíbe, pero el diseño no depende de eso.
 
+### Estado actual (2026-10-21)
+- **Corrida final `2026-10-18-main` completa y congelada** (`docs/RUNBOOK.md` §j, commit de referencia `2996515`). Solo se admiten cambios de documentación, CI y correcciones que no cambien ninguna salida. No toques el código de los pasos 1 a 4 ni de la evaluación (`src/aem`, `eval`), los prompts, `data/org`, los escenarios, los textos de los reportes ni los mapeos de referencia: cualquier cambio congelado exige un run-id nuevo.
+- **Revisión humana integrada:** las tres hojas (indicador 4: 71 filas; indicador 5 público: 15; indicador 5 privado de Akira: 15) están completas e integradas con `aem integrate-review` (commit `21c413b`). Las hojas **no se ordenan ni se filtran** en la hoja de cálculo: `aem review-check` lo rechaza. Se guardan como CSV UTF-8.
+- **Prevalencia (D-78):** la plantilla `data/prevalence/red_canary_2026.csv` queda vacía, como se congeló; la columna `prevalence` del experimento dice `sin dato disponible`. Los rankings reales de Red Canary están en `data/prevalence/context/`, solo como contexto para la discusión de la tesis; ningún código del pipeline los lee (test).
+
 ---
 
 ## 1. Dónde crear el proyecto
@@ -31,7 +36,7 @@ Crea el repositorio en una carpeta llamada `attack-exposure-model` **dentro de l
 - Primero localiza ese disco. Detecta el sistema operativo y busca el volumen con etiqueta `info` (Windows: `Get-Volume` o `wmic logicaldisk get name,volumename`; macOS: `/Volumes/info`; Linux: `lsblk -o NAME,LABEL,SIZE,MOUNTPOINT` y `/media`, `/mnt`).
 - Si encuentras la carpeta `github` en ese disco, trabaja ahí. **Si el disco no aparece, hay varios candidatos o la carpeta `github` no existe, detente y pregúntale a Sebas la ruta exacta antes de crear nada.**
 - No crees ni modifiques nada fuera de `…/github/attack-exposure-model/`.
-- Inicializa git en la carpeta (`git init`, rama `main`). No hagas `push` ni crees remotos: Sebas lo sube a GitHub él mismo.
+- El repositorio usa git, rama `main`, publicado en https://github.com/Mumogg/attack-exposure-model. **Haz `push` solo cuando Sebas lo pida explícitamente**, y no crees tags ni releases hasta que él lo pida.
 
 ---
 
@@ -43,7 +48,7 @@ Crea el repositorio en una carpeta llamada `attack-exposure-model` **dentro de l
 4. **Nunca inventes datos.** Esto incluye: técnicas de ATT&CK, IDs, mitigaciones, la prevalencia de Red Canary, o el contenido de los reportes. Si un dato no está disponible, el programa dice `sin dato disponible` o se detiene con un error claro.
 5. **Secretos:** la API key va solo en `.env` (nunca en el código ni en commits). Crea `.env.example` y un `.gitignore` correcto **en el primer commit**.
 6. **Compatible con Windows, macOS y Linux:** usa `pathlib`, no rutas escritas a mano, y evita comandos específicos de un shell en el código.
-7. **Idioma:** identificadores, comentarios y commits en **inglés**; README, textos de la CLI y documentación en **español** (es una tesis costarricense).
+7. **Idioma:** identificadores, comentarios y commits en **inglés**; textos de la CLI y documentación en **español** (es una tesis costarricense). El README principal es `README.md`, en **inglés**; `README.es.md` es la versión en español, con las mismas secciones (lo comprueba `tests/test_readmes.py`). Todo cambio se hace en los dos.
 8. **No ejecutes malware ni código ofensivo.** Este repo solo **analiza texto** y datos estructurados. Atomic Red Team y CALDERA se usan aparte, en un laboratorio aislado, y no forman parte de este repo (deja solo una nota en `docs/lab_notes.md`).
 9. Sé honesto en los README: marca como *adaptación propia, pendiente de validación* todo lo que Sebas todavía no haya confirmado (ver `docs/DECISIONS.md`).
 
@@ -57,7 +62,7 @@ Crea el repositorio en una carpeta llamada `attack-exposure-model` **dentro de l
 - Sin framework web. Interfaz = **línea de comandos**. (Una interfaz web local simple es opcional y va al final, solo si sobra tiempo.)
 
 ### LLM
-- Proveedor: **Google Gemini**, capa gratuita (el plan es gratis; los reportes usados son públicos y la organización es ficticia, así que no hay datos sensibles).
+- Proveedor: **Google Gemini** (los reportes usados son públicos y la organización es ficticia, así que no hay datos sensibles). La capa gratuita no alcanzaba: las corridas finales usaron la capa de pago (D-75), sin cambiar modelo, parámetros ni prompts.
 - Modelo por defecto: **`gemini-3.8-flash`**; alternativa: `gemini-3.5-flash-lite`. Léelo de la variable de entorno `GEMINI_MODEL`. En la primera ejecución verifica con la API que el modelo existe; si no, avisa claramente y sugiere el alternativo.
 - Parámetros: `temperature = 0`, salida JSON con esquema fijo. Registra siempre: ID exacto del modelo, fecha y hora, temperatura, hash SHA-256 del prompt.
 - Respeta los límites de la capa gratuita (aprox. 10 solicitudes por minuto; **no son cifras oficiales**: configúralas en `.env` como `GEMINI_RPM`): pausa entre llamadas y reintentos con espera exponencial ante HTTP 429.
@@ -70,13 +75,13 @@ Crea el repositorio en una carpeta llamada `attack-exposure-model` **dentro de l
 ```
 attack-exposure-model/
 ├── CLAUDE.md                  (este archivo)
-├── README.md                  (español; ver sección 9)
+├── README.md  README.es.md    (inglés, principal; español; ver sección 9)
 ├── LICENSE                    (MIT)
 ├── .gitignore  .env.example  pyproject.toml
 ├── docs/
 │   ├── PLAN.md  DECISIONS.md  lab_notes.md
 ├── src/aem/
-│   ├── cli.py                 (comandos: run, eval, fetch-data, make-variants, demo)
+│   ├── cli.py                 (comandos: ver sección 6)
 │   ├── config.py  models.py   (pydantic: todos los esquemas)
 │   ├── llm.py                 (cliente Gemini + caché + demo + reintentos)
 │   ├── attack_data.py         (carga de ATT&CK v19.2 desde STIX)
@@ -89,13 +94,14 @@ attack-exposure-model/
 │   ├── attack/                (JSON STIX descargado; en .gitignore; solo script + checksum)
 │   ├── org/fictional_org.yaml (organización ficticia, estilo DeTT&CT)
 │   ├── ssvc_tree.yaml         (tabla de decisión editable)
-│   ├── prevalence/red_canary_2026.csv  (plantilla; lo llena Sebas a mano)
+│   ├── prevalence/red_canary_2026.csv  (plantilla del paso 4; vacía, congelada, D-78)
+│   ├── prevalence/context/    (rankings reales de Red Canary; solo contexto, ningún código los lee)
 │   ├── reports/               (textos; ver sección 7)
 │   └── reference_mappings/    (CSV de técnicas de referencia por escenario)
 ├── eval/
 │   ├── make_variants.py  baseline_ioc.py  metrics.py  run_experiments.py
-│   └── review_sheets/         (hojas para revisión manual)
-├── runs/                      (respuestas crudas del LLM + resultados; se commitea)
+│   └── review_sheets/         (hojas de revisión manual; la de Akira en private/, ignorada por git)
+├── runs/                      (respuestas crudas del LLM + resultados; se commitea, salvo runs/*/private/ y runs/llm_cache_private/, D-69)
 └── tests/
 ```
 
@@ -155,10 +161,10 @@ Orden dentro del paso:
   2. `mitigations`: mitigaciones asociadas como **catálogo de identificadores** (`M####` + nombre), **sin recomendar cuál aplicar**.
   3. `data_sources`: fuentes de datos que permiten detectarla (campo de ATT&CK).
   4. `groups`: grupos de amenaza que la emplean (nombres, de ATT&CK).
-  5. `prevalence`: prevalencia en entornos reales según **Red Canary (2026), *2026 Threat Detection Report*** leída de `data/prevalence/red_canary_2026.csv`; si la técnica no figura, el valor es literalmente `sin dato disponible`.
+  5. `prevalence`: prevalencia en entornos reales según **Red Canary (2026), *2026 Threat Detection Report*** leída de `data/prevalence/red_canary_2026.csv`; si la técnica no figura, el valor es literalmente `sin dato disponible`. La plantilla quedó vacía al congelar el experimento (D-78), así que en `2026-10-18-main` todas las filas dicen `sin dato disponible`.
 - **La IA interviene solo para condensar la descripción larga** (máx. 3 oraciones, sin añadir información que no esté en la descripción fuente, sin valoraciones). Si el LLM falla, el campo queda `resumen no disponible` y el enlace igualmente se muestra.
 - **Prohibido en la salida de este paso:** cualquier campo de urgencia, prioridad, riesgo, recomendación de acción o «relevancia».
-- **Plantilla de prevalencia:** crea `data/prevalence/red_canary_2026.csv` con encabezado `technique_id,rank,source_note` y **sin datos inventados**. Sebas la llena a mano desde el informe. Con el CSV vacío, todo sale `sin dato disponible`.
+- **Plantilla de prevalencia:** `data/prevalence/red_canary_2026.csv`, con encabezado `technique_id,rank,source_note` y **sin datos inventados**. **Se queda vacía** (D-78): llenarla cambiaría las salidas del pipeline y exigiría un run-id nuevo. Los rankings reales de Red Canary (ediciones 2019 y 2020 del repositorio público, licencia MIT, y el top 10 de 2026) están en `data/prevalence/context/`, solo como contexto para la discusión; ningún código del pipeline, de la evaluación ni del reporte los lee.
 - Datos de ATT&CK: usa la **versión 19.2** (https://github.com/mitre-attack/attack-stix-data , archivo `enterprise-attack-19.2.json`). Escribe `scripts` / comando `fetch-data` que lo descargue y guarde su checksum; verifica que ese archivo exista; si el nombre difiere, ajústalo y regístralo. **El orden de las tácticas debe leerse de los datos de la matriz** (en v19 *Defense Evasion* se dividió en *Stealth* y *Defense Impairment*): no lo escribas a mano.
 
 ### Salida del modelo
@@ -180,6 +186,7 @@ Comandos (con `typer`), todos con `--help` en español:
 - `aem make-variants`: genera la variante con IoC modificados de cada reporte.
 - `aem eval`: corre el experimento completo (sección 8) y genera las tablas.
 - `aem demo`: atajo para correr el escenario de Gunra en modo `--demo`, sin API key.
+- Además: `prepare-reports`, `suggest-anon-names`, `preflight`, `review-check`, `integrate-review` (integra las hojas de revisión en una corrida ya evaluada, sin `aem eval` ni API), `report` (`--html`, `--private`), `sensitivity`, `provenance` y `check-repo` (`--deep`). El uso de cada uno está en `docs/RUNBOOK.md`.
 
 ---
 
@@ -197,9 +204,9 @@ Tratamiento:
   - De esas tablas extrae el **mapeo de referencia** → `data/reference_mappings/<escenario>.csv` (`technique_id,technique_name,tactic`). Verifica cada ID contra ATT&CK v19.2 y deja una columna `valid_in_v19_2` (los de 2025 pueden haber cambiado).
   - **Antes de dárselo al LLM, elimina del texto la sección que contiene el mapeo ATT&CK**, para que la extracción no consista en copiar la tabla de referencia. Guarda el texto resultante como `<escenario>_stripped.txt`, y documenta en `docs/` exactamente qué secciones se quitaron.
   - Los boletines de CISA son documentos del gobierno de EE. UU.; se pueden incluir en el repo.
-- **DFIR Report (Akira):** su contenido **tiene derechos de autor: no lo copies al repo.** El repo incluye solo el enlace, instrucciones para descargarlo y colocar el texto en `data/reports/akira_dfir_2026.txt` (en `.gitignore`), y el mapeo de referencia (**solo IDs de técnicas**, que son datos, no texto) tomado de la sección ATT&CK del reporte (32 técnicas). Esa sección también debe retirarse del texto antes de dárselo al LLM. Si no puedes descargarlo con seguridad, **pídele a Sebas que lo ponga a mano**; no lo reconstruyas de memoria.
+- **DFIR Report (Akira):** su contenido **tiene derechos de autor: no lo copies al repo.** El repo incluye solo el enlace, instrucciones para descargarlo y colocar el texto en `data/reports/akira_dfir_2026.txt` (en `.gitignore`), y el mapeo de referencia (**solo IDs de técnicas**, que son datos, no texto) tomado de la sección ATT&CK del reporte (38 técnicas en `data/reference_mappings/akira.csv`). Esa sección también debe retirarse del texto antes de dárselo al LLM. Si no puedes descargarlo con seguridad, **pídele a Sebas que lo ponga a mano**; no lo reconstruyas de memoria.
 - Descargas: si no tienes acceso de red a algún sitio, dilo y pide el archivo; no inventes el contenido.
-- Cada escenario existe en **dos versiones**: `orig` y `mut` (indicadores modificados, ver 8).
+- Cada escenario existe en **tres versiones**: `orig`, `mut` (indicadores modificados, ver 8) y `anon` (además, nombres del actor y del malware reemplazados; D-72).
 
 ---
 
@@ -216,7 +223,7 @@ El comité pidió diseñar, ejecutar y evaluar simulaciones controladas con crit
 - **Enfoque tradicional** (`baseline_ioc.py`): extrae los IoC del reporte con expresiones regulares y los compara con `known_iocs` del YAML; si hay al menos una coincidencia, «reconoce» la amenaza (todas las técnicas del escenario); si no, ninguna. En `orig`, `known_iocs` contiene una porción de los IoC reales del reporte (fija y reproducible, con semilla); en `mut`, por construcción ya no coinciden. **Esta política es una simplificación pendiente de confirmar por Sebas: documéntala en `DECISIONS.md` y haz que sea configurable.**
 - Modelo: de las técnicas con brecha según el YAML (`parcial` o `sin cobertura`) y presentes en la referencia, qué porcentaje flaggea el modelo en cada versión.
 
-**Indicador 4 — Fidelidad de los resúmenes del paso 4.** Genera una **hoja de revisión manual** (CSV) con descripción original, resumen y columnas vacías `ok (si/no)` y `observación` para que Sebas la complete. Además calcula un chequeo automático básico (p. ej., que el resumen no contenga IDs o cifras que no aparezcan en la fuente).
+**Indicador 4 — Fidelidad de los resúmenes del paso 4.** Genera una **hoja de revisión manual** (CSV) con descripción original, resumen y columnas vacías `ok (si/no)` y `observación` para que Sebas la complete. Además calcula un chequeo automático básico (p. ej., que el resumen no contenga IDs o cifras que no aparezcan en la fuente). Las hojas de `2026-10-18-main` (indicadores 4 y 5) ya están completas e integradas con `aem integrate-review`; no se regeneran con `aem eval` ni se ordenan o filtran.
 
 **Indicador 5 — Cumplimiento de los límites.** Comprobación automática de que ninguna salida de IA contenga campos o texto de valoración (lista de patrones en español e inglés: prioridad/priority, urgente/urgent, recomend*/recommend*, «debería»/«should», «crítico»/«critical», etc.). Cuenta las violaciones. Complementa con revisión manual de una muestra.
 
@@ -226,9 +233,9 @@ Entregables de `aem eval`: tablas en CSV y Markdown (`runs/<fecha>/results/`), y
 
 ---
 
-## 9. README (en español)
+## 9. README (inglés y español)
 
-Debe incluir: qué es y qué NO es (prototipo para reproducibilidad de una tesis; no producción); la idea central y el principio de diseño; diagrama de flujo en texto o Mermaid; instalación paso a paso en Windows/macOS/Linux; cómo obtener y poner la API key (`.env`); cómo correr el **modo demo sin API key**; cómo reproducir los resultados; estructura del repo; aviso sobre los datos (CISA incluido, DFIR no incluido por derechos de autor); limitaciones honestas; licencia MIT; cómo citarlo; y una sección «Declaración de uso de IA en el desarrollo» con el texto `[PENDIENTE: Sebas confirma la redacción y si la universidad lo exige]`.
+Debe incluir: qué es y qué NO es (prototipo para reproducibilidad de una tesis; no producción); la idea central y el principio de diseño; diagrama de flujo en texto o Mermaid; instalación paso a paso en Windows/macOS/Linux; cómo obtener y poner la API key (`.env`); cómo correr el **modo demo sin API key**; cómo reproducir los resultados; estructura del repo; aviso sobre los datos (CISA incluido, DFIR no incluido por derechos de autor); limitaciones honestas; licencia MIT; cómo citarlo; y una sección «Declaración de uso de IA en el desarrollo» (ya redactada). La única marca pendiente en los README es la versión publicada del BibTeX (`[PENDIENTE: versión publicada]`), que se queda hasta la release.
 
 ---
 
@@ -266,7 +273,7 @@ Para todo lo demás: toma una decisión razonable, impleméntala configurable, y
 - [ ] `pytest` pasa completo sin llamar a la API.
 - [ ] `aem demo` corre de punta a punta **sin API key** y produce el CSV y `global_review.json`.
 - [ ] Con API key, `aem run` procesa los boletines de Gunra e Interlock y el de Akira (si Sebas puso el texto).
-- [ ] `aem eval` produce los cinco indicadores para los tres escenarios × `orig`/`mut` × 5 corridas.
+- [ ] `aem eval` produce los cinco indicadores para los tres escenarios × `orig`/`mut`/`anon` × 5 corridas.
 - [ ] No hay secretos ni texto de DFIR Report en el historial de git.
 - [ ] `docs/DECISIONS.md` lista todo lo marcado **PENDIENTE DE CONFIRMAR**.
 - [ ] El README es claro para alguien que nunca vio el proyecto.
