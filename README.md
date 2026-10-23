@@ -32,24 +32,32 @@ Why techniques and not indicators of compromise (IoC): an AI can easily mutate t
 
 ```mermaid
 flowchart TD
-    R["Threat report<br/>text without the ATT&CK mapping"] --> P1
-    P1["Step 1 · AI (Gemini)<br/>extraction and mapping<br/>fixed schema: technique_id, technique_name, evidence_quote"] --> V["Validation by code<br/>ID exists and is current in ATT&CK v19.2,<br/>otherwise → needs_review · quote found: flag only"]
-    V --> A1["Analyst review<br/>resolve needs_review · accept / remove / add"]
-    A1 --> L(["Validated technique list"])
-    O["Organization YAML<br/>DeTT&CT style"] --> P2
+    R["Threat report<br/>text, without the ATT&CK mapping"] --> P1["Step 1: extraction and mapping<br/>artificial intelligence"]
+    P1 --> V["Validation by code<br/>ID exists and is current, invalid ones go to review"]
+    V --> A1["Analyst review<br/>resolve, accept, remove or add techniques"]
+    K["ATT&CK v19.2 data<br/>and Red Canary prevalence (2026)"] -->|"ATT&CK only"| V
+    K --> P4["Step 4: reference data<br/>script with AI only for the summary"]
+    A1 --> P4
+    A1 --> P2["Step 2: coverage<br/>script against the YAML"]
+    O["YAML file<br/>detections, assets and context"] --> P2
     O --> P3
-    L --> P2["Step 2 · code<br/>coverage from the score only: cubierta / parcial / sin cobertura"]
-    P2 --> P3["Step 3 · analyst + adapted SSVC tree<br/>validates coverage · asset criticality,<br/>exposure only for Initial Access → Track · Track* · Attend · Act"]
-    P3 --> G["Global review of the chain · analyst"]
-    G --> GJ["global_review.json"]
-    K["ATT&CK v19.2 data<br/>+ prevalence (red_canary_2026.csv)"] --> P4
-    K -->|"ATT&CK only"| V
-    L --> P4["Step 4 · code + AI only for the summary<br/>batch lookup → AI summary of the description<br/>→ evaluative-language check (violations)"]
-    P3 --> S["Grouping and ordering · code<br/>by action Act, Attend, Track*, Track,<br/>attack-chain order within each group"]
+    P2 --> P3["Step 3: prioritization<br/>analyst with SSVC tree"]
+    P3 --> G["Global review<br/>analyst over the chain, writes global_review.json"]
+    P3 --> S["Grouping and ordering<br/>script, by action and attack order"]
     P4 --> S
-    S --> CSV["CSV per threat (UTF-8 with BOM)<br/>one row per validated technique"]
-    S --> RR["run_record.json<br/>traceability record"]
+    S --> CSV["Output: CSV report<br/>one row per technique in the validated list"]
+    classDef ia fill:#fbeee9,stroke:#a8432a,color:#7a2a17
+    classDef code fill:#f1eee8,stroke:#6b6b6b,color:#333333
+    classDef an fill:#e3f3ec,stroke:#1f7a57,color:#14543b
+    classDef io fill:#fafaf8,stroke:#9a9a9a,stroke-dasharray:4 3,color:#333333
+    class P1 ia
+    class P4 ia
+    class V,P2,S code
+    class A1,P3,G an
+    class R,K,O,CSV io
 ```
+
+Colors: red = AI, grey = script (code), green = analyst, dashed = input or output. Every run also writes `run_record.json` as its traceability record.
 
 | Step | Who | What it does |
 |---|---|---|

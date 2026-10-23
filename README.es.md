@@ -32,24 +32,32 @@ Por qué técnicas y no indicadores de compromiso (IoC): una IA puede mutar con 
 
 ```mermaid
 flowchart TD
-    R["Reporte de amenaza<br/>texto sin el mapeo ATT&CK"] --> P1
-    P1["Paso 1 · IA (Gemini)<br/>extracción y mapeo<br/>esquema fijo: technique_id, technique_name, evidence_quote"] --> V["Validación por código<br/>ID existente y vigente en ATT&CK v19.2,<br/>si no → needs_review · cita encontrada: solo marca"]
-    V --> A1["Revisión del analista<br/>resolver needs_review · aceptar / quitar / agregar"]
-    A1 --> L(["Lista validada de técnicas"])
-    O["YAML de la organización<br/>estilo DeTT&CT"] --> P2
+    R["Reporte de amenaza<br/>texto, sin el mapeo ATT&CK"] --> P1["Paso 1: extracción y mapeo<br/>inteligencia artificial"]
+    P1 --> V["Validación por código<br/>ID existente y vigente, inválidos pasan a revisión"]
+    V --> A1["Revisión del analista<br/>resolver, aceptar, quitar o agregar técnicas"]
+    K["Datos de ATT&CK v19.2<br/>y prevalencia de Red Canary (2026)"] -->|"solo ATT&CK"| V
+    K --> P4["Paso 4: datos de referencia<br/>script con IA solo en el resumen"]
+    A1 --> P4
+    A1 --> P2["Paso 2: cobertura<br/>script contra el YAML"]
+    O["Archivo YAML<br/>detecciones, activos y contexto"] --> P2
     O --> P3
-    L --> P2["Paso 2 · código<br/>cobertura solo por el score: cubierta / parcial / sin cobertura"]
-    P2 --> P3["Paso 3 · analista + árbol SSVC adaptado<br/>valida la cobertura · criticidad del activo,<br/>exposición solo en Acceso Inicial → Track · Track* · Attend · Act"]
-    P3 --> G["Revisión global de la cadena · analista"]
-    G --> GJ["global_review.json"]
-    K["Datos de ATT&CK v19.2<br/>+ prevalencia (red_canary_2026.csv)"] --> P4
-    K -->|"solo ATT&CK"| V
-    L --> P4["Paso 4 · código + IA solo para el resumen<br/>consulta en lote → resumen de la descripción por IA<br/>→ chequeo de lenguaje valorativo (violations)"]
-    P3 --> S["Agrupación y ordenamiento · código<br/>por acción Act, Attend, Track*, Track,<br/>orden de la cadena de ataque dentro de cada grupo"]
+    P2 --> P3["Paso 3: priorización<br/>analista con árbol SSVC"]
+    P3 --> G["Revisión global<br/>analista sobre la cadena, genera global_review.json"]
+    P3 --> S["Agrupación y ordenamiento<br/>script, por acción y orden de ataque"]
     P4 --> S
-    S --> CSV["CSV por amenaza (UTF-8 con BOM)<br/>una fila por técnica de la lista validada"]
-    S --> RR["run_record.json<br/>registro de trazabilidad"]
+    S --> CSV["Salida: informe CSV<br/>una fila por técnica de la lista validada"]
+    classDef ia fill:#fbeee9,stroke:#a8432a,color:#7a2a17
+    classDef code fill:#f1eee8,stroke:#6b6b6b,color:#333333
+    classDef an fill:#e3f3ec,stroke:#1f7a57,color:#14543b
+    classDef io fill:#fafaf8,stroke:#9a9a9a,stroke-dasharray:4 3,color:#333333
+    class P1 ia
+    class P4 ia
+    class V,P2,S code
+    class A1,P3,G an
+    class R,K,O,CSV io
 ```
+
+Colores: rojo = IA, gris = script (código), verde = analista, punteado = entrada o salida. Cada corrida escribe además `run_record.json` como registro de trazabilidad.
 
 | Paso | Quién | Qué hace |
 |---|---|---|
