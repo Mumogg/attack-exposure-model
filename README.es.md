@@ -32,23 +32,34 @@ Por qué técnicas y no indicadores de compromiso (IoC): una IA puede mutar con 
 
 ```mermaid
 flowchart TD
-    R[Reporte de amenaza<br/>texto sin el mapeo ATT&CK] --> P1
-    O[YAML de la organización<br/>estilo DeTT&CT] --> P2
-    P1["Paso 1 · IA (Gemini)<br/>extracción de técnicas + cita textual"] --> V["Validación por código<br/>ID existe en ATT&CK v19.2, no revocado"]
-    V --> A1["Revisión del analista<br/>aceptar / quitar / agregar"]
-    A1 --> P2["Paso 2 · código<br/>cobertura: cubierta / parcial / sin cobertura"]
-    P2 --> P3["Paso 3 · analista + árbol SSVC adaptado<br/>Track · Track* · Attend · Act"]
-    P3 --> G["Revisión global de la cadena<br/>(pregunta al analista, global_review.json)"]
-    P3 --> P4["Paso 4 · código + IA solo para el resumen<br/>mitigaciones, fuentes de datos, grupos, prevalencia"]
-    P4 --> CSV["CSV por amenaza (UTF-8 con BOM)"]
+    R["Reporte de amenaza<br/>texto sin el mapeo ATT&CK"] --> P1
+    P1["Paso 1 · IA (Gemini)<br/>extracción y mapeo<br/>esquema fijo: technique_id, technique_name, evidence_quote"] --> V["Validación por código<br/>ID existente y vigente en ATT&CK v19.2,<br/>si no → needs_review · cita encontrada: solo marca"]
+    V --> A1["Revisión del analista<br/>resolver needs_review · aceptar / quitar / agregar"]
+    A1 --> L(["Lista validada de técnicas"])
+    O["YAML de la organización<br/>estilo DeTT&CT"] --> P2
+    O --> P3
+    L --> P2["Paso 2 · código<br/>cobertura solo por el score: cubierta / parcial / sin cobertura"]
+    P2 --> P3["Paso 3 · analista + árbol SSVC adaptado<br/>valida la cobertura · criticidad del activo,<br/>exposición solo en Acceso Inicial → Track · Track* · Attend · Act"]
+    P3 --> G["Revisión global de la cadena · analista"]
+    G --> GJ["global_review.json"]
+    K["Datos de ATT&CK v19.2<br/>+ prevalencia (red_canary_2026.csv)"] --> P4
+    L --> P4["Paso 4 · código + IA solo para el resumen<br/>consulta en lote → resumen de la descripción por IA<br/>→ chequeo de lenguaje valorativo (violations)"]
+    P3 --> S["Agrupación y ordenamiento · código<br/>por acción Act, Attend, Track*, Track,<br/>orden de la cadena de ataque dentro de cada grupo"]
+    P4 --> S
+    S --> CSV["CSV por amenaza (UTF-8 con BOM)<br/>una fila por técnica de la lista validada"]
+    S --> RR["run_record.json<br/>registro de trazabilidad"]
 ```
 
 | Paso | Quién | Qué hace |
 |---|---|---|
-| 1 | IA + código + analista | El LLM devuelve técnicas con una cita del reporte. El código valida cada ID contra ATT&CK v19.2 y marca `needs_review` los inválidos o deprecados (no los descarta en silencio). El analista revisa. Se guardan por separado `extracted_raw` y `extracted_validated`. |
-| 2 | Código | Cruza cada técnica con las detecciones del YAML (escala de DeTT&CT 0–5): 0 o sin entrada → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. |
-| 3 | Analista + tabla | Árbol adaptado de SSVC v2.0 (cobertura × criticidad del activo; la exposición solo ajusta las técnicas de Acceso Inicial). Tabla editable en `data/ssvc_tree.yaml`. |
-| 4 | Código + IA | Resumen breve (IA, máx. 3 oraciones, en inglés), enlace a attack.mitre.org (por código), mitigaciones `M####`, fuentes de datos, grupos y prevalencia (Red Canary 2026). Sin campos de urgencia, riesgo ni recomendación. |
+| 1 | IA + código + analista | El LLM devuelve técnicas con una cita del reporte, con un esquema fijo (`technique_id`, `technique_name`, `evidence_quote`). El código valida cada ID contra ATT&CK v19.2: los malformados, no encontrados, revocados o descontinuados se marcan `needs_review` (no se descartan en silencio). El código también verifica si la cita aparece en el reporte, pero es solo una marca que ve el analista: no excluye nada. El analista resuelve los `needs_review` (reemplazar o quitar) y acepta, quita o agrega técnicas. Se guardan por separado `extracted_raw` y `extracted_validated`. |
+| 2 | Código | Cruza cada técnica con las detecciones del YAML usando solo el score (escala de DeTT&CT 0–5): 0 o sin entrada → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. Las `data_sources` de la entrada solo se copian al registro. Las subtécnicas sin entrada propia no heredan el score de la técnica padre (`subtechnique_policy: no_inherit`, el valor por defecto). |
+| 3 | Analista + tabla | El analista primero valida la cobertura del paso 2 y luego indica la criticidad del activo (y la exposición, solo en técnicas de Acceso Inicial). Árbol adaptado de SSVC v2.0: cobertura × criticidad; la exposición solo ajusta las técnicas de Acceso Inicial. Tabla editable en `data/ssvc_tree.yaml`. `processes_regulated_data` solo se muestra al analista; no es una entrada del árbol. |
+| Revisión global | Analista | Con las técnicas en el orden de la cadena de ataque y su cobertura validada, el analista responde si hay algún punto donde la organización podría interrumpir el ataque. Solo escribe `global_review.json`; no alimenta ninguna otra etapa. |
+| 4 | Código + IA | Depende solo de la lista validada del paso 1 (no de los pasos 2 y 3). Una consulta en lote a los datos de ATT&CK: enlace a attack.mitre.org, mitigaciones `M####`, fuentes de datos, grupos; más la prevalencia de `data/prevalence/red_canary_2026.csv`. La IA solo condensa la descripción (máx. 3 oraciones, en inglés); después un chequeo de código reemplaza por `resumen no disponible` todo resumen con lenguaje valorativo que no esté en la fuente. Ese CSV está vacío en la corrida congelada (D-78), así que la prevalencia figura como `sin dato disponible`. Sin campos de urgencia, riesgo ni recomendación. |
+| Salida | Código | Une los pasos 3 y 4: una fila del CSV por técnica de la lista validada, agrupadas por acción (Act, Attend, Track*, Track) y en el orden de la cadena de ataque dentro de cada grupo. No ordena entre sí las técnicas con la misma acción. `run_record.json` guarda la traza de cada paso. |
+
+**Modo del analista.** `interactive` (por defecto en `aem run`): una persona toma todas las decisiones de analista descritas arriba. `auto` (solo experimentos): `AutoReviewer` excluye los `needs_review` sin agregar ni quitar nada, `AutoAnalyst` mantiene la cobertura del paso 2 y toma la criticidad y la exposición de `analyst_context` del YAML, y la revisión global queda sin responder. La evaluación usó siempre `auto`.
 
 ## Instalación
 

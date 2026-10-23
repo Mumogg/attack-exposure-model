@@ -32,23 +32,34 @@ Why techniques and not indicators of compromise (IoC): an AI can easily mutate t
 
 ```mermaid
 flowchart TD
-    R[Threat report<br/>text without the ATT&CK mapping] --> P1
-    O[Organization YAML<br/>DeTT&CT style] --> P2
-    P1["Step 1 · AI (Gemini)<br/>technique extraction + verbatim quote"] --> V["Validation by code<br/>ID exists in ATT&CK v19.2, not revoked"]
-    V --> A1["Analyst review<br/>accept / remove / add"]
-    A1 --> P2["Step 2 · code<br/>coverage: cubierta / parcial / sin cobertura"]
-    P2 --> P3["Step 3 · analyst + adapted SSVC tree<br/>Track · Track* · Attend · Act"]
-    P3 --> G["Global review of the chain<br/>(question to the analyst, global_review.json)"]
-    P3 --> P4["Step 4 · code + AI only for the summary<br/>mitigations, data sources, groups, prevalence"]
-    P4 --> CSV["CSV per threat (UTF-8 with BOM)"]
+    R["Threat report<br/>text without the ATT&CK mapping"] --> P1
+    P1["Step 1 · AI (Gemini)<br/>extraction and mapping<br/>fixed schema: technique_id, technique_name, evidence_quote"] --> V["Validation by code<br/>ID exists and is current in ATT&CK v19.2,<br/>otherwise → needs_review · quote found: flag only"]
+    V --> A1["Analyst review<br/>resolve needs_review · accept / remove / add"]
+    A1 --> L(["Validated technique list"])
+    O["Organization YAML<br/>DeTT&CT style"] --> P2
+    O --> P3
+    L --> P2["Step 2 · code<br/>coverage from the score only: cubierta / parcial / sin cobertura"]
+    P2 --> P3["Step 3 · analyst + adapted SSVC tree<br/>validates coverage · asset criticality,<br/>exposure only for Initial Access → Track · Track* · Attend · Act"]
+    P3 --> G["Global review of the chain · analyst"]
+    G --> GJ["global_review.json"]
+    K["ATT&CK v19.2 data<br/>+ prevalence (red_canary_2026.csv)"] --> P4
+    L --> P4["Step 4 · code + AI only for the summary<br/>batch lookup → AI summary of the description<br/>→ evaluative-language check (violations)"]
+    P3 --> S["Grouping and ordering · code<br/>by action Act, Attend, Track*, Track,<br/>attack-chain order within each group"]
+    P4 --> S
+    S --> CSV["CSV per threat (UTF-8 with BOM)<br/>one row per validated technique"]
+    S --> RR["run_record.json<br/>traceability record"]
 ```
 
 | Step | Who | What it does |
 |---|---|---|
-| 1 | AI + code + analyst | The LLM returns techniques with a quote from the report. The code validates each ID against ATT&CK v19.2 and marks invalid or deprecated ones as `needs_review` (it does not discard them silently). The analyst reviews. `extracted_raw` and `extracted_validated` are stored separately. |
-| 2 | Code | Matches each technique against the YAML detections (DeTT&CT scale 0–5): 0 or no entry → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. |
-| 3 | Analyst + table | Tree adapted from SSVC v2.0 (coverage × asset criticality; exposure only adjusts Initial Access techniques). Editable table in `data/ssvc_tree.yaml`. |
-| 4 | Code + AI | Brief summary (AI, max. 3 sentences, in English), link to attack.mitre.org (by code), `M####` mitigations, data sources, groups and prevalence (Red Canary 2026). No urgency, risk or recommendation fields. |
+| 1 | AI + code + analyst | The LLM returns techniques with a quote from the report, with a fixed schema (`technique_id`, `technique_name`, `evidence_quote`). The code validates each ID against ATT&CK v19.2: malformed, not found, revoked or deprecated IDs are marked `needs_review` (they are not discarded silently). The code also checks whether the quote appears in the report, but that is only a flag shown to the analyst: it does not exclude anything. The analyst resolves the `needs_review` items (replace or remove) and accepts, removes or adds techniques. `extracted_raw` and `extracted_validated` are stored separately. |
+| 2 | Code | Matches each technique against the YAML detections using only the score (DeTT&CT scale 0–5): 0 or no entry → `sin cobertura`; 1–3 → `parcial`; 4–5 → `cubierta`. The entry's `data_sources` are only copied to the record. Sub-techniques without their own entry do not inherit the parent's score (`subtechnique_policy: no_inherit`, the default). |
+| 3 | Analyst + table | The analyst first validates the step 2 coverage, then states the asset criticality (and exposure, only for Initial Access techniques). Tree adapted from SSVC v2.0: coverage × criticality, with exposure shifting only Initial Access techniques. Editable table in `data/ssvc_tree.yaml`. `processes_regulated_data` is only shown to the analyst; it is not an input of the tree. |
+| Global review | Analyst | With the techniques in attack-chain order and their validated coverage, the analyst answers whether there is a point where the organization could interrupt the attack. It only writes `global_review.json`; it does not feed any other stage. |
+| 4 | Code + AI | Depends only on the validated list from step 1 (not on steps 2 and 3). One batch lookup of ATT&CK data: link to attack.mitre.org, `M####` mitigations, data sources, groups; plus prevalence from `data/prevalence/red_canary_2026.csv`. The AI only condenses the description (max. 3 sentences, in English); a code check then replaces with `resumen no disponible` any summary with evaluative language that is not in the source. That CSV is empty in the frozen run (D-78), so prevalence shows `sin dato disponible`. No urgency, risk or recommendation fields. |
+| Output | Code | Joins steps 3 and 4: one CSV row per validated technique, grouped by action (Act, Attend, Track*, Track) and in attack-chain order within each group. It does not rank techniques that share an action. `run_record.json` keeps the trace of every step. |
+
+**Analyst mode.** `interactive` (the default in `aem run`): a person makes every analyst decision above. `auto` (experiments only): `AutoReviewer` excludes the `needs_review` items without adding or removing anything, `AutoAnalyst` keeps the step 2 coverage and takes criticality and exposure from `analyst_context` in the YAML, and the global review is left unanswered. The evaluation always used `auto`.
 
 ## Installation
 
