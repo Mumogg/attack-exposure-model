@@ -43,6 +43,7 @@ flowchart TD
     P3 --> G["Global review of the chain · analyst"]
     G --> GJ["global_review.json"]
     K["ATT&CK v19.2 data<br/>+ prevalence (red_canary_2026.csv)"] --> P4
+    K -->|"ATT&CK only"| V
     L --> P4["Step 4 · code + AI only for the summary<br/>batch lookup → AI summary of the description<br/>→ evaluative-language check (violations)"]
     P3 --> S["Grouping and ordering · code<br/>by action Act, Attend, Track*, Track,<br/>attack-chain order within each group"]
     P4 --> S
