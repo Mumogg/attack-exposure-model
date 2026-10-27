@@ -30,32 +30,9 @@ Por qué técnicas y no indicadores de compromiso (IoC): una IA puede mutar con 
 
 ## Flujo
 
-```mermaid
-flowchart TD
-    R["Reporte de amenaza<br/>texto, sin el mapeo ATT&CK"] --> P1["Paso 1: extracción y mapeo<br/>inteligencia artificial"]
-    P1 --> V["Validación por código<br/>ID existente y vigente, inválidos pasan a revisión"]
-    V --> A1["Revisión del analista<br/>resolver, aceptar, quitar o agregar técnicas"]
-    K["Datos de ATT&CK v19.2<br/>y prevalencia de Red Canary (2026)"] -->|"solo ATT&CK"| V
-    K --> P4["Paso 4: datos de referencia<br/>script con IA solo en el resumen"]
-    A1 --> P4
-    A1 --> P2["Paso 2: cobertura<br/>script contra el YAML"]
-    O["Archivo YAML<br/>detecciones, activos y contexto"] --> P2
-    O --> P3
-    P2 --> P3["Paso 3: priorización<br/>analista con árbol SSVC"]
-    P3 --> G["Revisión global<br/>analista sobre la cadena, genera global_review.json"]
-    P3 --> S["Agrupación y ordenamiento<br/>script, por acción y orden de ataque"]
-    P4 --> S
-    S --> CSV["Salida: informe CSV<br/>una fila por técnica de la lista validada"]
-    classDef ia fill:#fbeee9,stroke:#a8432a,color:#7a2a17
-    classDef code fill:#f1eee8,stroke:#6b6b6b,color:#333333
-    classDef an fill:#e3f3ec,stroke:#1f7a57,color:#14543b
-    classDef io fill:#fafaf8,stroke:#9a9a9a,stroke-dasharray:4 3,color:#333333
-    class P1 ia
-    class P4 ia
-    class V,P2,S code
-    class A1,P3,G an
-    class R,K,O,CSV io
-```
+![Flujo del modelo: del reporte de amenaza al informe CSV, con pasos de IA, script y analista](docs/img/flujo_modelo_es.png)
+
+Cada corrida también guarda run_record.json (registro de trazabilidad).
 
 Colores: rojo = IA, gris = script (código), verde = analista, punteado = entrada o salida. Cada corrida escribe además `run_record.json` como registro de trazabilidad.
 
